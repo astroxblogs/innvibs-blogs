@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* Optional: Hide Google branding and dropdown styling */
+/* Hide Google Translate top banner */
+/* Hide the default Google Translate elements */
+/* Hide Google Translate banner and branding */
+/* Hide Google Translate banner and branding */
+
+
+/* Hide Google Translate banner and branding */
+/* Hide Google branding and banner */
+.goog-te-banner-frame.skiptranslate,
+.goog-te-balloon-frame,
+.goog-logo-link,
+.goog-te-gadget span {
+    display: none !important;
+}
+
+body {
+    top: 0px !important;
+}
+
+#google_translate_element {
+    display: none !important;
+}
+
+/* Custom Icon and Dropdown */
+#custom-google-icon {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 1000;
+    cursor: pointer;
+    font-size: 1.5rem;
+    background: white;
+    border-radius: 50%;
+    padding: 0.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+#language_selector {
+    display: none;
+    position: fixed;
+    top: 58px;
+    right: 16px;
+    z-index: 1000;
+    padding: 0.4rem;
+    border-radius: 6px;
+    background: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+#main-outer-component {
+    display: flex;
+    padding-left: 50px;
+}

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Web site created using create-react-app" />
+  <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  <title>React App</title>
+
+  
+  
+
+</head>
+
+<body>
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+
+  <!-- Google Translate Widget Container (Hidden) -->
+  <div id="google_translate_element"></div>
+
+  <!-- Custom Translate Icon -->
+  <div id="custom-google-icon" title="Translate 🌐">🌐</div>
+
+  <!-- Language Dropdown -->
+  <select id="language_selector">
+    <option value="">Select language</option>
+    <option value="en">English</option>
+    <option value="hi">हिन्दी</option>
+    <option value="fr">Français</option>
+    <option value="es">Español</option>
+  </select>
+
+  <div id="root"></div>
+
+  <!-- Google Translate Script -->
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        includedLanguages: 'en,hi,fr,de,es',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+      }, 'google_translate_element');
+    }
+  </script>
+  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+  <!-- Custom Translate Logic -->
+  <script>
+    function triggerTranslation(lang) {
+      const selectEl = document.querySelector('.goog-te-combo');
+      if (selectEl) {
+        selectEl.value = lang;
+        selectEl.dispatchEvent(new Event('change'));
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const icon = document.getElementById("custom-google-icon");
+      const selector = document.getElementById("language_selector");
+
+      icon.addEventListener("click", () => {
+        selector.style.display = selector.style.display === "none" ? "block" : "none";
+      });
+
+      selector.addEventListener("change", () => {
+        const lang = selector.value;
+        if (lang) {
+          triggerTranslation(lang);
+          selector.style.display = "none";
+        }
+      });
+
+      // Remove unwanted banner every second (if injected later)
+      setInterval(() => {
+        const banner = document.querySelector(".goog-te-banner-frame");
+        if (banner) banner.remove();
+        document.body.style.top = "0px";
+      }, 1000);
+    });
+  </script>
+</body>
+
+</html>
