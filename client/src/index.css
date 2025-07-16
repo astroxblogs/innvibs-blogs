@@ -25,7 +25,7 @@ body {
     display: none !important;
 }
 
-/* Custom Icon and Dropdown */
+/* Custom Icon and Dropdown
 #custom-google-icon {
     position: fixed;
     top: 16px;
@@ -37,7 +37,7 @@ body {
     border-radius: 50%;
     padding: 0.5rem;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-}
+} */
 
 #language_selector {
     display: none;

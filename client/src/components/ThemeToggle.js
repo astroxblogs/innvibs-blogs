@@ -1,29 +1,44 @@
+// client/src/components/ThemeToggle.js
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 
 const ThemeToggle = () => {
-    const { t } = useTranslation();
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
 
     useEffect(() => {
+        const root = document.documentElement;
         if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
+            root.classList.add('dark');
         } else {
-            document.documentElement.classList.remove('dark');
+            root.classList.remove('dark');
         }
         localStorage.setItem('theme', theme);
     }, [theme]);
 
+    const toggleTheme = () => {
+        setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
+    };
+
     return (
         <button
-            className="px-4 py-2 rounded-lg bg-white/80 text-gray-800 dark:bg-[#1e1e2f]/70 dark:text-gray-100 dark:hover:bg-[#2a2a3d]/80 shadow-md backdrop-blur-md transition-all duration-300"
-            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+            onClick={toggleTheme}
+            className="
+                p-2 rounded-full
+                bg-light-bg-secondary dark:bg-dark-bg-secondary
+                shadow-md transition-colors duration-300 ease-in-out
+                flex items-center justify-center
+                focus:outline-none focus:ring-2 focus:ring-accent focus:ring-opacity-75
+            "
+            aria-label={theme === 'light' ? "Switch to dark mode" : "Switch to light mode"}
         >
-            {t('theme')}: {theme === 'light' ? t('light') : t('dark')}
+            {theme === 'light' ? (
+                // Moon icon: Dark text in light mode. This is already a very dark gray.
+                <span className="material-icons text-xl text-text-dark dark:text-black hover:text-accent-dark dark:hover:text-accent-light">dark_mode</span>
+            ) : (
+                // Sun icon: Now will be pure black in dark mode.
+                <span className="material-icons text-xl text-text-dark dark:text-black hover:text-accent-dark dark:hover:text-accent-light">light_mode</span>
+            )}
         </button>
-
-
     );
 };
 
-export default ThemeToggle; 
+export default ThemeToggle;

@@ -6,11 +6,12 @@ const BlogList = ({ blogs }) => {
     const { t } = useTranslation();
     if (!blogs.length) return <div className="text-center text-gray-500 mt-10">{t('no_blogs')}</div>;
     return (
-        <div className="w-full max-w-3xl mx-auto py-8 flex flex-col items-center">
+        <div className="max-w-4xl w-full mx-auto px-4">
             {blogs.map((blog) => (
                 <BlogCard key={blog._id} blog={blog} />
             ))}
         </div>
+
     );
 };
 

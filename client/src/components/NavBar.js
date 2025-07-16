@@ -1,4 +1,7 @@
-import React, { useRef } from 'react';
+// client/src/components/CategoryScroller.js
+// (This was previously NavBar.js)
+
+import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const categories = [
@@ -15,66 +18,91 @@ const categories = [
     { label: 'Women', value: 'women' },
 ];
 
-const NavBar = ({ activeCategory, setActiveCategory }) => {
-    const scrollRef = useRef(null);
+const VISIBLE_COUNT = 5;
 
-    const scroll = (direction) => {
-        const container = scrollRef.current;
-        if (container) {
-            const scrollAmount = 150;
-            container.scrollBy({ left: direction === 'right' ? scrollAmount : -scrollAmount, behavior: 'smooth' });
-        }
+const CategoryScroller = ({ activeCategory, setActiveCategory }) => {
+    const [startIdx, setStartIdx] = useState(0);
+
+    const canScrollLeft = startIdx > 0;
+    const canScrollRight = startIdx + VISIBLE_COUNT < categories.length;
+
+    const handleScrollLeft = () => {
+        if (canScrollLeft) setStartIdx(startIdx - 1);
     };
 
-    // Split categories into first 5 and the rest
-    const firstFive = categories.slice(0, 5);
-    const rest = categories.slice(5);
+    const handleScrollRight = () => {
+        if (canScrollRight) setStartIdx(startIdx + 1);
+    };
+
+    const visibleCategories = categories.slice(startIdx, startIdx + VISIBLE_COUNT);
 
     return (
-        <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
-            <div className="max-w-screen-xl mx-auto flex items-center px-4 relative overflow-hidden">
-                {/* First 5 categories (always visible) */}
-                <div className="flex space-x-4 py-3">
-                    {firstFive.map((cat) => (
-                        <button
-                            key={cat.value}
-                            onClick={() => setActiveCategory && setActiveCategory(cat.value)}
-                            className={`flex-shrink-0 text-sm px-3 py-1 rounded-md transition font-medium 
-                                ${activeCategory === cat.value
-                                    ? 'bg-green-600 text-white'
-                                    : 'text-gray-700 hover:text-green-600 dark:text-gray-300 dark:hover:text-green-400'
-                                }`}
-                        >
-                            {cat.label}
-                        </button>
-                    ))}
-                </div>
-                {/* Left Scroll Button for rest */}
-                <button onClick={() => scroll('left')} className="p-2 text-gray-500 hover:text-gray-900 dark:hover:text-white hidden sm:block absolute left-0 top-1/2 -translate-y-1/2 z-10">
+        <div
+            // This component itself no longer needs a full background or sticky position
+            // as it will be nested inside the new TopNavigation.
+            // We only keep border-b for internal separation within the TopNavigation.
+            className="
+                w-full border-b border-border-light dark:border-border-dark
+                transition-colors duration-300 py-3
+            "
+        >
+            <div className="max-w-screen-xl mx-auto flex justify-center items-center px-4 relative">
+                {/* Left Arrow Button */}
+                <button
+                    onClick={handleScrollLeft}
+                    disabled={!canScrollLeft}
+                    className={`
+                        p-2 mr-2 rounded transition-colors duration-200
+                        ${canScrollLeft
+                            ? 'text-text-muted dark:text-text-light hover:text-accent dark:hover:text-accent-light'
+                            : 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
+                        }
+                    `}
+                    aria-label="Scroll left"
+                >
                     <ChevronLeft />
                 </button>
-                {/* Scrollable rest of categories */}
+
+                {/* Animated Categories Container */}
                 <div
-                    ref={scrollRef}
-                    className="flex-1 flex space-x-4 overflow-x-auto scrollbar-hide py-3 ml-2"
-                    style={{ minWidth: 0 }}
+                    className="flex space-x-4 transition-transform duration-300 overflow-hidden" // Added overflow-hidden to handle category display
+                    style={{
+                        minWidth: 0,
+                        width: 'fit-content',
+                        transform: `translateX(0)`,
+                    }}
                 >
-                    {rest.map((cat) => (
+                    {visibleCategories.map((cat) => (
                         <button
                             key={cat.value}
                             onClick={() => setActiveCategory && setActiveCategory(cat.value)}
-                            className={`flex-shrink-0 text-sm px-3 py-1 rounded-md transition font-medium 
+                            className={`
+                                flex-shrink-0 text-sm px-3 py-1 rounded-md transition font-medium
+                                duration-200 ease-in-out
                                 ${activeCategory === cat.value
-                                    ? 'bg-green-600 text-white'
-                                    : 'text-gray-700 hover:text-green-600 dark:text-gray-300 dark:hover:text-green-400'
-                                }`}
+                                    ? 'bg-accent text-text-light dark:bg-accent-dark'
+                                    : 'text-text-muted hover:text-accent dark:text-text-light dark:hover:text-accent-light'
+                                }
+                            `}
                         >
                             {cat.label}
                         </button>
                     ))}
                 </div>
-                {/* Right Scroll Button for rest */}
-                <button onClick={() => scroll('right')} className="p-2 text-gray-500 hover:text-gray-900 dark:hover:text-white hidden sm:block absolute right-0 top-1/2 -translate-y-1/2 z-10">
+
+                {/* Right Arrow Button */}
+                <button
+                    onClick={handleScrollRight}
+                    disabled={!canScrollRight}
+                    className={`
+                        p-2 ml-2 rounded transition-colors duration-200
+                        ${canScrollRight
+                            ? 'text-text-muted dark:text-text-light hover:text-accent dark:hover:text-accent-light'
+                            : 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
+                        }
+                    `}
+                    aria-label="Scroll right"
+                >
                     <ChevronRight />
                 </button>
             </div>
@@ -82,4 +110,4 @@ const NavBar = ({ activeCategory, setActiveCategory }) => {
     );
 };
 
-export default NavBar;
+export default CategoryScroller; // <--- IMPORTANT: Changed export name

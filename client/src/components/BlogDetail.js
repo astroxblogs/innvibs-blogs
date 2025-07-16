@@ -14,9 +14,15 @@ const BlogDetail = ({ blog }) => (
             <span className="flex items-center gap-1"><span className="material-icons text-base">thumb_up</span> {blog.likes || 0}</span>
             <span className="flex items-center gap-1"><span className="material-icons text-base">comment</span> {blog.comments?.length || 0}</span>
         </div>
-        <div className="prose prose-lg dark:prose-invert max-w-none mb-8">
-            {blog.content}
-        </div>
+        {/*
+            THE CHANGE IS HERE:
+            Use dangerouslySetInnerHTML to render the HTML content.
+            The __html property is where you pass your raw HTML string.
+        */}
+        <div
+            className="prose prose-lg dark:prose-invert max-w-none mb-8"
+            dangerouslySetInnerHTML={{ __html: blog.content }}
+        />
         <div className="mb-8">
             <LikeButton blogId={blog._id} initialLikes={blog.likes} />
         </div>
@@ -24,4 +30,4 @@ const BlogDetail = ({ blog }) => (
     </article>
 );
 
-export default BlogDetail; 
+export default BlogDetail;
