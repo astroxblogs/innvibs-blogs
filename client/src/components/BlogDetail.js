@@ -4,21 +4,18 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import DOMPurify from 'dompurify';
 
-// You can keep these as separate components if you wish
 import LikeButton from '../components/LikeButton';
 import CommentSection from '../components/CommentSection';
 
-// Helper function to create clean, non-redundant alt text
 const createSafeAltText = (text) => {
     if (!text) return '';
-    // Removes common redundant words (case-insensitive) and cleans up extra spaces.
     return text.replace(/\b(image|photo|picture)\b/gi, '').replace(/\s\s+/g, ' ').trim();
 };
 
 
-const BlogDetailPage = () => {
-    const { id } = useParams(); // Get blog ID from the URL
-    const { i18n } = useTranslation(); // Hook to get language info
+const BlogDetail = () => {
+    const { id } = useParams();
+    const { i18n } = useTranslation();
 
     const [blog, setBlog] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -29,6 +26,7 @@ const BlogDetailPage = () => {
             try {
                 setLoading(true);
                 const res = await axios.get(`/api/blogs/${id}`);
+                console.log('Fetched Blog Data:', res.data);
                 setBlog(res.data);
                 setError('');
             } catch (err) {
@@ -39,46 +37,55 @@ const BlogDetailPage = () => {
             }
         };
 
-        fetchBlog();
+        if (id) {
+            fetchBlog();
+        }
     }, [id]);
 
     if (loading) {
-        return <div className="text-center mt-20">Loading...</div>;
+        return <div className="text-center mt-20 p-4">Loading post...</div>;
     }
 
     if (error) {
-        return <div className="text-center mt-20 text-red-500">{error}</div>;
+        return <div className="text-center mt-20 p-4 text-red-500">{error}</div>;
     }
 
     if (!blog) {
-        return null; // Or a "Not Found" component
+        return <div className="text-center mt-20 p-4">Blog post not found.</div>;
     }
 
-    // --- Logic for multilingual and rich content ---
-    const currentLang = i18n.language; // e.g., 'en', 'es', 'fr', 'hi'
+    // --- NEW: BACKWARDS-COMPATIBLE DATA HANDLING ---
+    const currentLang = i18n.language;
+    let title, rawContent, images, tags;
 
-    // Select the title for the current language, with English as a fallback
-    const title = blog.title[currentLang] || blog.title.en;
+    // Check if the data is in the NEW format (title is an object)
+    if (typeof blog.title === 'object' && blog.title !== null) {
+        title = blog.title?.[currentLang] || blog.title?.en || 'Title Not Available';
+        rawContent = blog.content?.[currentLang] || blog.content?.en || '<p>Content not available.</p>';
+        images = blog.images || [];
+        tags = blog.tags || [];
+    } else {
+        // Otherwise, handle it as OLD data (title is a string)
+        title = blog.title || 'Title Not Available';
+        rawContent = blog.content || '<p>Content not available.</p>';
+        // Handle old 'image' field and new 'images' array
+        images = blog.images || (blog.image ? [blog.image] : []);
+        // Handle old tags format
+        if (Array.isArray(blog.tags) && blog.tags.length > 0 && blog.tags[0].includes('#')) {
+            tags = blog.tags[0].split(' ').map(t => t.replace('#', ''));
+        } else {
+            tags = blog.tags || [];
+        }
+    }
 
-    // Select and SANITIZE the HTML content for the current language, with English as a fallback
-    const rawContent = blog.content[currentLang] || blog.content.en;
     const cleanContent = DOMPurify.sanitize(rawContent);
-
-    // Use the first image as the main cover image
-    const coverImage = blog.images && blog.images.length > 0 ? blog.images[0] : 'https://placehold.co/800x400?text=No+Image';
-
-    // FIX: Create clean alt text from the title
+    const coverImage = images.length > 0 ? images[0] : 'https://placehold.co/800x400/666/fff?text=No+Image';
     const cleanAltTitle = createSafeAltText(title);
 
     return (
         <article className="max-w-4xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-xl p-4 sm:p-6 md:p-8 mt-8">
-            {/* Cover Image */}
-            <img src={coverImage} alt={cleanAltTitle} className="w-full h-auto max-h-[500px] object-cover rounded-lg mb-6" />
-
-            {/* Title */}
+            <img src={coverImage} alt={cleanAltTitle} className="w-full h-auto max-h-[500px] object-cover rounded-lg mb-6 bg-gray-200" />
             <h1 className="text-3xl md:text-5xl font-extrabold mb-3 text-gray-900 dark:text-white leading-tight">{title}</h1>
-
-            {/* Metadata */}
             <div className="flex flex-wrap gap-x-4 gap-y-2 items-center text-sm text-gray-500 dark:text-gray-400 mb-8">
                 <span>Published on: {new Date(blog.date).toLocaleDateString()}</span>
                 <span className="flex items-center gap-1">
@@ -90,23 +97,18 @@ const BlogDetailPage = () => {
                     {blog.comments?.length || 0}
                 </span>
             </div>
-
-            {/* Rich Text Content */}
             <div
                 className="prose prose-lg lg:prose-xl dark:prose-invert max-w-none mb-8"
                 dangerouslySetInnerHTML={{ __html: cleanContent }}
             />
-
-            {/* Display other images in a gallery */}
-            {blog.images && blog.images.length > 1 && (
+            {images.length > 1 && (
                 <div className="mb-8">
                     <h3 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">Gallery</h3>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {blog.images.slice(1).map((imgUrl, index) => (
+                        {images.slice(1).map((imgUrl, index) => (
                             <img
                                 key={index}
                                 src={imgUrl}
-                                // FIX: Use the cleaned title for a non-redundant alt text
                                 alt={`${cleanAltTitle} - gallery ${index + 2}`}
                                 className="w-full h-auto object-cover rounded-md shadow-md"
                             />
@@ -114,15 +116,11 @@ const BlogDetailPage = () => {
                     </div>
                 </div>
             )}
-
-            {/* Tags */}
             <div className="flex flex-wrap gap-2 mb-8">
-                {blog.tags.map((tag) => (
+                {tags.map((tag) => (
                     <span key={tag} className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 text-sm font-medium rounded-full">#{tag}</span>
                 ))}
             </div>
-
-            {/* Like Button and Comments */}
             <div className="border-t dark:border-gray-700 pt-6">
                 <div className="mb-8">
                     <LikeButton blogId={blog._id} initialLikes={blog.likes} />
@@ -133,4 +131,4 @@ const BlogDetailPage = () => {
     );
 };
 
-export default BlogDetailPage;
+export default BlogDetail;
