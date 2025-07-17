@@ -1,33 +1,136 @@
-import React from 'react';
-import LikeButton from './LikeButton';
-import CommentSection from './CommentSection';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { useTranslation } from 'react-i18next';
+import DOMPurify from 'dompurify';
 
-const BlogDetail = ({ blog }) => (
-    <article className="max-w-2xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow p-0 md:p-8 mt-8">
-        <img src={blog.image} alt={blog.title} className="w-full h-64 object-cover rounded-t-lg md:rounded-lg mb-6" />
-        <h1 className="text-4xl font-extrabold mb-2 text-gray-900 dark:text-white leading-tight">{blog.title}</h1>
-        <div className="flex flex-wrap gap-3 items-center text-sm text-gray-500 dark:text-gray-400 mb-6">
-            <span>{new Date(blog.date).toLocaleDateString()}</span>
-            {blog.tags.map((tag) => (
-                <span key={tag} className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded">#{tag}</span>
-            ))}
-            <span className="flex items-center gap-1"><span className="material-icons text-base">thumb_up</span> {blog.likes || 0}</span>
-            <span className="flex items-center gap-1"><span className="material-icons text-base">comment</span> {blog.comments?.length || 0}</span>
-        </div>
-        {/*
-            THE CHANGE IS HERE:
-            Use dangerouslySetInnerHTML to render the HTML content.
-            The __html property is where you pass your raw HTML string.
-        */}
-        <div
-            className="prose prose-lg dark:prose-invert max-w-none mb-8"
-            dangerouslySetInnerHTML={{ __html: blog.content }}
-        />
-        <div className="mb-8">
-            <LikeButton blogId={blog._id} initialLikes={blog.likes} />
-        </div>
-        <CommentSection blogId={blog._id} initialComments={blog.comments} />
-    </article>
-);
+// You can keep these as separate components if you wish
+import LikeButton from '../components/LikeButton';
+import CommentSection from '../components/CommentSection';
 
-export default BlogDetail;
+// Helper function to create clean, non-redundant alt text
+const createSafeAltText = (text) => {
+    if (!text) return '';
+    // Removes common redundant words (case-insensitive) and cleans up extra spaces.
+    return text.replace(/\b(image|photo|picture)\b/gi, '').replace(/\s\s+/g, ' ').trim();
+};
+
+
+const BlogDetailPage = () => {
+    const { id } = useParams(); // Get blog ID from the URL
+    const { i18n } = useTranslation(); // Hook to get language info
+
+    const [blog, setBlog] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+        const fetchBlog = async () => {
+            try {
+                setLoading(true);
+                const res = await axios.get(`/api/blogs/${id}`);
+                setBlog(res.data);
+                setError('');
+            } catch (err) {
+                console.error("Failed to fetch blog post:", err);
+                setError('Failed to load the blog post. Please try again later.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchBlog();
+    }, [id]);
+
+    if (loading) {
+        return <div className="text-center mt-20">Loading...</div>;
+    }
+
+    if (error) {
+        return <div className="text-center mt-20 text-red-500">{error}</div>;
+    }
+
+    if (!blog) {
+        return null; // Or a "Not Found" component
+    }
+
+    // --- Logic for multilingual and rich content ---
+    const currentLang = i18n.language; // e.g., 'en', 'es', 'fr', 'hi'
+
+    // Select the title for the current language, with English as a fallback
+    const title = blog.title[currentLang] || blog.title.en;
+
+    // Select and SANITIZE the HTML content for the current language, with English as a fallback
+    const rawContent = blog.content[currentLang] || blog.content.en;
+    const cleanContent = DOMPurify.sanitize(rawContent);
+
+    // Use the first image as the main cover image
+    const coverImage = blog.images && blog.images.length > 0 ? blog.images[0] : 'https://placehold.co/800x400?text=No+Image';
+
+    // FIX: Create clean alt text from the title
+    const cleanAltTitle = createSafeAltText(title);
+
+    return (
+        <article className="max-w-4xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-xl p-4 sm:p-6 md:p-8 mt-8">
+            {/* Cover Image */}
+            <img src={coverImage} alt={cleanAltTitle} className="w-full h-auto max-h-[500px] object-cover rounded-lg mb-6" />
+
+            {/* Title */}
+            <h1 className="text-3xl md:text-5xl font-extrabold mb-3 text-gray-900 dark:text-white leading-tight">{title}</h1>
+
+            {/* Metadata */}
+            <div className="flex flex-wrap gap-x-4 gap-y-2 items-center text-sm text-gray-500 dark:text-gray-400 mb-8">
+                <span>Published on: {new Date(blog.date).toLocaleDateString()}</span>
+                <span className="flex items-center gap-1">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.562 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.865.802V10.333z"></path></svg>
+                    {blog.likes || 0}
+                </span>
+                <span className="flex items-center gap-1">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.08-3.242A8.877 8.877 0 012 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM4.72 14.48A6.879 6.879 0 008 15c3.314 0 6-2.686 6-6s-2.686-6-6-6a6.879 6.879 0 00-3.28.52l.995 2.985A.5.5 0 016 7h.5a.5.5 0 01.5.5v.5a.5.5 0 01-.5.5h-.5a.5.5 0 01-.5-.5v-.5a.5.5 0 01.3-.464L4.72 14.48z" clipRule="evenodd"></path></svg>
+                    {blog.comments?.length || 0}
+                </span>
+            </div>
+
+            {/* Rich Text Content */}
+            <div
+                className="prose prose-lg lg:prose-xl dark:prose-invert max-w-none mb-8"
+                dangerouslySetInnerHTML={{ __html: cleanContent }}
+            />
+
+            {/* Display other images in a gallery */}
+            {blog.images && blog.images.length > 1 && (
+                <div className="mb-8">
+                    <h3 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">Gallery</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {blog.images.slice(1).map((imgUrl, index) => (
+                            <img
+                                key={index}
+                                src={imgUrl}
+                                // FIX: Use the cleaned title for a non-redundant alt text
+                                alt={`${cleanAltTitle} - gallery ${index + 2}`}
+                                className="w-full h-auto object-cover rounded-md shadow-md"
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Tags */}
+            <div className="flex flex-wrap gap-2 mb-8">
+                {blog.tags.map((tag) => (
+                    <span key={tag} className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 text-sm font-medium rounded-full">#{tag}</span>
+                ))}
+            </div>
+
+            {/* Like Button and Comments */}
+            <div className="border-t dark:border-gray-700 pt-6">
+                <div className="mb-8">
+                    <LikeButton blogId={blog._id} initialLikes={blog.likes} />
+                </div>
+                <CommentSection blogId={blog._id} initialComments={blog.comments} />
+            </div>
+        </article>
+    );
+};
+
+export default BlogDetailPage;

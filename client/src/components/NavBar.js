@@ -42,7 +42,7 @@ const CategoryScroller = ({ activeCategory, setActiveCategory }) => {
             // as it will be nested inside the new TopNavigation.
             // We only keep border-b for internal separation within the TopNavigation.
             className="
-                w-full border-b border-border-light dark:border-border-dark
+                w-full 
                 transition-colors duration-300 py-3
             "
         >

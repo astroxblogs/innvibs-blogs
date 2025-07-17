@@ -69,7 +69,7 @@ const TopNavigation = ({ activeCategory, setActiveCategory }) => {
                             <span className="material-icons text-base ml-1">arrow_drop_down</span>
                         </span>
                         {/* Placeholder for Language Dropdown content */}
-                        <div className="absolute top-full left-0 mt-1 w-32 bg-light-bg-secondary dark:bg-dark-bg-secondary shadow-lg rounded-md hidden group-hover:block transition-all duration-200 z-30">
+                        <div className="absolute top-full left-0 pt-1 w-32 bg-light-bg-secondary dark:bg-dark-bg-secondary shadow-lg rounded-md hidden group-hover:block transition-all duration-200 z-30">
                             {/* CHANGED TO BUTTONS: Address jsx-a11y/anchor-is-valid */}
                             <button
                                 type="button" // Important for buttons not to submit forms
