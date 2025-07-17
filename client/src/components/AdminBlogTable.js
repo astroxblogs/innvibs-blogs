@@ -6,7 +6,7 @@ const AdminBlogTable = ({ blogs, onEdit, onDelete }) => {
 
     return (
         <div className="overflow-x-auto rounded-lg shadow-md mt-8 border border-gray-200 dark:border-gray-700">
-            <h2 className="p-4 text-red-500 font-bold">DIAGNOSTIC MODE ACTIVE</h2>
+            {/* <h2 className="p-4 text-red-500 font-bold">DIAGNOSTIC MODE ACTIVE</h2> */}
             <table className="min-w-full bg-white dark:bg-gray-900">
                 <thead className="bg-gray-50 dark:bg-gray-800">
                     <tr>
@@ -23,7 +23,7 @@ const AdminBlogTable = ({ blogs, onEdit, onDelete }) => {
                               We are not trying to access blog.title at all.
                               We are just rendering a simple string.
                             */}
-                            <td className="p-4 font-medium text-green-500">TESTING TITLE</td>
+                            {/* <td className="p-4 font-medium text-green-500">TESTING TITLE</td> */}
 
                             <td className="p-4 text-gray-500">
                                 {new Date(blog.date).toLocaleDateString()}

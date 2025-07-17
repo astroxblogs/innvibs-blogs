@@ -3,10 +3,12 @@ import React, { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
 
 // Import your new FeaturedBlogCarousel component
-import FeaturedBlogCarousel from '../components/FeaturedBlogCarousel';
-import BlogList from '../components/BlogList'; // Keep your existing BlogList
+import { useTranslation } from 'react-i18next';
+import BlogList from '../components/BlogList';
+import FeaturedBlogCarousel from '../components/FeaturedBlogCarousel' // Keep your existing BlogList
 
 const Home = ({ activeCategory }) => {
+    const { i18n } = useTranslation();
     const [blogs, setBlogs] = useState([]);
     const [loading, setLoading] = useState(true); // Add loading state for better UX
 
@@ -36,19 +38,23 @@ const Home = ({ activeCategory }) => {
     // Filter the *remaining* blogs for the BlogList, excluding those already in the carousel
     const filteredRemainingBlogs = useMemo(() => {
         const remaining = blogs.slice(5); // All blogs AFTER the featured ones
+        const currentLang = i18n.language;
 
         if (!activeCategory || activeCategory === 'for-you') {
             return remaining;
         }
 
         const cat = activeCategory.toLowerCase();
-        return remaining.filter(
-            (b) =>
+        return remaining.filter((b) => {
+            const title = b.title?.[currentLang] || b.title?.en || '';
+            const content = b.content?.[currentLang] || b.content?.en || '';
+            return (
                 (b.tags && b.tags.some((tag) => tag.toLowerCase().includes(cat))) ||
-                (b.title && b.title.toLowerCase().includes(cat)) ||
-                (b.content && b.content.toLowerCase().includes(cat))
-        );
-    }, [blogs, activeCategory]);
+                (title && title.toLowerCase().includes(cat)) ||
+                (content && content.toLowerCase().includes(cat))
+            );
+        });
+    }, [blogs, activeCategory, i18n.language]);
 
     if (loading) {
         // You can render a skeleton loader or a simple "Loading..." message here

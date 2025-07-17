@@ -1,37 +1,57 @@
 require('dotenv').config();
+
 const express = require('express');
+
 const mongoose = require('mongoose');
+
 const cors = require('cors');
-const path = require('path'); // Import the path module
+
+
 
 const app = express();
 
+
+
 // Middleware
+
 app.use(cors());
+
 app.use(express.json());
 
-// --- New middleware to serve static files ---
-// This line makes any files inside the 'public/uploads' directory on your server
-// accessible to the public via a URL. For example, a file located at
-// 'public/uploads/my-image.jpg' can be accessed from 'http://<your_server_address>/uploads/my-image.jpg'
-app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 
 
 // Connect to MongoDB
+
 mongoose.connect(process.env.MONGO_URI, {
+
     useNewUrlParser: true,
+
     useUnifiedTopology: true,
+
 }).then(() => console.log('MongoDB connected'))
+
     .catch((err) => console.error('MongoDB connection error:', err));
 
+
+
 // Routes
+
 app.use('/api/blogs', require('./routes/blogs'));
+
 app.use('/api/admin', require('./routes/admin'));
 
+
+
 // Default route
+
 app.get('/', (req, res) => {
+
     res.send('Blog API running');
+
 });
 
+
+
 const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
