@@ -7,16 +7,9 @@ import DOMPurify from 'dompurify';
 import LikeButton from '../components/LikeButton';
 import CommentSection from '../components/CommentSection';
 
-const createSafeAltText = (text) => {
-    if (!text) return '';
-    return text.replace(/\b(image|photo|picture)\b/gi, '').replace(/\s\s+/g, ' ').trim();
-};
-
-
 const BlogDetail = () => {
     const { id } = useParams();
     const { i18n } = useTranslation();
-
     const [blog, setBlog] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -26,9 +19,7 @@ const BlogDetail = () => {
             try {
                 setLoading(true);
                 const res = await axios.get(`/api/blogs/${id}`);
-                console.log('Fetched Blog Data:', res.data);
                 setBlog(res.data);
-                setError('');
             } catch (err) {
                 console.error("Failed to fetch blog post:", err);
                 setError('Failed to load the blog post. Please try again later.');
@@ -54,79 +45,60 @@ const BlogDetail = () => {
         return <div className="text-center mt-20 p-4">Blog post not found.</div>;
     }
 
-    // --- NEW: BACKWARDS-COMPATIBLE DATA HANDLING ---
+    // --- Simplified Data Handling for the New Schema ---
     const currentLang = i18n.language;
-    let title, rawContent, images, tags;
 
-    // Check if the data is in the NEW format (title is an object)
-    if (typeof blog.title === 'object' && blog.title !== null) {
-        title = blog.title?.[currentLang] || blog.title?.en || 'Title Not Available';
-        rawContent = blog.content?.[currentLang] || blog.content?.en || '<p>Content not available.</p>';
-        images = blog.images || [];
-        tags = blog.tags || [];
-    } else {
-        // Otherwise, handle it as OLD data (title is a string)
-        title = blog.title || 'Title Not Available';
-        rawContent = blog.content || '<p>Content not available.</p>';
-        // Handle old 'image' field and new 'images' array
-        images = blog.images || (blog.image ? [blog.image] : []);
-        // Handle old tags format
-        if (Array.isArray(blog.tags) && blog.tags.length > 0 && blog.tags[0].includes('#')) {
-            tags = blog.tags[0].split(' ').map(t => t.replace('#', ''));
-        } else {
-            tags = blog.tags || [];
-        }
-    }
+    // Select the title and content for the current language, with a fallback to English.
+    const title = blog.title?.[currentLang] || blog.title?.en || 'Title Not Available';
+    const rawContent = blog.content?.[currentLang] || blog.content?.en || '<p>Content not available.</p>';
+    const categories = blog.categories || [];
 
+    // Sanitize the HTML content for safe rendering.
     const cleanContent = DOMPurify.sanitize(rawContent);
-    const coverImage = images.length > 0 ? images[0] : 'https://placehold.co/800x400/666/fff?text=No+Image';
-    const cleanAltTitle = createSafeAltText(title);
+
+    // Use the featured image from the blog, with a placeholder as a fallback.
+    const featuredImage = blog.image || 'https://placehold.co/800x400/666/fff?text=No+Image';
 
     return (
         <article className="max-w-4xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-xl p-4 sm:p-6 md:p-8 mt-8">
-            <img src={coverImage} alt={cleanAltTitle} className="w-full h-auto max-h-[500px] object-cover rounded-lg mb-6 bg-gray-200" />
-            <h1 className="text-3xl md:text-5xl font-extrabold mb-3 text-gray-900 dark:text-white leading-tight">{title}</h1>
-            <div className="flex flex-wrap gap-x-4 gap-y-2 items-center text-sm text-gray-500 dark:text-gray-400 mb-8">
-                <span>Published on: {new Date(blog.date).toLocaleDateString()}</span>
-                <span className="flex items-center gap-1">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.562 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.865.802V10.333z"></path></svg>
-                    {blog.likes || 0}
-                </span>
-                <span className="flex items-center gap-1">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.08-3.242A8.877 8.877 0 012 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM4.72 14.48A6.879 6.879 0 008 15c3.314 0 6-2.686 6-6s-2.686-6-6-6a6.879 6.879 0 00-3.28.52l.995 2.985A.5.5 0 016 7h.5a.5.5 0 01.5.5v.5a.5.5 0 01-.5.5h-.5a.5.5 0 01-.5-.5v-.5a.5.5 0 01.3-.464L4.72 14.48z" clipRule="evenodd"></path></svg>
-                    {blog.comments?.length || 0}
-                </span>
-            </div>
+            <header>
+                <img src={featuredImage} alt={title} className="w-full h-auto max-h-[500px] object-cover rounded-lg mb-6 bg-gray-200" />
+                <h1 className="text-3xl md:text-5xl font-extrabold mb-3 text-gray-900 dark:text-white leading-tight">{title}</h1>
+                <div className="flex flex-wrap gap-x-4 gap-y-2 items-center text-sm text-gray-500 dark:text-gray-400 mb-8">
+                    <span>Published on: {new Date(blog.date).toLocaleDateString()}</span>
+                    <span className="flex items-center gap-1" title="Likes">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.562 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.865.802V10.333z"></path></svg>
+                        {blog.likes || 0}
+                    </span>
+                    <span className="flex items-center gap-1" title="Comments">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.08-3.242A8.877 8.877 0 012 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM4.72 14.48A6.879 6.879 0 008 15c3.314 0 6-2.686 6-6s-2.686-6-6-6a6.879 6.879 0 00-3.28.52l.995 2.985A.5.5 0 016 7h.5a.5.5 0 01.5.5v.5a.5.5 0 01-.5.5h-.5a.5.5 0 01-.5-.5v-.5a.5.5 0 01.3-.464L4.72 14.48z" clipRule="evenodd"></path></svg>
+                        {blog.comments?.length || 0}
+                    </span>
+                </div>
+            </header>
+
             <div
                 className="prose prose-lg lg:prose-xl dark:prose-invert max-w-none mb-8"
                 dangerouslySetInnerHTML={{ __html: cleanContent }}
             />
-            {images.length > 1 && (
-                <div className="mb-8">
-                    <h3 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">Gallery</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {images.slice(1).map((imgUrl, index) => (
-                            <img
-                                key={index}
-                                src={imgUrl}
-                                alt={`${cleanAltTitle} - gallery ${index + 2}`}
-                                className="w-full h-auto object-cover rounded-md shadow-md"
-                            />
-                        ))}
-                    </div>
+
+            {/* Display Categories */}
+            {categories.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-8">
+                    {categories.map((category) => (
+                        <span key={category} className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 text-sm font-medium rounded-full">
+                            #{category}
+                        </span>
+                    ))}
                 </div>
             )}
-            <div className="flex flex-wrap gap-2 mb-8">
-                {tags.map((tag) => (
-                    <span key={tag} className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 text-sm font-medium rounded-full">#{tag}</span>
-                ))}
-            </div>
-            <div className="border-t dark:border-gray-700 pt-6">
+
+            <footer className="border-t dark:border-gray-700 pt-6">
                 <div className="mb-8">
                     <LikeButton blogId={blog._id} initialLikes={blog.likes} />
                 </div>
                 <CommentSection blogId={blog._id} initialComments={blog.comments} />
-            </div>
+            </footer>
         </article>
     );
 };

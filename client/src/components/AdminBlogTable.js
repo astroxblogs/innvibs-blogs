@@ -17,7 +17,7 @@ const AdminBlogTable = ({ blogs, onEdit, onDelete }) => {
                 <tbody>
                     {blogs.map((blog) => (
                         <tr key={blog._id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                            <td className="p-4 font-medium text-gray-900 dark:text-gray-100">{blog.title}</td>
+                            <td className="p-4 font-medium text-gray-900 dark:text-gray-100">{blog.title?.en || 'No Title Available'}</td>
                             <td className="p-4 text-gray-600 dark:text-gray-300">{blog.language}</td>
                             <td className="p-4 text-gray-500 dark:text-gray-400">{new Date(blog.date).toLocaleDateString()}</td>
                             <td className="p-4">

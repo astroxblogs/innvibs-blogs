@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios'; // <-- ADD THIS IMPORT
+import axios from 'axios';
+import './index.css';
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'; // <-- ADD THIS IMPORT
 
 // Import your components and pages
 import TopNavigation from './components/TopNavigation';

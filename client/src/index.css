@@ -1,22 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* Optional: Hide Google branding and dropdown styling */
-/* Hide Google Translate top banner */
-/* Hide the default Google Translate elements */
-/* Hide Google Translate banner and branding */
-/* Hide Google Translate banner and branding */
+ @import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
 
-/* Hide Google Translate banner and branding */
-/* Hide Google branding and banner */
+
+
+
 .goog-te-banner-frame.skiptranslate,
 .goog-te-balloon-frame,
 .goog-logo-link,
 .goog-te-gadget span {
     display: none !important;
 }
-
+ 
 body {
     top: 0px !important;
 }
