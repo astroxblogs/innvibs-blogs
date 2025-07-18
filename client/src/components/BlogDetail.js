@@ -93,12 +93,12 @@ const BlogDetail = () => {
                 </div>
             )}
 
-            <footer className="border-t dark:border-gray-700 pt-6">
+            <footer1 className="border-t dark:border-gray-700 pt-6">
                 <div className="mb-8">
                     <LikeButton blogId={blog._id} initialLikes={blog.likes} />
                 </div>
                 <CommentSection blogId={blog._id} initialComments={blog.comments} />
-            </footer>
+            </footer1>
         </article>
     );
 };

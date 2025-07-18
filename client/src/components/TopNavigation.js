@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import NavBar from './NavBar';
+import CategoryNav from './CategoryNav.tsx';
 import ThemeToggle from './ThemeToggle';
 // import LanguageSelector from './LanguageSelector'; // You might need to adjust this component or integrate its logic here
 import { Search, X } from 'lucide-react';
@@ -128,7 +128,7 @@ const TopNavigation = ({ activeCategory, setActiveCategory }) => {
 
                 {/* Category Scroller (your current NavBar.js) */}
                 <div className="flex-grow flex justify-center mx-4 overflow-hidden">
-                    <NavBar activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
+                    <CategoryNav activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
                 </div>
 
                 {/* Right Section: Search & Theme Toggle - Reduced gap */}
