@@ -107,8 +107,7 @@ export default function CategoryNav() {
                                 ${
                                   activeCategory === cat.value
                                     ? "bg-accent text-white"
-                                    : "text-text-secondary hover:text-text-primary hover:bg-off-background"
-                                }
+                : "text-text-secondary hover:text-text-primary hover:bg-off-background dark:text-white/70 dark:hover:text-white dark:hover:bg-white/10"                                }
                             `}>
               {cat.label}
             </button>

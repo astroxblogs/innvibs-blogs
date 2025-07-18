@@ -10,7 +10,7 @@ import Home from './pages/Home';
 import BlogDetailPage from './pages/BlogDetailPage';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminLogin from './pages/AdminLogin';
-import Footer2 from './components/Footer2';
+import Footer1 from './components/Footer1';
 
 // --- Interceptor Setup ---
 // This component will handle the redirection logic for expired tokens.
@@ -73,7 +73,7 @@ function App() {
         </Routes>
       </main>
 
-      {!isAdminPath && <Footer2 />}
+      {!isAdminPath && <Footer1 />}
     </div>
   );
 }

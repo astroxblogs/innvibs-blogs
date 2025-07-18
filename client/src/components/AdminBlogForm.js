@@ -40,10 +40,8 @@ const AdminBlogForm = ({ blog, onSave }) => {
     const [currentLang, setCurrentLang] = useState('en');
     const [editorStates, setEditorStates] = useState(createEmptyEditorStates);
 
-    // --- Effect to Populate Form for Editing ---
     useEffect(() => {
         if (blog) {
-            // Populate form fields for an existing blog
             const newEditorStates = {};
             languages.forEach(lang => {
                 const contentHtml = blog.content?.[lang.value] || '';
@@ -59,17 +57,11 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 categories: Array.isArray(blog.categories) ? blog.categories.join(', ') : ''
             });
         } else {
-            // Reset form for a new blog post
-            reset({
-                title: { en: '', hi: '', fr: '', es: '' },
-                image: '',
-                categories: ''
-            });
+            reset({ title: { en: '', hi: '', fr: '', es: '' }, image: '', categories: '' });
             setEditorStates(createEmptyEditorStates());
         }
     }, [blog, reset]);
 
-    // --- Image Uploading Logic ---
     const uploadToCloudinary = async (file) => {
         const formData = new FormData();
         formData.append('file', file);
@@ -93,7 +85,6 @@ const AdminBlogForm = ({ blog, onSave }) => {
         }
     };
 
-    // Callback for the editor's own image upload button
     const uploadImageCallback = async (file) => {
         try {
             const uploadedUrl = await uploadToCloudinary(file);
@@ -104,16 +95,12 @@ const AdminBlogForm = ({ blog, onSave }) => {
         }
     };
 
-    // --- Editor State Handling ---
     const handleEditorStateChange = useCallback((newState, lang) => {
         setEditorStates(prev => ({ ...prev, [lang]: newState }));
     }, []);
 
-    // --- Form Submission ---
     const onSubmit = async (data) => {
         const token = localStorage.getItem('adminToken');
-
-        // Construct the multi-language content object from editor states
         const contentPayload = {};
         for (const lang of languages) {
             const rawContentState = convertToRaw(editorStates[lang.value].getCurrentContent());
@@ -133,7 +120,6 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 : await axios.post('/api/blogs', payload, { headers: { Authorization: token } });
 
             onSave(res.data);
-            // Reset the form completely after successful save
             reset({ title: { en: '', hi: '', fr: '', es: '' }, image: '', categories: '' });
             setEditorStates(createEmptyEditorStates());
             setCurrentLang('en');
@@ -148,7 +134,6 @@ const AdminBlogForm = ({ blog, onSave }) => {
             onSubmit={handleSubmit(onSubmit)}
             className="mb-8 bg-gray-50 dark:bg-gray-800 p-6 rounded-lg shadow flex flex-col gap-6 max-w-4xl mx-auto"
         >
-            {/* Language Tabs */}
             <div className="flex border-b border-gray-300 dark:border-gray-700">
                 {languages.map(lang => (
                     <button
@@ -165,17 +150,14 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 ))}
             </div>
 
-            {/* Multi-language Title and Content */}
             {languages.map(lang => (
                 <div key={lang.value} className={currentLang === lang.value ? 'block' : 'hidden'}>
                     <div className="flex flex-col gap-6">
-                        {/* Title Input */}
                         <input
                             className="border border-gray-300 dark:border-gray-700 p-3 rounded w-full text-lg font-semibold"
                             placeholder={`${lang.label} Title`}
                             {...register(`title.${lang.value}`, { required: true })}
                         />
-                        {/* Rich Text Editor */}
                         <div>
                             <label className="block font-medium text-sm mb-2 text-gray-700 dark:text-gray-300">
                                 {lang.label} Content
@@ -199,7 +181,6 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 </div>
             ))}
 
-            {/* Featured Image Upload */}
             <div>
                 <label className="block font-medium text-sm mb-2 text-gray-700 dark:text-gray-300">
                     Featured Image (Optional)
@@ -211,14 +192,12 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 )}
             </div>
 
-            {/* Categories Input */}
             <input
                 className="border border-gray-300 dark:border-gray-700 p-2 rounded w-full"
                 placeholder="Categories (comma separated, e.g., tech, astronomy)"
                 {...register('categories')}
             />
 
-            {/* Submit Button */}
             <button
                 className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded font-semibold transition-colors w-full md:w-auto self-end"
                 type="submit"

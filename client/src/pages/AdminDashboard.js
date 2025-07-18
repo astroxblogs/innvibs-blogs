@@ -1,4 +1,3 @@
-// client/src/pages/AdminDashboard.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminBlogForm from '../components/AdminBlogForm';
@@ -8,6 +7,8 @@ import axios from 'axios';
 const AdminDashboard = () => {
     const [blogs, setBlogs] = useState([]);
     const [editingBlog, setEditingBlog] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -18,57 +19,102 @@ const AdminDashboard = () => {
         }
 
         const fetchBlogs = async () => {
+            setLoading(true);
             try {
-                const res = await axios.get('/api/blogs', { headers: { Authorization: token } });
+                // Fetch the English version for a consistent table display
+                const res = await axios.get('/api/blogs?lang=en');
                 setBlogs(res.data);
-            } catch (error) {
-                console.error('Error fetching blogs:', error);
-                if (error.response?.status === 401) {
+            } catch (err) {
+                console.error('Error fetching blogs:', err);
+                setError('Failed to load blog posts.');
+                if (err.response?.status === 401) {
                     localStorage.removeItem('adminToken');
                     navigate('/admin/login');
                 }
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchBlogs();
     }, [navigate]);
 
-    const handleEdit = (blog) => setEditingBlog(blog);
+    // This is the core logic for updating the UI after a save
+    const handleSave = (savedBlog) => {
+        const exists = blogs.some((b) => b._id === savedBlog._id);
+
+        if (exists) {
+            // If UPDATING, replace the item in the array
+            setBlogs(blogs.map((b) => (b._id === savedBlog._id ? savedBlog : b)));
+        } else {
+            // If CREATING, add the new blog to the TOP of the list
+            setBlogs([savedBlog, ...blogs]);
+        }
+        // Clear the form by resetting the editing state
+        setEditingBlog(null);
+    };
+
+    const handleEdit = (blog) => {
+        setEditingBlog(blog);
+        window.scrollTo(0, 0); // Scroll to top to see the form
+    };
 
     const handleDelete = async (id) => {
-        const token = localStorage.getItem('adminToken');
-        try {
-            await axios.delete(`/api/blogs/${id}`, { headers: { Authorization: token } });
-            setBlogs(blogs.filter((b) => b._id !== id));
-        } catch (error) {
-            console.error('Error deleting blog:', error);
-            // Use a custom message box instead of alert()
-            // For example, you could have a state variable for a message,
-            // and a simple modal component that displays it.
-            // For this example, I'll just log to console as per instruction.
-            console.log('Error deleting blog: ' + (error.response?.data?.error || error.message));
+        if (window.confirm('Are you sure you want to delete this blog?')) {
+            const token = localStorage.getItem('adminToken');
+            try {
+                await axios.delete(`/api/blogs/${id}`, { headers: { Authorization: token } });
+                setBlogs(blogs.filter((b) => b._id !== id));
+            } catch (err) {
+                console.error('Error deleting blog:', err);
+                alert('Error deleting blog: ' + (err.response?.data?.error || err.message));
+            }
         }
     };
 
-    const handleSave = (blog) => {
-        if (editingBlog) {
-            setBlogs(blogs.map((b) => (b._id === blog._id ? blog : b)));
-            setEditingBlog(null); // Clear editing state after save
-        } else {
-            setBlogs([...blogs, blog]);
-        }
+    // Clears the form to allow adding a new blog
+    const handleAddNew = () => {
+        setEditingBlog(null);
     };
+
+    if (loading) return <div className="text-center p-10">Loading Dashboard...</div>;
+    if (error) return <div className="text-center p-10 text-red-500">{error}</div>;
 
     return (
-        // Outer div to take full height and center content using flexbox
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 py-10">
-            {/* Inner container for the dashboard content, with max-width and padding */}
-            <div className="w-full max-w-4xl mx-auto p-4 bg-white dark:bg-gray-800 rounded-lg shadow-xl">
+        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-10">
+            <div className="w-full max-w-5xl mx-auto p-4 md:p-6 bg-white dark:bg-gray-800 rounded-lg shadow-xl">
                 <h1 className="text-3xl font-extrabold mb-6 text-center text-gray-900 dark:text-white">
                     Admin Dashboard
                 </h1>
-                <AdminBlogForm blog={editingBlog} onSave={handleSave} />
-                <AdminBlogTable blogs={blogs} onEdit={handleEdit} onDelete={handleDelete} />
+
+                {/* Blog Form Section */}
+                <div className="mb-12">
+                    <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
+                        {editingBlog ? `Editing: ${editingBlog.title?.en || ''}` : 'Add New Blog Post'}
+                    </h2>
+
+                    {/* The 'key' prop is crucial. It forces React to create a new form instance
+                        when we switch between editing and creating, ensuring it resets properly. */}
+                    <AdminBlogForm
+                        key={editingBlog ? editingBlog._id : 'new-blog'}
+                        blog={editingBlog}
+                        onSave={handleSave}
+                    />
+
+                    {editingBlog && (
+                        <button onClick={handleAddNew} className="mt-4 text-sm text-blue-500 hover:underline">
+                            + Cancel Edit & Add New Post
+                        </button>
+                    )}
+                </div>
+
+                {/* Blog Table Section */}
+                <div>
+                    <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
+                        Manage Existing Blogs
+                    </h2>
+                    <AdminBlogTable blogs={blogs} onEdit={handleEdit} onDelete={handleDelete} />
+                </div>
             </div>
         </div>
     );

@@ -59,7 +59,7 @@ const TopNavigation = ({ activeCategory, setActiveCategory }) => {
     return (
         <nav className="sticky top-0 z-50">
             {/* Top Bar */}
-            <div className="bg-light-bg-secondary dark:bg-dark-bg-secondary border-b border-border-light dark:border-border-dark py-2 px-4 md:px-8 text-sm text-text-muted dark:text-text-light flex justify-between items-center transition-colors duration-300">
+            <div className="bg-gray-100 dark:bg-gray-950 border-b border-gray-200 dark:border-white/10 py-2 px-4 md:px-8 text-sm text-gray-500 dark:text-gray-400 flex justify-between items-center transition-colors duration-300">
                 {/* Left Section: Language, Date, Time - Reduced gap */}
                 <div className="flex items-center space-x-2">
                     {/* Language Edition (styled as per screenshot) */}
