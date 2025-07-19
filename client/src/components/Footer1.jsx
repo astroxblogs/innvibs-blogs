@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom"; // Or from 'next/link'
+import { Link } from "react-router-dom";
 import {
   FaLinkedin,
   FaTwitter,
@@ -9,7 +9,28 @@ import {
   FaArrowRight,
 } from "react-icons/fa";
 
-// Curated, essential link structure
+// 1. Define your blog categories
+const blogCategories = [
+  { label: "Technology", value: "Technology" },
+  { label: "Fashion", value: "Fashion" },
+  { label: "Health & Wellness", value: "Health & Wellness" },
+  { label: "Travel", value: "Travel" },
+  { label: "Food & Cooking", value: "Food & Cooking" },
+  { label: "Sports", value: "Sports" },
+  { label: "Business & Finance", value: "Business & Finance" },
+  { label: "Lifestyle", value: "Lifestyle" },
+];
+
+// 2. Transform the categories into the format the footer expects
+const categoryLinks = {
+  title: "Categories",
+  links: blogCategories.map(cat => ({
+    name: cat.label,
+    // This creates a URL-friendly path, e.g., /category/health-wellness
+    path: `/category/${cat.value.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')}`
+  }))
+};
+
 const footerSections = [
   {
     title: "Company",
@@ -19,14 +40,8 @@ const footerSections = [
       { name: "Contact", path: "/contact" },
     ],
   },
-  {
-    title: "Product",
-    links: [
-      { name: "Features", path: "/features" },
-      { name: "Pricing", path: "/pricing" },
-      { name: "Changelog", path: "/changelog" },
-    ],
-  },
+  // 3. Replaced the old "Product" section with your new category links
+  categoryLinks,
   {
     title: "Legal",
     links: [
@@ -42,7 +57,6 @@ const socialLinks = [
   { name: "Instagram", icon: <FaInstagram />, url: "https://instagram.com" },
 ];
 
-// Example theme hook
 const useTheme = () => {
   const [theme, setTheme] = useState("light");
   useEffect(() => {
@@ -58,7 +72,6 @@ export default function BalancedMonumentFooter() {
   return (
     <footer className="bg-off-background dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
       <div className="max-w-screen-xl mx-auto px-6 pt-16 pb-10">
-        {/* THE STATEMENT: Now with the tagline to add context and fill space */}
         <div className="text-center mb-12">
           <h2 className="text-5xl md:text-6xl font-bold tracking-tighter text-text-primary dark:text-white">
             AstroXHub
@@ -68,7 +81,6 @@ export default function BalancedMonumentFooter() {
           </p>
         </div>
 
-        {/* THE NAVIGATION & UTILITY GRID: The same solid structure */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {footerSections.map((section) => (
             <div key={section.title}>
@@ -111,7 +123,6 @@ export default function BalancedMonumentFooter() {
           </div>
         </div>
 
-        {/* THE FOUNDATION: Final utility bar, closer to the content */}
         <div className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
           <p className="text-sm text-gray-500 dark:text-gray-400">
             &copy; {new Date().getFullYear()} AstroXHub

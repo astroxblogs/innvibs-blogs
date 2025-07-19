@@ -1,191 +1,95 @@
-// client/src/pages/Home.js
-
-import React, { useEffect, useState, useMemo } from 'react';
-
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
-
-
-// Import your new FeaturedBlogCarousel component
-
-import { useTranslation } from 'react-i18next';
-
 import BlogList from '../components/BlogList';
+import FeaturedBlogCarousel from '../components/FeaturedBlogCarousel';
 
-import FeaturedBlogCarousel from '../components/FeaturedBlogCarousel' // Keep your existing BlogList
+// The component receives activeCategory and searchQuery from App.js to determine what to display.
+const Home = ({ activeCategory, searchQuery }) => {
+    const [blogs, setBlogs] = useState([]); // For the main list of blogs
+    const [featuredBlogs, setFeaturedBlogs] = useState([]); // For the carousel
+    const [loading, setLoading] = useState(true);
 
-
-
-const Home = ({ activeCategory }) => {
-
-    const { i18n } = useTranslation();
-
-    const [blogs, setBlogs] = useState([]);
-
-    const [loading, setLoading] = useState(true); // Add loading state for better UX
-
-
-
+    // Effect to fetch the 5 latest blogs for the carousel.
+    // This runs only once when the component first mounts.
     useEffect(() => {
-
-        const fetchBlogs = async () => {
-
+        const fetchFeaturedBlogs = async () => {
             try {
-
-                const res = await axios.get(`/api/blogs`);
-
-                // Sort blogs by date in descending order (newest first) to ensure latest are featured
-
-                const sortedBlogs = res.data.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-                setBlogs(sortedBlogs);
-
+                const res = await axios.get('/api/blogs/latest');
+                setFeaturedBlogs(res.data);
             } catch (err) {
-
-                console.error("Error fetching blogs:", err);
-
-                setBlogs([]); // Set to empty array on error
-
-            } finally {
-
-                setLoading(false); // Set loading to false regardless of success or failure
-
+                console.error("Error fetching featured blogs:", err);
             }
-
         };
 
+        fetchFeaturedBlogs();
+    }, []); // Empty dependency array ensures this runs only once.
 
+    // Effect to fetch the main list of blogs.
+    // This re-runs whenever the active category or search query changes.
+    useEffect(() => {
+        const fetchBlogs = async () => {
+            setLoading(true);
+            try {
+                let url = '/api/blogs'; // Default URL for all blogs
+
+                if (searchQuery) {
+                    // If searching, use the search endpoint
+                    url = `/api/blogs/search?q=${encodeURIComponent(searchQuery)}`;
+                } else if (activeCategory && activeCategory !== 'all') { // Assuming 'all' is for the main page
+                    // If a category is selected, filter by that category
+                    url = `/api/blogs?category=${activeCategory}`;
+                }
+
+                const res = await axios.get(url);
+                setBlogs(res.data);
+            } catch (err) {
+                console.error("Error fetching blogs:", err);
+                setBlogs([]); // Clear blogs on error
+            } finally {
+                setLoading(false);
+            }
+        };
 
         fetchBlogs();
+    }, [activeCategory, searchQuery]); // Re-fetch when these props change.
 
-    }, []);
+    // Determine the current view to adjust UI elements like the title
+    const isSearchView = !!searchQuery;
+    const isCategoryView = activeCategory && activeCategory !== 'all';
 
-
-
-    // Memoize the featured blogs for the carousel (e.g., top 5 latest blogs)
-
-    const featuredBlogs = useMemo(() => {
-
-        return blogs.slice(0, 5); // Take the first 5 blogs (which are the latest due to sorting)
-
-    }, [blogs]);
-
-
-
-    // Filter the *remaining* blogs for the BlogList, excluding those already in the carousel
-
-    const filteredRemainingBlogs = useMemo(() => {
-
-        const remaining = blogs.slice(5); // All blogs AFTER the featured ones
-
-        const currentLang = i18n.language;
-
-
-
-        if (!activeCategory || activeCategory === 'for-you') {
-
-            return remaining;
-
-        }
-
-
-
-        const cat = activeCategory.toLowerCase();
-
-        return remaining.filter((b) => {
-
-            const title = b.title?.[currentLang] || b.title?.en || '';
-
-            const content = b.content?.[currentLang] || b.content?.en || '';
-
-            return (
-
-                (b.tags && b.tags.some((tag) => tag.toLowerCase().includes(cat))) ||
-
-                (title && title.toLowerCase().includes(cat)) ||
-
-                (content && content.toLowerCase().includes(cat))
-
-            );
-
-        });
-
-    }, [blogs, activeCategory, i18n.language]);
-
-
+    // The page title is now dynamic based on the view
+    const pageTitle = isSearchView
+        ? `Search Results for "${searchQuery}"`
+        : isCategoryView
+            ? `Blogs in #${activeCategory}`
+            : 'Latest Blogs';
 
     if (loading) {
-
-        // You can render a skeleton loader or a simple "Loading..." message here
-
-        return <div className="text-center py-10 dark:text-gray-200">Loading blogs...</div>;
-
+        return <div className="text-center py-20 dark:text-gray-200">Loading blogs...</div>;
     }
 
-
-
     return (
-
         <div className="min-h-screen">
-
-            {/* Render the Featured Blog Carousel at the very top */}
-
-            {featuredBlogs.length > 0 && (
-
+            {/* The carousel only shows on the main home page (not in search or category views) */}
+            {!isSearchView && !isCategoryView && featuredBlogs.length > 0 && (
                 <FeaturedBlogCarousel blogs={featuredBlogs} />
-
             )}
 
-
-
-            {/* Main content area for the rest of the blogs */}
-
             <main className="container mx-auto px-4 py-8">
+                <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white capitalize">
+                    {pageTitle}
+                </h2>
 
-                {/* Potentially add a heading for the regular blog list */}
+                <BlogList blogs={blogs} />
 
-                {filteredRemainingBlogs.length > 0 && (
-
-                    <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
-
-                        Latest Blogs
-
-                    </h2>
-
-                )}
-
-
-
-                {/* Render the BlogList with the remaining, filtered blogs */}
-
-                <BlogList blogs={filteredRemainingBlogs} />
-
-
-
-                {filteredRemainingBlogs.length === 0 && featuredBlogs.length === 0 && (
-
-                    <p className="text-center text-gray-500 dark:text-gray-400 py-10">No blogs found.</p>
-
-                )}
-
-                {filteredRemainingBlogs.length === 0 && featuredBlogs.length > 0 && (
-
+                {blogs.length === 0 && !loading && (
                     <p className="text-center text-gray-500 dark:text-gray-400 py-10">
-
-                        No more blogs matching this category.
-
+                        No blogs found.
                     </p>
-
                 )}
-
             </main>
-
         </div>
-
     );
-
 };
-
-
 
 export default Home;

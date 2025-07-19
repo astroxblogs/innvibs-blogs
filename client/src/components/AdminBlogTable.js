@@ -9,7 +9,8 @@ const AdminBlogTable = ({ blogs, onEdit, onDelete }) => {
                 <thead>
                     <tr className="border-b border-gray-200 dark:border-gray-700">
                         <th className="p-4 text-left font-semibold text-gray-700 dark:text-gray-200">Title</th>
-                        <th className="p-4 text-left font-semibold text-gray-700 dark:text-gray-200">Language</th>
+                        {/* UPDATED: Changed table header from Language to Category */}
+                        <th className="p-4 text-left font-semibold text-gray-700 dark:text-gray-200">Category</th>
                         <th className="p-4 text-left font-semibold text-gray-700 dark:text-gray-200">Date</th>
                         <th className="p-4 text-left font-semibold text-gray-700 dark:text-gray-200">Actions</th>
                     </tr>
@@ -18,7 +19,8 @@ const AdminBlogTable = ({ blogs, onEdit, onDelete }) => {
                     {blogs.map((blog) => (
                         <tr key={blog._id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                             <td className="p-4 font-medium text-gray-900 dark:text-gray-100">{blog.title}</td>
-                            <td className="p-4 text-gray-600 dark:text-gray-300">{blog.language}</td>
+                            {/* UPDATED: Displaying blog.category instead of blog.language */}
+                            <td className="p-4 text-gray-600 dark:text-gray-300">{blog.category}</td>
                             <td className="p-4 text-gray-500 dark:text-gray-400">{new Date(blog.date).toLocaleDateString()}</td>
                             <td className="p-4">
                                 <button className="text-green-600 hover:underline mr-4" onClick={() => onEdit(blog)}>Edit</button>
@@ -28,7 +30,8 @@ const AdminBlogTable = ({ blogs, onEdit, onDelete }) => {
                     ))}
                 </tbody>
             </table>
-            {/* Delete Confirmation Modal */}
+
+            {/* Delete Confirmation Modal (No changes needed here) */}
             {deleteId && (
                 <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
                     <div className="bg-white dark:bg-gray-900 rounded-lg p-8 shadow-lg max-w-sm w-full">
@@ -45,4 +48,4 @@ const AdminBlogTable = ({ blogs, onEdit, onDelete }) => {
     );
 };
 
-export default AdminBlogTable; 
+export default AdminBlogTable;

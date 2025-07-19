@@ -21,8 +21,8 @@ const AdminDashboard = () => {
         const fetchBlogs = async () => {
             setLoading(true);
             try {
-                // Fetch the English version for a consistent table display
-                const res = await axios.get('/api/blogs?lang=en');
+                // UPDATED: Fetch all blogs. The language parameter is removed.
+                const res = await axios.get('/api/blogs');
                 setBlogs(res.data);
             } catch (err) {
                 console.error('Error fetching blogs:', err);
@@ -90,7 +90,8 @@ const AdminDashboard = () => {
                 {/* Blog Form Section */}
                 <div className="mb-12">
                     <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
-                        {editingBlog ? `Editing: ${editingBlog.title?.en || ''}` : 'Add New Blog Post'}
+                        {/* UPDATED: The blog title is now a simple string, not an object */}
+                        {editingBlog ? `Editing: ${editingBlog.title || ''}` : 'Add New Blog Post'}
                     </h2>
 
                     {/* The 'key' prop is crucial. It forces React to create a new form instance
