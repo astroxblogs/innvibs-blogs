@@ -12,17 +12,39 @@ import AdminLogin from './pages/AdminLogin';
 import Footer1 from './components/Footer1';
 import CategoryPage from './pages/CategoryPage';
 
-// --- THIS COMPONENT WAS MISSING ---
-// It needs to be defined before the main App component uses it.
+// --- THIS IS THE MISSING PIECE ---
+// This interceptor will run before every API request is sent.
+axios.interceptors.request.use(
+  (config) => {
+    // Get the token from local storage
+    const adminToken = localStorage.getItem('adminToken');
+
+    // If a token exists, add the 'Authorization: Bearer <token>' header
+    if (adminToken) {
+      config.headers['Authorization'] = `Bearer ${adminToken}`;
+    }
+
+    return config; // Continue with the request
+  },
+  (error) => {
+    // Handle request errors
+    return Promise.reject(error);
+  }
+);
+// --- END OF FIX ---
+
+
+// This interceptor handles what happens AFTER a response is received.
 const AxiosInterceptorNavigate = () => {
   const navigate = useNavigate();
   useEffect(() => {
     const interceptor = axios.interceptors.response.use(
       response => response,
       error => {
+        // If the server responds with 401, it means the token is invalid/expired.
         if (error.response && error.response.status === 401) {
           localStorage.removeItem('adminToken');
-          navigate('/admin/login');
+          navigate('/admin/login'); // Redirect to login
         }
         return Promise.reject(error);
       }
@@ -33,7 +55,6 @@ const AxiosInterceptorNavigate = () => {
   }, [navigate]);
   return null;
 };
-// ------------------------------------
 
 function App() {
   const [activeCategory, setActiveCategory] = useState('all');
@@ -65,7 +86,6 @@ function App() {
             path="/"
             element={<Home activeCategory={activeCategory} searchQuery={searchQuery} />}
           />
-
           <Route path="/category/:categoryName" element={<CategoryPage />} />
           <Route path="/blog/:id" element={<BlogDetailPage />} />
           <Route path="/admin" element={<AdminDashboard />} />

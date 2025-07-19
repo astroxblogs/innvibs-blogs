@@ -1,13 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Editor } from 'react-draft-wysiwyg';
-import { EditorState, convertToRaw, ContentState } from 'draft-js';
-import draftToHtml from 'draftjs-to-html';
-import htmlToDraft from 'html-to-draftjs';
 import axios from 'axios';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import MDEditor from '@uiw/react-md-editor'; // 1. Import the Markdown editor
 
-// NEW: Define the list of blog categories
 const categories = [
     'Technology',
     'Fashion',
@@ -26,24 +21,20 @@ const AdminBlogForm = ({ blog, onSave }) => {
     const { register, handleSubmit, reset, setValue, watch } = useForm();
     const [uploading, setUploading] = useState(false);
     const imageUrl = watch('image');
-    const [editorState, setEditorState] = useState(EditorState.createEmpty());
+    // 2. State for the Markdown content instead of the old editor state
+    const [markdown, setMarkdown] = useState('');
 
     useEffect(() => {
-        if (blog && blog.content) {
-            const contentBlock = htmlToDraft(blog.content);
-            if (contentBlock) {
-                const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks);
-                setEditorState(EditorState.createWithContent(contentState));
-            }
-            // When editing, pre-fill the form with existing blog data
+        if (blog) {
+            // When editing, pre-fill the form and the markdown editor
             reset(blog);
+            setMarkdown(blog.content || '');
         } else {
-            // When creating a new blog, reset the form and set a default category
-            setEditorState(EditorState.createEmpty());
-            reset({ title: '', content: '', image: '', tags: '', category: categories[0] }); // UPDATED: Default to the first category
+            // When creating, reset everything
+            reset({ title: '', content: '', image: '', tags: '', category: categories[0] });
+            setMarkdown('');
         }
     }, [blog, reset]);
-
 
     const handleImageUpload = async (e) => {
         const file = e.target.files[0];
@@ -67,42 +58,34 @@ const AdminBlogForm = ({ blog, onSave }) => {
         }
     };
 
-
     const onSubmit = async (data) => {
         const tags = typeof data.tags === 'string'
             ? data.tags.split(',').map(tag => tag.trim())
             : [];
-        const token = localStorage.getItem('adminToken');
-        const contentHtml = draftToHtml(convertToRaw(editorState.getCurrentContent()));
 
-        // UPDATED: The payload now includes 'category' instead of 'language'
+        // 3. The payload now sends the raw markdown content
         const payload = {
             title: data.title,
             image: data.image,
-            content: contentHtml,
+            content: markdown, // Use the markdown state here
             tags,
             category: data.category
         };
 
         try {
+            // 4. The Axios interceptor handles authorization, so no headers are needed here
             const res = blog
-                ? await axios.put(`/api/blogs/${blog._id}`, payload, {
-                    headers: { Authorization: token }
-                })
-                : await axios.post('/api/blogs', payload, {
-                    headers: { Authorization: token }
-                });
+                ? await axios.put(`/api/blogs/${blog._id}`, payload)
+                : await axios.post('/api/blogs', payload);
 
             onSave(res.data);
             reset();
-            setEditorState(EditorState.createEmpty());
-
+            setMarkdown(''); // Reset the markdown editor
         } catch (error) {
             console.error('Error saving blog:', error);
             alert('Error saving blog: ' + (error.response?.data?.error || error.message));
         }
     };
-
 
     return (
         <form
@@ -136,16 +119,19 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 )}
             </div>
 
-            <div>
+            {/* 5. Replaced the old editor with the new MDEditor component */}
+            <div data-color-mode="light">
                 <label className="block font-medium text-sm mb-1 text-gray-700 dark:text-gray-300">
-                    Content
+                    Content (Markdown)
                 </label>
-                <Editor
-                    editorState={editorState}
-                    toolbar={{ /* Toolbar config unchanged */ }}
-                    wrapperClassName="border border-gray-300 dark:border-gray-700 rounded"
-                    editorClassName="p-2 min-h-[100px]"
-                    onEditorStateChange={setEditorState}
+                <MDEditor
+                    value={markdown}
+                    onChange={setMarkdown}
+                    height={400}
+                    previewOptions={{
+                        // This allows HTML tags within your markdown, which is useful
+                        skipHtml: false
+                    }}
                 />
             </div>
 
@@ -155,7 +141,6 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 {...register('tags')}
             />
 
-            {/* UPDATED: Replaced language dropdown with category dropdown */}
             <select
                 className="border border-gray-300 dark:border-gray-700 p-2 rounded w-full"
                 {...register('category', { required: true })}

@@ -68,31 +68,29 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery }) => 
     const showLeftArrow = categories.length > MAX_VISIBLE_CATEGORIES && startIndex > 0;
     const showRightArrow = categories.length > MAX_VISIBLE_CATEGORIES && startIndex < categories.length - MAX_VISIBLE_CATEGORIES;
 
+    // Move Google Translate into the custom container
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const gt = document.querySelector('#google_translate_element select');
+            const container = document.getElementById('google_translate_custom_container');
+            if (gt && container && container.children.length === 0) {
+                container.appendChild(gt.parentElement);
+                clearInterval(interval);
+            }
+        }, 500);
+        return () => clearInterval(interval);
+    }, []);
+
     return (
         <nav className="sticky top-0 z-50 bg-light-bg-secondary dark:bg-dark-bg-secondary shadow-sm">
-            <div className="bg-gray-100 dark:bg-black border-b border-gray-200 dark:border-white/10 py-1.5 px-4 md:px-8 text-xs text-gray-500 dark:text-gray-400 flex justify-between items-center">
-
-                <div className="flex items-center space-x-2">
-                    <div className="relative group cursor-pointer">
-                        <span className="flex items-center">{i18n.language.toUpperCase()} Edition</span>
-                        <div className="absolute top-full left-0 pt-1 w-32 bg-light-bg-secondary dark:bg-dark-bg-secondary shadow-lg rounded-md hidden group-hover:block z-30">
-                            <button type="button" onClick={() => handleChangeLanguage('en')} className="block w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">English</button>
-                            <button type="button" onClick={() => handleChangeLanguage('hi')} className="block w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Hindi</button>
-                        </div>
-                    </div>
-                    <span className="border-l border-gray-300 dark:border-gray-600 h-4"></span>
-                    <span className="hidden sm:inline-block">{formatDate(currentDateTime)},</span>
-                    <span className="hidden sm:inline-block">{formatTime(currentDateTime)} IST</span>
-                </div>
-            </div>
-
             <div className="py-3 px-4 md:px-8 flex justify-between items-center">
+                {/* Logo */}
                 <Link to="/" className="flex items-center gap-2 text-2xl font-extrabold text-text-dark dark:text-text-light flex-shrink-0">
                     <img src="/logo.png" alt="AstroXHub Logo" className="h-8 w-8" />
                     <span>AstroXHub</span>
                 </Link>
 
-                {/* === UPDATED CATEGORY NAV LAYOUT === */}
+                {/* === Category Navigation === */}
                 <div className="flex-grow flex justify-center items-center">
                     <div className="flex items-center">
                         <AnimatePresence>
@@ -107,7 +105,14 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery }) => 
 
                         <div className="flex items-center space-x-3 whitespace-nowrap">
                             {categories.slice(startIndex, startIndex + MAX_VISIBLE_CATEGORIES).map((cat) => (
-                                <button key={cat.value} onClick={() => handleCategoryClick(cat.value)} className={`flex-shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-200 ${activeCategory === cat.value ? "bg-gray-900 text-white dark:bg-gray-50 dark:text-gray-900" : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"}`}>
+                                <button
+                                    key={cat.value}
+                                    onClick={() => handleCategoryClick(cat.value)}
+                                    className={`flex-shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-200 ${activeCategory === cat.value
+                                            ? "bg-gray-900 text-white dark:bg-gray-50 dark:text-gray-900"
+                                            : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                                        }`}
+                                >
                                     {cat.label}
                                 </button>
                             ))}
@@ -125,6 +130,7 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery }) => 
                     </div>
                 </div>
 
+                {/* === Right Side Controls === */}
                 <div className="flex items-center space-x-3 flex-shrink-0">
                     {showSearchInput ? (
                         <form onSubmit={handleSearchSubmit} className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-full px-3 py-1.5 w-full max-w-xs">
@@ -145,6 +151,10 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery }) => 
                             <Search className="w-6 h-6" />
                         </button>
                     )}
+
+                    {/* === Google Translate Widget === */}
+                    <div id="google_translate_custom_container" className="ml-2" />
+
                     <ThemeToggle />
                 </div>
             </div>

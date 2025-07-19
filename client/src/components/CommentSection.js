@@ -40,7 +40,7 @@ const CommentSection = ({ blogId, initialComments }) => {
         try {
             // This is the correct URL for DELETING a comment
             await axios.delete(`/api/blogs/${blogId}/comments/${commentId}`, {
-                
+                headers: { Authorization: `Bearer ${adminToken}` }
             });
             setComments(comments.filter(c => c._id !== commentId));
         } catch (err) {
