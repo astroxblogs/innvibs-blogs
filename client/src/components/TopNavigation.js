@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import ThemeToggle from './ThemeToggle';
-import { Search, X, ChevronLeft, ChevronRight } from 'lucide-react';
+// 1. Import the Globe icon
+import { Search, X, ChevronLeft, ChevronRight, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 
 const categories = [
@@ -20,77 +20,65 @@ const categories = [
 const MAX_VISIBLE_CATEGORIES = 5;
 
 const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery }) => {
-    const { i18n } = useTranslation();
-    const [currentDateTime, setCurrentDateTime] = useState(new Date());
     const [showSearchInput, setShowSearchInput] = useState(false);
     const [inputValue, setInputValue] = useState('');
     const [startIndex, setStartIndex] = useState(0);
+    // 2. Add state to control the visibility of the translate dropdown
+    const [showTranslate, setShowTranslate] = useState(false);
 
-    const handleNext = () => {
-        setStartIndex(prev => Math.min(prev + 1, categories.length - MAX_VISIBLE_CATEGORIES));
-    };
-
-    const handlePrev = () => {
-        setStartIndex(prev => Math.max(prev - 1, 0));
-    };
-
-    const handleCategoryClick = (categoryValue) => {
-        onCategoryChange(categoryValue);
-    };
-
+    // This effect finds the Google Translate widget and moves it into our custom container
     useEffect(() => {
-        const timer = setInterval(() => setCurrentDateTime(new Date()), 1000);
-        return () => clearInterval(timer);
-    }, []);
+        // Only run this logic if the user wants to see the dropdown
+        if (showTranslate) {
+            const interval = setInterval(() => {
+                const googleWidget = document.querySelector('.skiptranslate');
+                const customContainer = document.getElementById('google_translate_custom_container');
 
-    const handleChangeLanguage = (lang) => i18n.changeLanguage(lang);
+                if (googleWidget && customContainer) {
+                    // Move the widget into our container if it's not already there
+                    if (!customContainer.contains(googleWidget)) {
+                        customContainer.appendChild(googleWidget);
+                    }
+                    // Style the dropdown to match the site's theme
+                    const select = googleWidget.querySelector('select');
+                    if (select) {
+                        select.className = 'bg-light-bg-secondary dark:bg-dark-bg-secondary text-text-dark dark:text-text-light border border-border-light dark:border-border-dark rounded-md p-1 focus:outline-none';
+                    }
+                    clearInterval(interval); // Stop checking once it's moved
+                }
+            }, 100); // Check every 100ms
 
+            return () => clearInterval(interval);
+        }
+    }, [showTranslate]); // This effect runs when `showTranslate` changes
+
+    const handleNext = () => setStartIndex(prev => Math.min(prev + 1, categories.length - MAX_VISIBLE_CATEGORIES));
+    const handlePrev = () => setStartIndex(prev => Math.max(prev - 1, 0));
+    const handleCategoryClick = (categoryValue) => onCategoryChange(categoryValue);
     const handleSearchSubmit = (e) => {
         e.preventDefault();
         if (!inputValue.trim()) return;
         setSearchQuery(inputValue);
     };
-
     const handleCloseSearch = () => {
         setShowSearchInput(false);
         setInputValue('');
         setSearchQuery('');
     };
-
-    const handleSearchClick = () => {
-        setShowSearchInput(true);
-        setTimeout(() => document.getElementById('search-blog-input')?.focus(), 10);
-    };
-
-    const formatDate = (date) => date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-    const formatTime = (date) => date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    const handleSearchClick = () => setShowSearchInput(true);
 
     const showLeftArrow = categories.length > MAX_VISIBLE_CATEGORIES && startIndex > 0;
     const showRightArrow = categories.length > MAX_VISIBLE_CATEGORIES && startIndex < categories.length - MAX_VISIBLE_CATEGORIES;
 
-    // Move Google Translate into the custom container
-    useEffect(() => {
-        const interval = setInterval(() => {
-            const gt = document.querySelector('#google_translate_element select');
-            const container = document.getElementById('google_translate_custom_container');
-            if (gt && container && container.children.length === 0) {
-                container.appendChild(gt.parentElement);
-                clearInterval(interval);
-            }
-        }, 500);
-        return () => clearInterval(interval);
-    }, []);
-
     return (
         <nav className="sticky top-0 z-50 bg-light-bg-secondary dark:bg-dark-bg-secondary shadow-sm">
             <div className="py-3 px-4 md:px-8 flex justify-between items-center">
-                {/* Logo */}
                 <Link to="/" className="flex items-center gap-2 text-2xl font-extrabold text-text-dark dark:text-text-light flex-shrink-0">
                     <img src="/logo.png" alt="AstroXHub Logo" className="h-8 w-8" />
                     <span>AstroXHub</span>
                 </Link>
 
-                {/* === Category Navigation === */}
+                {/* Category Navigation (No changes here) */}
                 <div className="flex-grow flex justify-center items-center">
                     <div className="flex items-center">
                         <AnimatePresence>
@@ -102,22 +90,13 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery }) => 
                                 </motion.div>
                             )}
                         </AnimatePresence>
-
                         <div className="flex items-center space-x-3 whitespace-nowrap">
                             {categories.slice(startIndex, startIndex + MAX_VISIBLE_CATEGORIES).map((cat) => (
-                                <button
-                                    key={cat.value}
-                                    onClick={() => handleCategoryClick(cat.value)}
-                                    className={`flex-shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-200 ${activeCategory === cat.value
-                                            ? "bg-gray-900 text-white dark:bg-gray-50 dark:text-gray-900"
-                                            : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-                                        }`}
-                                >
+                                <button key={cat.value} onClick={() => handleCategoryClick(cat.value)} className={`flex-shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-200 ${activeCategory === cat.value ? "bg-gray-900 text-white dark:bg-gray-50 dark:text-gray-900" : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"}`}>
                                     {cat.label}
                                 </button>
                             ))}
                         </div>
-
                         <AnimatePresence>
                             {showRightArrow && (
                                 <motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.5 }}>
@@ -130,18 +109,11 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery }) => 
                     </div>
                 </div>
 
-                {/* === Right Side Controls === */}
+                {/* Right Side Controls */}
                 <div className="flex items-center space-x-3 flex-shrink-0">
                     {showSearchInput ? (
                         <form onSubmit={handleSearchSubmit} className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-full px-3 py-1.5 w-full max-w-xs">
-                            <input
-                                id="search-blog-input"
-                                type="text"
-                                placeholder="Search by keyword or tags"
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                className="bg-transparent focus:outline-none text-text-dark dark:text-text-light w-full"
-                            />
+                            <input id="search-blog-input" type="text" placeholder="Search..." value={inputValue} onChange={(e) => setInputValue(e.target.value)} className="bg-transparent focus:outline-none text-text-dark dark:text-text-light w-full" />
                             <button onClick={handleCloseSearch} type="button" className="ml-2 text-gray-500 hover:text-red-500" aria-label="Close search">
                                 <X className="w-5 h-5" />
                             </button>
@@ -152,8 +124,17 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery }) => 
                         </button>
                     )}
 
-                    {/* === Google Translate Widget === */}
-                    <div id="google_translate_custom_container" className="ml-2" />
+                    {/* 3. Add the Google Translate trigger icon and dropdown container */}
+                    <div className="relative">
+                        <button onClick={() => setShowTranslate(!showTranslate)} className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white" aria-label="Translate page">
+                            <Globe className="w-6 h-6" />
+                        </button>
+                        {showTranslate && (
+                            <div id="google_translate_custom_container" className="absolute top-full right-0 mt-2 p-2 bg-light-bg-secondary dark:bg-dark-bg-secondary border dark:border-border-dark rounded-md shadow-lg">
+                                {/* The Google Translate dropdown will be moved here */}
+                            </div>
+                        )}
+                    </div>
 
                     <ThemeToggle />
                 </div>

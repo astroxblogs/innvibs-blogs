@@ -10,7 +10,7 @@ const BlogCard = ({ blog }) => {
         if (!markdownContent) return '';
 
         // First, convert Markdown to an HTML string
-        const html = marked.parse(markdownContent);
+        const html =markdownContent;
 
         // Then, use a temporary element to strip the HTML tags and get plain text
         const tempDiv = document.createElement('div');

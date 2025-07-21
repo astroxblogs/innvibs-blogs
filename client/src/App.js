@@ -12,7 +12,7 @@ import AdminLogin from './pages/AdminLogin';
 import Footer1 from './components/Footer1';
 import CategoryPage from './pages/CategoryPage';
 
-// --- THIS IS THE MISSING PIECE ---
+// --- THIS IS THE MISSING CODE BLOCK ---
 // This interceptor will run before every API request is sent.
 axios.interceptors.request.use(
   (config) => {
@@ -27,7 +27,7 @@ axios.interceptors.request.use(
     return config; // Continue with the request
   },
   (error) => {
-    // Handle request errors
+    // Handle any request errors
     return Promise.reject(error);
   }
 );
@@ -41,10 +41,10 @@ const AxiosInterceptorNavigate = () => {
     const interceptor = axios.interceptors.response.use(
       response => response,
       error => {
-        // If the server responds with 401, it means the token is invalid/expired.
+        // If the server responds with 401, the token is invalid/expired.
         if (error.response && error.response.status === 401) {
           localStorage.removeItem('adminToken');
-          navigate('/admin/login'); // Redirect to login
+          navigate('/admin/login'); // Redirect to the login page
         }
         return Promise.reject(error);
       }
@@ -56,16 +56,29 @@ const AxiosInterceptorNavigate = () => {
   return null;
 };
 
+// Helper function to create URL-friendly slugs
+const slugify = (text) => {
+  return text.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-');
+};
+
 function App() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isAdminPath = location.pathname.startsWith('/admin');
 
   const handleCategoryChange = (category) => {
     setActiveCategory(category);
     setSearchQuery('');
+
+    if (category === 'all') {
+      navigate('/');
+    } else {
+      const categorySlug = slugify(category);
+      navigate(`/category/${categorySlug}`);
+    }
   };
 
   return (

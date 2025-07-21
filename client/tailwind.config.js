@@ -1,4 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+
+const defaultTheme = require('tailwindcss/defaultTheme');
+
 module.exports = {
     content: [
         "./src/**/*.{js,jsx,ts,tsx}",
@@ -8,42 +11,48 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                // --- Custom Aesthetic & Minimalistic Palette ---
-                // Light Mode Backgrounds
-                'light-bg-primary': '#F7F8F9', // Very light off-white for overall page background
-                'light-bg-secondary': '#FFFFFF', // Pure white for cards, panels, and forms
-
-                // Dark Mode Backgrounds
-                'dark-bg-primary': '#1A202C', // Deep, muted charcoal/dark navy for overall page background
-                'dark-bg-secondary': '#2D3748', // Slightly lighter shade for cards, panels, forms
-
-                // Text Colors
-                'text-dark': '#1F2937',    // Dark grey for text in light mode
-                'text-light': '#F3F4F6',   // Light grey for text in dark mode
-                'text-muted': '#6B7280',   // Muted grey for secondary text/icons
-
-                // Accent Color (a subtle, modern green/teal)
+                // ... your custom colors ...
+                'light-bg-primary': '#F7F8F9',
+                'light-bg-secondary': '#FFFFFF',
+                'dark-bg-primary': '#1A202C',
+                'dark-bg-secondary': '#2D3748',
+                'text-dark': '#1F2937',
+                'text-light': '#F3F4F6',
+                'text-muted': '#6B7280',
                 'accent': {
-                    DEFAULT: '#10B981', // A nice vibrant-but-not-too-bright emerald green (emerald-500 equivalent)
-                    light: '#34D399',  // Lighter for hover in dark mode
-                    dark: '#059669',   // Darker for hover in light mode
+                    DEFAULT: '#10B981',
+                    light: '#34D399',
+                    dark: '#059669',
                 },
-
-                // Border Colors
-                'border-light': '#E5E7EB', // Light border for light mode
-                'border-dark': '#4A5568',  // Darker border for dark mode
-                // ---------------------------------------------
+                'border-light': '#E5E7EB',
+                'border-dark': '#4A5568',
             },
+
+            typography: ({ theme }) => ({
+                DEFAULT: {
+                    css: {
+                        // This sets the base font to serif
+                        fontFamily: `Georgia, ${defaultTheme.fontFamily.serif.join(', ')}`,
+
+                        // --- THIS IS THE NEW FIX ---
+                        // This forces all headings to also use the serif font
+                        'h1, h2, h3, h4, h5, h6': {
+                            fontFamily: `Georgia, ${defaultTheme.fontFamily.serif.join(', ')}`,
+                            color: theme('colors.text-dark'),
+                        },
+                        // This handles heading colors in dark mode
+                        '.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6': {
+                            color: theme('colors.text-light'),
+                        }
+                    },
+                },
+            }),
         },
     },
-
-
-
-
-
 
     plugins: [
         require('@tailwindcss/line-clamp'),
         require('tailwind-scrollbar-hide'),
+        require('@tailwindcss/typography'),
     ],
 };

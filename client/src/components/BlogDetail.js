@@ -3,10 +3,10 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import DOMPurify from 'dompurify';
-import { marked } from 'marked'; // 1. Import the 'marked' library
+import { marked } from 'marked';
 
-import LikeButton from '../components/LikeButton';
-import CommentSection from '../components/CommentSection';
+import LikeButton from './LikeButton';
+import CommentSection from './CommentSection'; // <-- THIS LINE IS NOW CORRECT
 
 const createSafeAltText = (text) => {
     if (!text) return '';
@@ -43,13 +43,11 @@ const BlogDetail = () => {
     if (error) return <div className="text-center mt-20 p-4 text-red-500">{error}</div>;
     if (!blog) return <div className="text-center mt-20 p-4">Blog post not found.</div>;
 
-    // --- Backwards-compatible data handling (no changes needed here) ---
     const rawContent = blog.content || '<p>Content not available.</p>';
     const images = blog.image ? [blog.image] : [];
     const tags = blog.tags || [];
 
-    // 2. Convert the Markdown content to HTML, THEN sanitize it
-    const cleanContent = DOMPurify.sanitize(marked.parse(rawContent));
+    const cleanContent = DOMPurify.sanitize(rawContent);
 
     const coverImage = images.length > 0 ? images[0] : 'https://placehold.co/800x400/666/fff?text=No+Image';
     const cleanAltTitle = createSafeAltText(blog.title);
@@ -57,7 +55,8 @@ const BlogDetail = () => {
     return (
         <article className="max-w-4xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-xl p-4 sm:p-6 md:p-8 mt-8">
             <img src={coverImage} alt={cleanAltTitle} className="w-full h-auto max-h-[500px] object-cover rounded-lg mb-6 bg-gray-200" />
-            <h1 className="text-3xl md:text-5xl font-extrabold mb-3 text-gray-900 dark:text-white leading-tight">{blog.title}</h1>
+
+            <h1 className="text-3xl md:text-5xl font-semibold mb-3 text-gray-900 dark:text-white leading-tight" style={{ fontFamily: 'Arial, sans-serif' }}>{blog.title}</h1>
             <div className="flex flex-wrap gap-x-4 gap-y-2 items-center text-sm text-gray-500 dark:text-gray-400 mb-8">
                 <span>Published on: {new Date(blog.date).toLocaleDateString()}</span>
                 <span className="flex items-center gap-1">
@@ -69,16 +68,19 @@ const BlogDetail = () => {
                     {blog.comments?.length || 0}
                 </span>
             </div>
-            {/* This will now render the correctly styled HTML */}
+
             <div
-                className="prose prose-lg lg:prose-xl dark:prose-invert max-w-none mb-8"
+                className="prose prose-lg lg:prose-xl dark:prose-invert max-w-none mb-8
+                           prose-img:rounded-xl prose-img:max-h-[500px] prose-img:mx-auto"
                 dangerouslySetInnerHTML={{ __html: cleanContent }}
             />
+
             <div className="flex flex-wrap gap-2 mb-8">
                 {tags.map((tag) => (
                     <span key={tag} className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 text-sm font-medium rounded-full">#{tag}</span>
                 ))}
             </div>
+
             <div className="border-t dark:border-gray-700 pt-6">
                 <div className="mb-8">
                     <LikeButton blogId={blog._id} initialLikes={blog.likes} />
