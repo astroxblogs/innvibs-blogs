@@ -12,41 +12,97 @@ exports.getLatestBlogs = async (req, res) => {
     }
 };
 
-// UPDATED: Gets all blogs, OR filters by category if a 'category' query param is provided
+// UPDATED: Gets all blogs with pagination, OR filters by category if a 'category' query param is provided
 exports.getBlogs = async (req, res) => {
     try {
-        const { category } = req.query; // Check for a category query parameter
-        const filter = category ? { category: category.trim() } : {}; // If category exists, create a filter for it
+        const { category, page = 1, limit = 10 } = req.query; // Default page to 1, limit to 10
+        const parsedLimit = parseInt(limit, 10);
+        const parsedPage = parseInt(page, 10);
 
-        const blogs = await Blog.find(filter).sort({ date: -1 });
-        res.json(blogs);
+        if (isNaN(parsedLimit) || parsedLimit <= 0) {
+            return res.status(400).json({ error: 'Invalid limit parameter. Must be a positive number.' });
+        }
+        if (isNaN(parsedPage) || parsedPage <= 0) {
+            return res.status(400).json({ error: 'Invalid page parameter. Must be a positive number.' });
+        }
+
+        const filter = category ? { category: category.trim() } : {};
+        const skip = (parsedPage - 1) * parsedLimit;
+
+        // Fetch blogs for the current page
+        const blogs = await Blog.find(filter)
+            .sort({ date: -1 })
+            .skip(skip)
+            .limit(parsedLimit);
+
+        // Get total count of blogs matching the filter
+        const totalBlogs = await Blog.countDocuments(filter);
+        const totalPages = Math.ceil(totalBlogs / parsedLimit);
+
+        res.json({
+            blogs,
+            currentPage: parsedPage,
+            totalPages,
+            totalBlogs
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
 
-// UPDATED: Simplified search functionality without translation
+// UPDATED: Search functionality to include all language fields with pagination
 exports.searchBlogs = async (req, res) => {
-    const { q } = req.query; // Get search query 'q'
+    const { q, page = 1, limit = 10 } = req.query; // Default page to 1, limit to 10
+    const parsedLimit = parseInt(limit, 10);
+    const parsedPage = parseInt(page, 10);
+
+    if (isNaN(parsedLimit) || parsedLimit <= 0) {
+        return res.status(400).json({ error: 'Invalid limit parameter. Must be a positive number.' });
+    }
+    if (isNaN(parsedPage) || parsedPage <= 0) {
+        return res.status(400).json({ error: 'Invalid page parameter. Must be a positive number.' });
+    }
 
     if (!q) {
         return res.status(400).json({ error: 'A search query "q" is required.' });
     }
 
     try {
-        const regex = new RegExp(q, 'i'); // Create a case-insensitive regular expression
-
-        // Search against title, content, tags, and the new category field
-        const blogs = await Blog.find({
+        const regex = new RegExp(q, 'i');
+        const searchFilter = {
             $or: [
                 { title: regex },
                 { content: regex },
+                { title_en: regex },
+                { title_hi: regex },
+                { title_es: regex },
+                { title_fr: regex },
+                { content_en: regex },
+                { content_hi: regex },
+                { content_es: regex },
+                { content_fr: regex },
                 { tags: regex },
                 { category: regex }
             ]
-        }).sort({ date: -1 });
+        };
+        const skip = (parsedPage - 1) * parsedLimit;
 
-        res.json(blogs);
+        // Fetch blogs for the current page matching the search filter
+        const blogs = await Blog.find(searchFilter)
+            .sort({ date: -1 })
+            .skip(skip)
+            .limit(parsedLimit);
+
+        // Get total count of blogs matching the search filter
+        const totalBlogs = await Blog.countDocuments(searchFilter);
+        const totalPages = Math.ceil(totalBlogs / parsedLimit);
+
+        res.json({
+            blogs,
+            currentPage: parsedPage,
+            totalPages,
+            totalBlogs
+        });
 
     } catch (err) {
         res.status(500).json({ error: 'Failed to perform search.' });
@@ -66,7 +122,7 @@ exports.getBlog = async (req, res) => {
     }
 };
 
-// Create a new blog (will automatically handle the 'category' from req.body)
+// Create a new blog (will automatically handle the 'category' from req.body and new language fields)
 exports.createBlog = async (req, res) => {
     try {
         const blog = new Blog(req.body);
@@ -77,7 +133,7 @@ exports.createBlog = async (req, res) => {
     }
 };
 
-// Update an existing blog
+// Update an existing blog (will automatically handle new language fields in req.body)
 exports.updateBlog = async (req, res) => {
     try {
         const blog = await Blog.findByIdAndUpdate(req.params.id, req.body, { new: true });

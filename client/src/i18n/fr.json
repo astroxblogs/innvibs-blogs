@@ -1,29 +1,99 @@
 {
-    "welcome": "Bienvenue sur le blog",
-    "like": "J'aime",
-    "comment": "Commentaire",
-    "submit": "Soumettre",
-    "language": "Langue",
-    "admin": "Administrateur",
-    "login": "Se connecter",
-    "logout": "Se déconnecter",
-    "title": "Titre",
-    "content": "Contenu",
-    "tags": "Étiquettes",
-    "image": "Image de couverture",
-    "date": "Date",
-    "actions": "Actions",
-    "edit": "Modifier",
-    "delete": "Supprimer",
-    "blog_list": "Liste des blogs",
-    "add_blog": "Ajouter un blog",
-    "dashboard": "Tableau de bord",
-    "moderate_comments": "Modérer les commentaires",
-    "name": "Nom",
-    "your_comment": "Votre commentaire",
-    "no_blogs": "Aucun blog trouvé.",
-    "select_language": "Choisir la langue",
-    "theme": "Thème",
-    "light": "Clair",
-    "dark": "Sombre"
+    "application_name": "AstroXHub",
+    "navigation": {
+        "home": "Accueil",
+        "blog": "Blog",
+        "categories": "Catégories",
+        "admin": "Admin",
+        "prev_categories": "Catégories précédentes",
+        "next_categories": "Catégories suivantes"
+    },
+    "search": {
+        "placeholder": "Rechercher...",
+        "open": "Ouvrir la recherche",
+        "close": "Fermer la recherche"
+    },
+    "category": {
+        "all": "Tout",
+        "technology": "Technologie",
+        "fashion": "Mode",
+        "health_wellness": "Santé et Bien-être",
+        "travel": "Voyage",
+        "food_cooking": "Cuisine",
+        "sports": "Sports",
+        "business_finance": "Affaires et Finance",
+        "lifestyle": "Style de Vie"
+    },
+    "homepage": {
+        "welcome_title": "Bienvenue sur les blogs AstroXHub",
+        "tagline": "Votre dose quotidienne d'informations sur la technologie et plus encore.",
+        "featured_posts": "Articles en vedette"
+    },
+    "language_selector": {
+        "select_language": "Sélectionner la langue",
+        "english": "Anglais",
+        "spanish": "Espagnol",
+        "french": "Français",
+        "hindi": "Hindi"
+    },
+    "blog_card": {
+        "read_more": "Lire la suite"
+    },
+    "general": {
+        "welcome": "Bienvenue sur le blog",
+        "like": "J'aime",
+        "comment": "Commentaire",
+        "submit": "Soumettre",
+        "login": "Se connecter",
+        "logout": "Se déconnecter",
+        "name": "Nom",
+        "your_comment": "Votre commentaire",
+        "no_blogs": "Aucun blog trouvé.",
+        "loading_blogs": "Chargement des blogs...",
+        "latest_blogs": "Derniers blogs",
+        "search_results_for": "Résultats de recherche pour \"{{query}}\"",
+        "blogs_in_category": "Blogs dans #{{category}}"
+    },
+    "admin_panel": {
+        "dashboard": "Tableau de bord",
+        "moderate_comments": "Modérer les commentaires",
+        "title": "Titre",
+        "content": "Contenu",
+        "tags": "Mots-clés",
+        "image": "Image de couverture",
+        "date": "Date",
+        "actions": "Actions",
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "blog_list": "Liste des blogs",
+        "add_blog": "Ajouter un blog"
+    },
+    "theme_toggle": {
+        "theme": "Thème",
+        "light": "Clair",
+        "dark": "Sombre",
+        "toggle_theme_title": "Basculer le thème",
+        "mode": "Mode"
+    },
+    "footer": {
+        "tagline": "Un espace organisé pour les idées, les histoires et les idées qui comptent.",
+        "company_title": "Entreprise",
+        "about_us": "À propos de nous",
+        "careers": "Carrières",
+        "contact": "Contact",
+        "categories_title": "Catégories",
+        "product_title": "Produit",
+        "features": "Caractéristiques",
+        "pricing": "Prix",
+        "changelog": "Journal des modifications",
+        "legal_title": "Légal",
+        "privacy_policy": "Politique de confidentialité",
+        "terms_of_service": "Conditions d'utilisation",
+        "newsletter_title": "Restez informé",
+        "email_placeholder": "Votre adresse e-mail",
+        "email_aria_label": "E-mail pour l'abonnement à la newsletter",
+        "subscribe_aria_label": "S'abonner à la newsletter",
+        "subscribe_title": "S'abonner",
+        "copyright": "© {{year}} {{appName}}"
+    }
 }

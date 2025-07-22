@@ -1,29 +1,99 @@
 {
-    "welcome": "Bienvenido al blog",
-    "like": "Me gusta",
-    "comment": "Comentario",
-    "submit": "Enviar",
-    "language": "Idioma",
-    "admin": "Administrador",
-    "login": "Iniciar sesión",
-    "logout": "Cerrar sesión",
-    "title": "Título",
-    "content": "Contenido",
-    "tags": "Etiquetas",
-    "image": "Imagen de portada",
-    "date": "Fecha",
-    "actions": "Acciones",
-    "edit": "Editar",
-    "delete": "Eliminar",
-    "blog_list": "Lista de blogs",
-    "add_blog": "Agregar blog",
-    "dashboard": "Panel de control",
-    "moderate_comments": "Moderar comentarios",
-    "name": "Nombre",
-    "your_comment": "Tu comentario",
-    "no_blogs": "No se encontraron blogs.",
-    "select_language": "Seleccionar idioma",
-    "theme": "Tema",
-    "light": "Claro",
-    "dark": "Oscuro"
+    "application_name": "AstroXHub",
+    "navigation": {
+        "home": "Inicio",
+        "blog": "Blog",
+        "categories": "Categorías",
+        "admin": "Administrador",
+        "prev_categories": "Categorías anteriores",
+        "next_categories": "Siguientes categorías"
+    },
+    "search": {
+        "placeholder": "Buscar...",
+        "open": "Abrir búsqueda",
+        "close": "Cerrar búsqueda"
+    },
+    "category": {
+        "all": "Todo",
+        "technology": "Tecnología",
+        "fashion": "Moda",
+        "health_wellness": "Salud y Bienestar",
+        "travel": "Viajes",
+        "food_cooking": "Comida y Cocina",
+        "sports": "Deportes",
+        "business_finance": "Negocios y Finanzas",
+        "lifestyle": "Estilo de Vida"
+    },
+    "homepage": {
+        "welcome_title": "Bienvenido a AstroXHub Blogs",
+        "tagline": "Su dosis diaria de información sobre tecnología y más.",
+        "featured_posts": "Publicaciones Destacadas"
+    },
+    "language_selector": {
+        "select_language": "Seleccionar Idioma",
+        "english": "Inglés",
+        "spanish": "Español",
+        "french": "Francés",
+        "hindi": "Hindi"
+    },
+    "blog_card": {
+        "read_more": "Leer Más"
+    },
+    "general": {
+        "welcome": "Bienvenido al blog",
+        "like": "Me gusta",
+        "comment": "Comentario",
+        "submit": "Enviar",
+        "login": "Iniciar sesión",
+        "logout": "Cerrar sesión",
+        "name": "Nombre",
+        "your_comment": "Tu comentario",
+        "no_blogs": "No se encontraron blogs.",
+        "loading_blogs": "Cargando blogs...",
+        "latest_blogs": "Últimos Blogs",
+        "search_results_for": "Resultados de búsqueda para \"{{query}}\"",
+        "blogs_in_category": "Blogs en #{{category}}"
+    },
+    "admin_panel": {
+        "dashboard": "Panel de control",
+        "moderate_comments": "Moderar comentarios",
+        "title": "Título",
+        "content": "Contenido",
+        "tags": "Etiquetas",
+        "image": "Imagen de portada",
+        "date": "Fecha",
+        "actions": "Acciones",
+        "edit": "Editar",
+        "delete": "Eliminar",
+        "blog_list": "Lista de blogs",
+        "add_blog": "Agregar blog"
+    },
+    "theme_toggle": {
+        "theme": "Tema",
+        "light": "Claro",
+        "dark": "Oscuro",
+        "toggle_theme_title": "Cambiar tema",
+        "mode": "Modo"
+    },
+    "footer": {
+        "tagline": "Un espacio curado para ideas, historias y conocimientos importantes.",
+        "company_title": "Compañía",
+        "about_us": "Nosotros",
+        "careers": "Carreras",
+        "contact": "Contacto",
+        "categories_title": "Categorías",
+        "product_title": "Producto",
+        "features": "Características",
+        "pricing": "Precios",
+        "changelog": "Registro de cambios",
+        "legal_title": "Legal",
+        "privacy_policy": "Política de Privacidad",
+        "terms_of_service": "Términos de Servicio",
+        "newsletter_title": "Mantente informado",
+        "email_placeholder": "Tu dirección de correo electrónico",
+        "email_aria_label": "Correo electrónico para suscripción al boletín",
+        "subscribe_aria_label": "Suscribirse al boletín",
+        "subscribe_title": "Suscribirse",
+        "copyright": "© {{year}} {{appName}}"
+    }
 }

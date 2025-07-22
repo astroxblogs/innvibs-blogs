@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react'; // <-- Added Suspense
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import DOMPurify from 'dompurify';
 import { marked } from 'marked';
 
-import LikeButton from './LikeButton';
-import CommentSection from './CommentSection'; // <-- THIS LINE IS NOW CORRECT
+import LikeButton from '../components/LikeButton.jsx';
+// OLD: import CommentSection from '../components/CommentSection';
+const CommentSection = React.lazy(() => import('../components/CommentSection')); // <-- Lazy-load CommentSection
 
 const createSafeAltText = (text) => {
     if (!text) return '';
@@ -18,7 +19,18 @@ const BlogDetail = () => {
     const { i18n } = useTranslation();
     const [blog, setBlog] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
+    const [error, setError] = useState(null);
+
+    const getLocalizedContent = (field, blogData, currentLang) => {
+        const localizedField = blogData[`${field}_${currentLang}`];
+        if (localizedField) {
+            return localizedField;
+        }
+        if (blogData[`${field}_en`]) {
+            return blogData[`${field}_en`];
+        }
+        return blogData[field] || '';
+    };
 
     useEffect(() => {
         const fetchBlog = async () => {
@@ -26,7 +38,7 @@ const BlogDetail = () => {
                 setLoading(true);
                 const res = await axios.get(`/api/blogs/${id}`);
                 setBlog(res.data);
-                setError('');
+                setError(null);
             } catch (err) {
                 console.error("Failed to fetch blog post:", err);
                 setError('Failed to load the blog post. Please try again later.');
@@ -39,24 +51,30 @@ const BlogDetail = () => {
         }
     }, [id]);
 
-    if (loading) return <div className="text-center mt-20 p-4">Loading post...</div>;
+    const currentLang = i18n.language;
+    const displayTitle = blog ? getLocalizedContent('title', blog, currentLang) : '';
+    const displayContent = blog ? getLocalizedContent('content', blog, currentLang) : '';
+
+    if (loading) return <div className="text-center mt-20 p-4 dark:text-gray-300">Loading post...</div>;
     if (error) return <div className="text-center mt-20 p-4 text-red-500">{error}</div>;
-    if (!blog) return <div className="text-center mt-20 p-4">Blog post not found.</div>;
+    if (!blog) return <div className="text-center mt-20 p-4 dark:text-gray-300">Blog post not found.</div>;
 
-    const rawContent = blog.content || '<p>Content not available.</p>';
-    const images = blog.image ? [blog.image] : [];
-    const tags = blog.tags || [];
+    const rawContentHtml = marked.parse(displayContent);
+    const cleanContentHtml = DOMPurify.sanitize(rawContentHtml);
 
-    const cleanContent = DOMPurify.sanitize(rawContent);
-
-    const coverImage = images.length > 0 ? images[0] : 'https://placehold.co/800x400/666/fff?text=No+Image';
-    const cleanAltTitle = createSafeAltText(blog.title);
+    const coverImage = blog.image ? blog.image : 'https://placehold.co/800x400/666/fff?text=No+Image';
+    const cleanAltTitle = createSafeAltText(displayTitle);
 
     return (
         <article className="max-w-4xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-xl p-4 sm:p-6 md:p-8 mt-8">
-            <img src={coverImage} alt={cleanAltTitle} className="w-full h-auto max-h-[500px] object-cover rounded-lg mb-6 bg-gray-200" />
+            <img
+                src={coverImage}
+                alt={cleanAltTitle}
+                className="w-full h-auto max-h-[500px] object-cover rounded-lg mb-6 bg-gray-200"
+                loading="lazy"
+            />
 
-            <h1 className="text-3xl md:text-5xl font-semibold mb-3 text-gray-900 dark:text-white leading-tight" style={{ fontFamily: 'Arial, sans-serif' }}>{blog.title}</h1>
+            <h1 className="text-3xl md:text-5xl font-semibold mb-3 text-gray-900 dark:text-white leading-tight" style={{ fontFamily: 'Arial, sans-serif' }}>{displayTitle}</h1>
             <div className="flex flex-wrap gap-x-4 gap-y-2 items-center text-sm text-gray-500 dark:text-gray-400 mb-8">
                 <span>Published on: {new Date(blog.date).toLocaleDateString()}</span>
                 <span className="flex items-center gap-1">
@@ -72,11 +90,11 @@ const BlogDetail = () => {
             <div
                 className="prose prose-lg lg:prose-xl dark:prose-invert max-w-none mb-8
                            prose-img:rounded-xl prose-img:max-h-[500px] prose-img:mx-auto"
-                dangerouslySetInnerHTML={{ __html: cleanContent }}
+                dangerouslySetInnerHTML={{ __html: cleanContentHtml }}
             />
 
             <div className="flex flex-wrap gap-2 mb-8">
-                {tags.map((tag) => (
+                {blog.tags?.map((tag) => (
                     <span key={tag} className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 text-sm font-medium rounded-full">#{tag}</span>
                 ))}
             </div>
@@ -85,7 +103,10 @@ const BlogDetail = () => {
                 <div className="mb-8">
                     <LikeButton blogId={blog._id} initialLikes={blog.likes} />
                 </div>
-                <CommentSection blogId={blog._id} initialComments={blog.comments} />
+                {/* Lazy-load CommentSection here */}
+                <Suspense fallback={<div className="text-center py-10 dark:text-gray-400">Loading comments...</div>}>
+                    <CommentSection blogId={blog._id} initialComments={blog.comments} />
+                </Suspense>
             </div>
         </article>
     );

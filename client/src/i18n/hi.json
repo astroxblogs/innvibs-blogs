@@ -1,29 +1,99 @@
 {
-  "welcome": "ब्लॉग में आपका स्वागत है",
-  "like": "पसंद करें",
-  "comment": "टिप्पणी",
-  "submit": "जमा करें",
-  "language": "भाषा",
-  "admin": "प्रशासक",
-  "login": "लॉगिन",
-  "logout": "लॉगआउट",
-  "title": "शीर्षक",
-  "content": "सामग्री",
-  "tags": "टैग्स",
-  "image": "कवर इमेज",
-  "date": "तारीख",
-  "actions": "क्रियाएँ",
-  "edit": "संपादित करें",
-  "delete": "हटाएँ",
-  "blog_list": "ब्लॉग सूची",
-  "add_blog": "ब्लॉग जोड़ें",
-  "dashboard": "डैशबोर्ड",
-  "moderate_comments": "टिप्पणियाँ मॉडरेट करें",
-  "name": "नाम",
-  "your_comment": "आपकी टिप्पणी",
-  "no_blogs": "कोई ब्लॉग नहीं मिला।",
-  "select_language": "भाषा चुनें",
-  "theme": "थीम",
-  "light": "लाइट",
-  "dark": "डार्क"
-} 
+  "application_name": "एस्ट्रोएक्सहब",
+  "navigation": {
+    "home": "होम",
+    "blog": "ब्लॉग",
+    "categories": "श्रेणियाँ",
+    "admin": "एडमिन",
+    "prev_categories": "पिछली श्रेणियां",
+    "next_categories": "अगली श्रेणियां"
+  },
+  "search": {
+    "placeholder": "खोजें...",
+    "open": "खोज खोलें",
+    "close": "खोज बंद करें"
+  },
+  "category": {
+    "all": "सभी",
+    "technology": "प्रौद्योगिकी",
+    "fashion": "फैशन",
+    "health_wellness": "स्वास्थ्य और कल्याण",
+    "travel": "यात्रा",
+    "food_cooking": "खाना बनाना",
+    "sports": "खेल",
+    "business_finance": "व्यवसाय और वित्त",
+    "lifestyle": "जीवन शैली"
+  },
+  "homepage": {
+    "welcome_title": "एस्ट्रोएक्सहब ब्लॉग में आपका स्वागत है",
+    "tagline": "प्रौद्योगिकी और बहुत कुछ पर आपकी दैनिक अंतर्दृष्टि।",
+    "featured_posts": "विशेष पोस्ट"
+  },
+  "language_selector": {
+    "select_language": "भाषा चुनें",
+    "english": "अंग्रेजी",
+    "spanish": "स्पेनिश",
+    "french": "फ्रेंच",
+    "hindi": "हिंदी"
+  },
+  "blog_card": {
+    "read_more": "और पढ़ें"
+  },
+  "general": {
+    "welcome": "ब्लॉग में आपका स्वागत है",
+    "like": "पसंद करें",
+    "comment": "टिप्पणी",
+    "submit": "जमा करें",
+    "login": "लॉगिन",
+    "logout": "लॉगआउट",
+    "name": "नाम",
+    "your_comment": "आपकी टिप्पणी",
+    "no_blogs": "कोई ब्लॉग नहीं मिला।",
+    "loading_blogs": "ब्लॉग लोड हो रहे हैं...",
+    "latest_blogs": "नवीनतम ब्लॉग",
+    "search_results_for": "\"{{query}}\" के लिए खोज परिणाम",
+    "blogs_in_category": "#{{category}} में ब्लॉग"
+  },
+  "admin_panel": {
+    "dashboard": "डैशबोर्ड",
+    "moderate_comments": "टिप्पणियाँ मॉडरेट करें",
+    "title": "शीर्षक",
+    "content": "सामग्री",
+    "tags": "टैग्स",
+    "image": "कवर इमेज",
+    "date": "तारीख",
+    "actions": "क्रियाएँ",
+    "edit": "संपादित करें",
+    "delete": "हटाएँ",
+    "blog_list": "ब्लॉग सूची",
+    "add_blog": "ब्लॉग जोड़ें"
+  },
+  "theme_toggle": {
+    "theme": "थीम",
+    "light": "लाइट",
+    "dark": "डार्क",
+    "toggle_theme_title": "थीम बदलें",
+    "mode": "मोड"
+  },
+  "footer": {
+    "tagline": "अंतर्दृष्टि, कहानियों और महत्वपूर्ण विचारों के लिए एक क्यूरेटेड स्थान।",
+    "company_title": "कंपनी",
+    "about_us": "हमारे बारे में",
+    "careers": "करियर",
+    "contact": "संपर्क करें",
+    "categories_title": "श्रेणियाँ",
+    "product_title": "उत्पाद",
+    "features": "विशेषताएं",
+    "pricing": "मूल्य निर्धारण",
+    "changelog": "चेंजलॉग",
+    "legal_title": "कानूनी",
+    "privacy_policy": "गोपनीयता नीति",
+    "terms_of_service": "सेवा की शर्तें",
+    "newsletter_title": "लूप में बने रहें",
+    "email_placeholder": "आपका ईमेल पता",
+    "email_aria_label": "न्यूज़लेटर के लिए ईमेल",
+    "subscribe_aria_label": "न्यूज़लेटर की सदस्यता लें",
+    "subscribe_title": "सदस्यता लें",
+    "copyright": "© {{year}} {{appName}}"
+  }
+}

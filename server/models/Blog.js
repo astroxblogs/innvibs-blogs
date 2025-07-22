@@ -7,17 +7,34 @@ const CommentSchema = new mongoose.Schema({
 });
 
 const BlogSchema = new mongoose.Schema({
-    title: { type: String, required: true }, // Corrected typo: 'itle' to 'title'
-    content: { type: String, required: true },
+    // Original fields, now structured for multiple languages
+    title: { // This can serve as a fallback or default title
+        type: String,
+        required: true
+    },
+    content: { // This can serve as a fallback or default content
+        type: String,
+        required: true
+    },
+    // New fields for multilingual titles
+    title_en: { type: String, required: true },
+    title_hi: { type: String },
+    title_es: { type: String },
+    title_fr: { type: String },
+
+    // New fields for multilingual content
+    content_en: { type: String, required: true },
+    content_hi: { type: String },
+    content_es: { type: String },
+    content_fr: { type: String },
+
     image: { type: String },
     date: { type: Date, default: Date.now },
-    // Added the new category field
     category: {
         type: String,
         required: true
     },
     tags: [String],
-    // Removed the language field as it's being replaced by category
     likes: { type: Number, default: 0 },
     comments: [CommentSchema]
 });

@@ -1,29 +1,99 @@
 {
-    "welcome": "Welcome to the Blog",
-    "like": "Like",
-    "comment": "Comment",
-    "submit": "Submit",
-    "language": "Language",
-    "admin": "Admin",
-    "login": "Login",
-    "logout": "Logout",
-    "title": "Title",
-    "content": "Content",
-    "tags": "Tags",
-    "image": "Cover Image",
-    "date": "Date",
-    "actions": "Actions",
-    "edit": "Edit",
-    "delete": "Delete",
-    "blog_list": "Blog List",
-    "add_blog": "Add Blog",
-    "dashboard": "Dashboard",
-    "moderate_comments": "Moderate Comments",
-    "name": "Name",
-    "your_comment": "Your Comment",
-    "no_blogs": "No blogs found.",
-    "select_language": "Select Language",
-    "theme": "Theme",
-    "light": "Light",
-    "dark": "Dark"
+    "application_name": "AstroXHub",
+    "navigation": {
+        "home": "Home",
+        "blog": "Blog",
+        "categories": "Categories",
+        "admin": "Admin",
+        "prev_categories": "Previous categories",
+        "next_categories": "Next categories"
+    },
+    "search": {
+        "placeholder": "Search...",
+        "open": "Open search",
+        "close": "Close search"
+    },
+    "category": {
+        "all": "All",
+        "technology": "Technology",
+        "fashion": "Fashion",
+        "health_wellness": "Health & Wellness",
+        "travel": "Travel",
+        "food_cooking": "Food & Cooking",
+        "sports": "Sports",
+        "business_finance": "Business & Finance",
+        "lifestyle": "Lifestyle"
+    },
+    "homepage": {
+        "welcome_title": "Welcome to AstroXHub Blogs",
+        "tagline": "Your daily dose of insights into technology and more.",
+        "featured_posts": "Featured Posts"
+    },
+    "language_selector": {
+        "select_language": "Select Language",
+        "english": "English",
+        "spanish": "Spanish",
+        "french": "French",
+        "hindi": "Hindi"
+    },
+    "blog_card": {
+        "read_more": "Read More"
+    },
+    "general": {
+        "welcome": "Welcome to the Blog",
+        "like": "Like",
+        "comment": "Comment",
+        "submit": "Submit",
+        "login": "Login",
+        "logout": "Logout",
+        "name": "Name",
+        "your_comment": "Your Comment",
+        "no_blogs": "No blogs found.",
+        "loading_blogs": "Loading blogs...",
+        "latest_blogs": "Latest Blogs",
+        "search_results_for": "Search Results for \"{{query}}\"",
+        "blogs_in_category": "Blogs in #{{category}}"
+    },
+    "admin_panel": {
+        "dashboard": "Dashboard",
+        "moderate_comments": "Moderate Comments",
+        "title": "Title",
+        "content": "Content",
+        "tags": "Tags",
+        "image": "Cover Image",
+        "date": "Date",
+        "actions": "Actions",
+        "edit": "Edit",
+        "delete": "Delete",
+        "blog_list": "Blog List",
+        "add_blog": "Add Blog"
+    },
+    "theme_toggle": {
+        "theme": "Theme",
+        "light": "Light",
+        "dark": "Dark",
+        "toggle_theme_title": "Toggle theme",
+        "mode": "Mode"
+    },
+    "footer": {
+        "tagline": "A curated space for insights, stories, and ideas that matter.",
+        "company_title": "Company",
+        "about_us": "About Us",
+        "careers": "Careers",
+        "contact": "Contact",
+        "categories_title": "Categories",
+        "product_title": "Product",
+        "features": "Features",
+        "pricing": "Pricing",
+        "changelog": "Changelog",
+        "legal_title": "Legal",
+        "privacy_policy": "Privacy Policy",
+        "terms_of_service": "Terms of Service",
+        "newsletter_title": "Stay in the loop",
+        "email_placeholder": "Your email address",
+        "email_aria_label": "Email for newsletter subscription",
+        "subscribe_aria_label": "Subscribe to newsletter",
+        "subscribe_title": "Subscribe",
+        "copyright": "© {{year}} {{appName}}"
+    }
 }
