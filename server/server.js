@@ -10,9 +10,8 @@ const app = express();
 
 
 app.use(cors({
-    origin: 'https://innvibs-blogs.vercel.app/'
+    origin: 'https://innvibs-blogs.vercel.app' // <-- THIS IS THE EXACT URL TO USE
 }));
-
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
