@@ -18,7 +18,7 @@ const CategoryPage = React.lazy(() => import('./pages/CategoryPage'));
 // --- GLOBAL AXIOS CONFIGURATION ---
 // THIS IS THE CORRECT PLACE: AFTER ALL IMPORTS AND BEFORE ANY OTHER LOGIC/COMPONENT DEFINITIONS.
 // Use your deployed backend URL for Vercel deployment.
-axios.defaults.baseURL = 'https://innvibs-blogs.onrender.com'; // <-- Use your deployed Render backend URL here!
+axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL; // <-- Use your deployed Render backend URL here!
 
 // --- Axios Interceptors ---
 // This interceptor will run before every API request is sent.

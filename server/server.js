@@ -10,8 +10,8 @@ const app = express();
 
 
 app.use(cors({
-    origin: 'https://www.innvibs.com' 
-}))
+    origin: process.env.CORS_ORIGIN  
+}));
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));

@@ -157,7 +157,7 @@ const Home = ({ activeCategory, searchQuery }) => {
 
                 {!hasBlogsToDisplay && !loading && (
                     <p className="text-center text-gray-500 dark:text-gray-400 py-10">
-                        {t('general.no_blogs_found')}
+                        {t('No Blogs Found')}
                     </p>
                 )}
             </main>
