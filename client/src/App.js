@@ -1,20 +1,22 @@
-import React, { useState, useEffect, Suspense } from 'react'; // <-- Import Suspense
+import React, { useState, useEffect, Suspense } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from 'axios'; // <-- AXIOS IMPORT IS HERE
+
+
+axios.defaults.baseURL = 'https://innvibs-blogs.onrender.com';
+
 import './index.css';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import Footer1 from './components/Footer1';
 
 import TopNavigation from './components/TopNavigation';
-import Home from './pages/Home'; // Home page is often loaded eagerly for best initial experience
+import Home from './pages/Home';
 
 // Use React.lazy for code splitting these pages
 const BlogDetailPage = React.lazy(() => import('./pages/BlogDetailPage'));
 const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
 const AdminLogin = React.lazy(() => import('./pages/AdminLogin'));
 const CategoryPage = React.lazy(() => import('./pages/CategoryPage'));
-// If you had a NotFound page component:
-// const NotFound = React.lazy(() => import('./pages/NotFound'));
 
 // --- THIS IS THE MISSING CODE BLOCK ---
 // This interceptor will run before every API request is sent.
@@ -98,21 +100,16 @@ function App() {
             )}
 
             <main className="flex-1 overflow-y-auto">
-                {/* Wrap your Routes with Suspense to show a fallback while lazy components load */}
                 <Suspense fallback={<div className="text-center py-20 dark:text-gray-200">Loading page...</div>}>
                     <Routes>
-                        {/* Home page is typically loaded eagerly for immediate content */}
                         <Route
                             path="/"
                             element={<Home activeCategory={activeCategory} searchQuery={searchQuery} />}
                         />
-                        {/* Lazy-loaded routes */}
                         <Route path="/category/:categoryName" element={<CategoryPage />} />
                         <Route path="/blog/:id" element={<BlogDetailPage />} />
                         <Route path="/admin" element={<AdminDashboard />} />
                         <Route path="/admin/login" element={<AdminLogin />} />
-                        {/* If you had a NotFound component: <Route path="*" element={<NotFound />} /> */}
-                        {/* Added 'replace' to Navigate for cleaner history with lazy loading */}
                         <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                 </Suspense>
@@ -123,4 +120,4 @@ function App() {
     );
 }
 
-export default App; 
+export default App;
