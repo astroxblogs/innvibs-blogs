@@ -6,7 +6,9 @@
     "categories": "श्रेणियाँ",
     "admin": "एडमिन",
     "prev_categories": "पिछली श्रेणियां",
-    "next_categories": "अगली श्रेणियां"
+    "next_categories": "अगली श्रेणियां",
+    "open_menu": "मोबाइल मेनू खोलें",
+    "close_menu": "मोबाइल मेनू बंद करें"
   },
   "search": {
     "placeholder": "खोजें...",

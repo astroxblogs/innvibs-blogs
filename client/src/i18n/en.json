@@ -6,7 +6,9 @@
         "categories": "Categories",
         "admin": "Admin",
         "prev_categories": "Previous categories",
-        "next_categories": "Next categories"
+        "next_categories": "Next categories",
+        "open_menu": "Open mobile menu",
+        "close_menu": "Close mobile menu"
     },
     "search": {
         "placeholder": "Search...",

@@ -6,7 +6,9 @@
         "categories": "Categorías",
         "admin": "Administrador",
         "prev_categories": "Categorías anteriores",
-        "next_categories": "Siguientes categorías"
+        "next_categories": "Siguientes categorías",
+        "open_menu": "Abrir menú móvil",
+        "close_menu": "Cerrar menú móvil"
     },
     "search": {
         "placeholder": "Buscar...",
