@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import ReactQuill, { Quill } from 'react-quill';
@@ -8,8 +8,6 @@ import ImageResize from 'quill-image-resize-module-react';
 // Register the resize module with Quill
 Quill.register('modules/imageResize', ImageResize);
 
-// Define supported languages for the admin interface
-// These should match the language codes used in your i18n setup and database fields
 const LANGUAGES = [
     { code: 'en', name: 'English' },
     { code: 'hi', name: 'Hindi' },
@@ -24,28 +22,71 @@ const categories = [
 
 const AdminBlogForm = ({ blog, onSave }) => {
     const { register, handleSubmit, reset, setValue, watch } = useForm();
-    const [activeLang, setActiveLang] = useState('en'); // State to manage active language tab
-    const [contents, setContents] = useState(() => { // State to hold content for all languages
+    const [activeLang, setActiveLang] = useState('en');
+    const [contents, setContents] = useState(() => {
         const initialContents = {};
         LANGUAGES.forEach(lang => {
             initialContents[lang.code] = '';
         });
         return initialContents;
     });
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [uploadingImage, setUploadingImage] = useState(false);
+    const fileInputRef = useRef(null);
 
-    const quillRef = React.useRef(null);
+    // REVERTED to a single quillRef, as only one editor will be mounted at a time
+    const quillRef = useRef(null);
 
-    // Custom image handler function for ReactQuill
-    const imageHandler = useCallback(() => {
-        const editor = quillRef.current.getEditor();
-        const url = prompt('Enter the image URL'); // Show a popup to paste the URL
-        if (url) {
-            const range = editor.getSelection();
-            editor.insertEmbed(range.index, 'image', url);
-        }
-    }, []);
+    const quillImageUploadHandler = useCallback(() => {
+        const input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        input.setAttribute('accept', 'image/*');
+        input.click();
 
-    // Memoize Quill modules to prevent re-creation on every render
+        input.onchange = async () => {
+            const file = input.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const token = localStorage.getItem('adminToken');
+                // Access the editor via the single quillRef
+                const editor = quillRef.current?.getEditor();
+                if (!editor) {
+                    console.error('Quill editor instance not found.');
+                    alert('Quill editor not ready. Please try again.');
+                    return;
+                }
+
+                const range = editor.getSelection();
+                editor.insertEmbed(range.index, 'text', 'Uploading image...');
+
+                const res = await axios.post('/api/blogs/upload-image', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        Authorization: `Bearer ${token}`
+                    },
+                });
+
+                const imageUrl = res.data.imageUrl;
+                editor.deleteText(range.index, 16);
+                editor.insertEmbed(range.index, 'image', imageUrl);
+            } catch (error) {
+                console.error('Error uploading image to backend for Quill:', error.response?.data || error.message);
+                alert('Error uploading image to content: ' + (error.response?.data?.error || error.message));
+                const editor = quillRef.current?.getEditor();
+                if (editor) {
+                    const range = editor.getSelection();
+                    if (range && editor.getText(range.index - 16, 16) === 'Uploading image...') {
+                        editor.deleteText(range.index - 16, 16);
+                    }
+                }
+            }
+        };
+    }, []); // No dependency on activeLang needed here anymore, as there's only one active QuillRef
+
     const modules = useMemo(() => ({
         imageResize: {
             parchment: Quill.import('parchment'),
@@ -63,31 +104,28 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 ['clean']
             ],
             handlers: {
-                image: imageHandler,
+                image: quillImageUploadHandler,
             },
         },
-    }), [imageHandler]); // Dependency on imageHandler to ensure it's stable
+    }), [quillImageUploadHandler]);
 
-
-    // Effect to populate form when editing an existing blog
     useEffect(() => {
         const newContents = {};
         if (blog) {
-            // Populate form fields for react-hook-form
-            reset(blog); // Resets all fields including original title/content, image, tags, category
-
-            // Manually set language-specific titles
+            reset(blog);
             LANGUAGES.forEach(lang => {
                 setValue(`title_${lang.code}`, blog[`title_${lang.code}`] || '');
                 newContents[lang.code] = blog[`content_${lang.code}`] || '';
             });
-            // Fallback for original `title` and `content` if `title_en`/`content_en` are not present (for old blogs)
             setValue('title', blog.title || '');
-            newContents['en'] = newContents['en'] || blog.content || ''; // Use English as primary fallback
+            newContents['en'] = newContents['en'] || blog.content || '';
 
             setContents(newContents);
+            setSelectedFile(null);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
         } else {
-            // Reset form for new blog
             reset({
                 title: '',
                 image: '',
@@ -97,27 +135,73 @@ const AdminBlogForm = ({ blog, onSave }) => {
             const clearedContents = {};
             LANGUAGES.forEach(lang => {
                 clearedContents[lang.code] = '';
-                setValue(`title_${lang.code}`, ''); // Clear language-specific title inputs
+                setValue(`title_${lang.code}`, '');
             });
             setContents(clearedContents);
-            setActiveLang('en'); // Reset to English tab
+            setActiveLang('en');
+            setSelectedFile(null);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
         }
     }, [blog, reset, setValue]);
+
+    const handleFileChange = (event) => {
+        if (event.target.files && event.target.files[0]) {
+            setSelectedFile(event.target.files[0]);
+            setValue('image', '');
+        } else {
+            setSelectedFile(null);
+        }
+    };
+
+    const uploadMainCoverImage = async () => {
+        if (!selectedFile) return;
+
+        setUploadingImage(true);
+        const formData = new FormData();
+        formData.append('image', selectedFile);
+
+        try {
+            const token = localStorage.getItem('adminToken');
+            const res = await axios.post('/api/blogs/upload-image', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${token}`
+                },
+            });
+
+            const imageUrl = res.data.imageUrl;
+            setValue('image', imageUrl);
+            setSelectedFile(null);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+            alert('Main cover image uploaded successfully!');
+        } catch (error) {
+            console.error('Error uploading main cover image to backend:', error.response?.data || error.message);
+            alert('Error uploading main cover image: ' + (error.response?.data?.error || error.message));
+        } finally {
+            setUploadingImage(false);
+        }
+    };
 
     const onSubmit = async (data) => {
         const tags = typeof data.tags === 'string' ? data.tags.split(',').map(tag => tag.trim()) : [];
 
-        // Prepare the payload including all language-specific fields
+        if (selectedFile) {
+            alert('Please upload the selected main cover image first or clear the file selection.');
+            return;
+        }
+
         const payload = {
             image: data.image,
             tags,
             category: data.category,
-            // Include original title/content as fallback/default (e.g., for compatibility)
-            title: data.title_en || data.title, // Use title_en, fallback to original title
-            content: contents.en || data.content, // Use content_en, fallback to original content
+            title: data.title_en || data.title,
+            content: contents.en || data.content,
         };
 
-        // Add all language-specific titles and contents
         LANGUAGES.forEach(lang => {
             payload[`title_${lang.code}`] = data[`title_${lang.code}`];
             payload[`content_${lang.code}`] = contents[lang.code];
@@ -128,12 +212,15 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 ? await axios.put(`/api/blogs/${blog._id}`, payload)
                 : await axios.post('/api/blogs', payload);
             onSave(res.data);
-            // After successful save, reset form and contents
             reset();
             const clearedContents = {};
             LANGUAGES.forEach(lang => clearedContents[lang.code] = '');
             setContents(clearedContents);
             setActiveLang('en');
+            setSelectedFile(null);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
         } catch (error) {
             console.error('Error saving blog:', error);
             alert('Error saving blog: ' + (error.response?.data?.error || error.message));
@@ -150,7 +237,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 {LANGUAGES.map(lang => (
                     <button
                         key={lang.code}
-                        type="button" // Important: Prevent form submission
+                        type="button"
                         onClick={() => setActiveLang(lang.code)}
                         className={`
                             px-4 py-2 text-sm font-medium
@@ -167,11 +254,49 @@ const AdminBlogForm = ({ blog, onSave }) => {
             </div>
 
             {/* Common Fields */}
-            <input
-                className="border border-gray-300 dark:border-gray-700 p-2 rounded w-full text-gray-900 dark:text-white bg-white dark:bg-gray-700"
-                placeholder="Main Cover Image URL"
-                {...register('image')}
-            />
+            {/* Main Cover Image URL Input & File Upload */}
+            <div className="flex flex-col gap-2">
+                <label className="block font-medium text-sm text-gray-700 dark:text-gray-300">
+                    Main Cover Image
+                </label>
+                <input
+                    className="border border-gray-300 dark:border-gray-700 p-2 rounded w-full text-gray-900 dark:text-white bg-white dark:bg-gray-700"
+                    placeholder="Paste Image URL"
+                    {...register('image')}
+                    disabled={!!selectedFile}
+                />
+                <div className="flex items-center gap-2">
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        ref={fileInputRef}
+                        className="block w-full text-sm text-gray-900 dark:text-white
+                                   file:mr-4 file:py-2 file:px-4
+                                   file:rounded-md file:border-0
+                                   file:text-sm file:font-semibold
+                                   file:bg-blue-50 file:text-blue-700
+                                   hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300
+                                   dark:hover:file:bg-blue-800"
+                    />
+                    {selectedFile && (
+                        <button
+                            type="button"
+                            onClick={uploadMainCoverImage}
+                            disabled={uploadingImage}
+                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                        >
+                            {uploadingImage ? 'Uploading...' : 'Upload Image'}
+                        </button>
+                    )}
+                </div>
+                {watch('image') && (
+                    <div className="mt-2 text-center">
+                        <img src={watch('image')} alt="Cover Preview" className="max-h-48 object-contain mx-auto rounded-md shadow-md" />
+                    </div>
+                )}
+            </div>
+
             <input
                 className="border border-gray-300 dark:border-gray-700 p-2 rounded w-full text-gray-900 dark:text-white bg-white dark:bg-gray-700"
                 placeholder="Tags (comma separated)"
@@ -186,34 +311,36 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 ))}
             </select>
 
-            {/* Language-specific Fields */}
+            {/* Language-specific Fields - RENDER ONLY THE ACTIVE ONE */}
             {LANGUAGES.map(lang => (
-                <div key={lang.code} style={{ display: activeLang === lang.code ? 'block' : 'none' }}>
-                    <h3 className="text-lg font-semibold mt-6 mb-2 text-gray-800 dark:text-gray-200">
-                        {lang.name} Content
-                    </h3>
-                    <input
-                        className="border border-gray-300 dark:border-gray-700 p-2 rounded w-full mb-4 text-gray-900 dark:text-white bg-white dark:bg-gray-700"
-                        placeholder={`Title (${lang.name})`}
-                        // Register input with dynamic name like 'title_en', 'title_es'
-                        {...register(`title_${lang.code}`, { required: lang.code === 'en' })}
-                    />
-
-                    <div>
-                        <label className="block font-medium text-sm mb-1 text-gray-700 dark:text-gray-300">
-                            Content ({lang.name})
-                        </label>
-                        <ReactQuill
-                            ref={quillRef}
-                            theme="snow"
-                            value={contents[lang.code]} // Use content for the active language
-                            onChange={(value) => setContents(prev => ({ ...prev, [lang.code]: value }))} // Update specific language content
-                            modules={modules}
-                            className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                activeLang === lang.code && ( // <-- CRUCIAL CHANGE: Only render if activeLang matches
+                    <div key={lang.code}> {/* Removed absolute positioning and related classes */}
+                        <h3 className="text-lg font-semibold mt-6 mb-2 text-gray-800 dark:text-gray-200">
+                            {lang.name} Content
+                        </h3>
+                        <input
+                            className="border border-gray-300 dark:border-gray-700 p-2 rounded w-full mb-4 text-gray-900 dark:text-white bg-white dark:bg-gray-700"
+                            placeholder={`Title (${lang.name})`}
+                            {...register(`title_${lang.code}`, { required: lang.code === 'en' })}
                         />
+
+                        <div>
+                            <label className="block font-medium text-sm mb-1 text-gray-700 dark:text-gray-300">
+                                Content ({lang.name})
+                            </label>
+                            <ReactQuill
+                                ref={quillRef} // Assign the single quillRef here
+                                theme="snow"
+                                value={contents[lang.code]}
+                                onChange={(value) => setContents(prev => ({ ...prev, [lang.code]: value }))}
+                                modules={modules}
+                                className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                            />
+                        </div>
                     </div>
-                </div>
+                )
             ))}
+            {/* REMOVED the spacer div, as content will now take up natural space */}
 
             <button
                 className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded font-semibold transition-colors w-full md:w-auto self-end mt-4"

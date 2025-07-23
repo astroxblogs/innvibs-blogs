@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios'; // <-- AXIOS IMPORT IS HERE
+import axios from 'axios';
 import './index.css';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
@@ -9,28 +9,33 @@ import Footer1 from './components/Footer1';
 import TopNavigation from './components/TopNavigation';
 import Home from './pages/Home';
 
-// Lazy-loaded page components (these are also technically imports, but wrapped in React.lazy)
+// Lazy-loaded page components
 const BlogDetailPage = React.lazy(() => import('./pages/BlogDetailPage'));
 const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
 const AdminLogin = React.lazy(() => import('./pages/AdminLogin'));
 const CategoryPage = React.lazy(() => import('./pages/CategoryPage'));
 
 // --- GLOBAL AXIOS CONFIGURATION ---
-// THIS IS THE CORRECT PLACE: AFTER ALL IMPORTS AND BEFORE ANY OTHER LOGIC/COMPONENT DEFINITIONS.
-// Use your deployed backend URL for Vercel deployment.
-axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL; // <-- Use your deployed Render backend URL here!
+// Use environment variable for the API base URL
+axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL;
 
 // --- Axios Interceptors ---
 // This interceptor will run before every API request is sent.
 axios.interceptors.request.use(
     (config) => {
-        // Get the token from local storage
-        const adminToken = localStorage.getItem('adminToken');
+        // Check if the request URL is NOT Cloudinary's upload URL
+        // This prevents sending Authorization header to Cloudinary's unsigned upload endpoint
+        const cloudinaryUploadUrl = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
+        if (config.url && !config.url.startsWith(cloudinaryUploadUrl)) {
+            // Get the token from local storage
+            const adminToken = localStorage.getItem('adminToken');
 
-        // If a token exists, add the 'Authorization: Bearer <token>' header
-        if (adminToken) {
-            config.headers['Authorization'] = `Bearer ${adminToken}`;
+            // If a token exists, add the 'Authorization: Bearer <token>' header
+            if (adminToken) {
+                config.headers['Authorization'] = `Bearer ${adminToken}`;
+            }
         }
+        // If it IS a Cloudinary upload URL, the Authorization header will NOT be added.
 
         return config; // Continue with the request
     },

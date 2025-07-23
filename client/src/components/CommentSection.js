@@ -63,7 +63,7 @@ const CommentSection = ({ blogId, initialComments }) => {
                 />
                 <input
                     className="border border-gray-300 dark:border-gray-700 rounded px-3 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder={t('your_comment')}
+                    placeholder={t('Comment here')}
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
                     required
