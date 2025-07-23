@@ -41,11 +41,26 @@ const BlogCard = ({ blog }) => {
     const excerpt = getPlainTextExcerpt(displayContent);
 
     return (
-        <div className="flex flex-col md:flex-row items-stretch bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow mb-6 overflow-hidden w-full">
-            <div className="flex-1 p-5 flex flex-col">
+        <div className="flex flex-col md:flex-row items-stretch bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden w-full">
+            {/* Image Section: Order on mobile, fixed width on desktop */}
+            {blog.image && (
+                <Link to={`/blog/${blog._id}`} className="order-first md:order-last w-full md:w-56 h-48 md:h-auto flex-shrink-0">
+                    <img
+                        src={blog.image}
+                        alt={displayTitle}
+                        className="object-cover w-full h-full transition-transform hover:scale-105"
+                        loading="lazy"
+                    />
+                </Link>
+            )}
+
+            {/* Content Section: Order on mobile, flex-grow to fill space */}
+            <div className="flex-1 p-4 sm:p-5 flex flex-col order-last md:order-first"> {/* Adjusted padding */}
                 <div className="flex-grow">
                     <Link to={`/blog/${blog._id}`} className="block">
-                        <h2 className="text-2xl font-bold mb-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{displayTitle}</h2>
+                        <h2 className="text-xl sm:text-2xl font-bold mb-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors leading-tight"> {/* Adjusted font size, added leading-tight */}
+                            {displayTitle}
+                        </h2>
                     </Link>
                     <div className="flex flex-wrap gap-2 mb-2 text-xs text-gray-500 dark:text-gray-400">
                         <span>{new Date(blog.date).toLocaleDateString()}</span>
@@ -53,7 +68,7 @@ const BlogCard = ({ blog }) => {
                             <span key={tag} className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded">#{tag}</span>
                         ))}
                     </div>
-                    <p className="text-gray-600 dark:text-gray-400 mb-4">
+                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4"> {/* Adjusted font size */}
                         {excerpt}
                         {excerpt.length >= 150 && (
                             <Link to={`/blog/${blog._id}`} className="text-blue-500 hover:underline font-semibold ml-1">
@@ -70,17 +85,6 @@ const BlogCard = ({ blog }) => {
                     </Link>
                 </div>
             </div>
-
-            {blog.image && (
-                <Link to={`/blog/${blog._id}`} className="w-full md:w-56 h-48 md:h-auto flex-shrink-0">
-                    <img
-                        src={blog.image}
-                        alt={displayTitle}
-                        className="object-cover w-full h-full transition-transform hover:scale-105"
-                        loading="lazy" // <-- Added lazy loading attribute here
-                    />
-                </Link>
-            )}
         </div>
     );
 };

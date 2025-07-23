@@ -20,7 +20,8 @@ const categories = [
     { labelKey: "category.lifestyle", value: "Lifestyle" },
 ];
 
-const MAX_VISIBLE_CATEGORIES = 5;
+// Adjusted MAX_VISIBLE_CATEGORIES for better mobile display, or consider hiding entirely
+const MAX_VISIBLE_CATEGORIES = 4; // Show fewer categories on smaller screens by default
 
 const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery }) => {
     const { t } = useTranslation();
@@ -49,35 +50,39 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery }) => 
 
     return (
         <nav className="sticky top-0 z-50 bg-light-bg-secondary dark:bg-dark-bg-secondary shadow-sm">
-            <div className="py-3 px-4 md:px-8 flex justify-between items-center">
-                <Link to="/" className="flex items-center gap-2 text-2xl font-extrabold text-text-dark dark:text-text-light flex-shrink-0">
+            {/* Main Container: Flex column on mobile, flex row on medium+ screens */}
+            <div className="py-3 px-4 md:px-8 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
+                {/* Logo Section */}
+                <Link to="/" className="flex items-center gap-2 text-2xl font-extrabold text-text-dark dark:text-white flex-shrink-0">
                     <img src="/logo.png" alt={t('application_name')} className="h-8 w-8" />
-                    <span>{t('application_name')}</span> {/* Translated application name */}
+                    <span>{t('application_name')}</span>
                 </Link>
 
-                {/* Category Navigation - NOW ALL CATEGORIES ARE TRANSLATED */}
-                <div className="flex-grow flex justify-center items-center">
+                {/* Category Navigation - Centered on desktop, hidden on very small screens or adjusted */}
+                {/* On mobile, this section might take full width or be scrollable */}
+                <div className="w-full md:w-auto flex-grow md:flex-grow-0 flex justify-center items-center overflow-x-auto md:overflow-visible">
                     <div className="flex items-center">
                         <AnimatePresence>
                             {showLeftArrow && (
                                 <motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.5 }}>
-                                    <button onClick={handlePrev} className="p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 mr-2" aria-label={t('navigation.prev_categories')}>
+                                    <button onClick={handlePrev} className="p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 mr-2 flex-shrink-0" aria-label={t('navigation.prev_categories')}>
                                         <ChevronLeft className="h-5 w-5 text-gray-700 dark:text-gray-200" />
                                     </button>
                                 </motion.div>
                             )}
                         </AnimatePresence>
+                        {/* Category buttons container: flex-nowrap to keep them in a row, allow scroll on small screens */}
                         <div className="flex items-center space-x-3 whitespace-nowrap">
                             {categories.slice(startIndex, startIndex + MAX_VISIBLE_CATEGORIES).map((cat) => (
                                 <button key={cat.value} onClick={() => handleCategoryClick(cat.value)} className={`flex-shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-200 ${activeCategory === cat.value ? "bg-gray-900 text-white dark:bg-gray-50 dark:text-gray-900" : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"}`}>
-                                    {t(cat.labelKey)} {/* Changed to t(cat.labelKey) for all categories */}
+                                    {t(cat.labelKey)}
                                 </button>
                             ))}
                         </div>
                         <AnimatePresence>
                             {showRightArrow && (
                                 <motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.5 }}>
-                                    <button onClick={handleNext} className="p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 ml-2" aria-label={t('navigation.next_categories')}>
+                                    <button onClick={handleNext} className="p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 ml-2 flex-shrink-0" aria-label={t('navigation.next_categories')}>
                                         <ChevronRight className="h-5 w-5 text-gray-700 dark:text-gray-200" />
                                     </button>
                                 </motion.div>
@@ -86,8 +91,8 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery }) => 
                     </div>
                 </div>
 
-                {/* Right Side Controls */}
-                <div className="flex items-center space-x-3 flex-shrink-0">
+                {/* Right Side Controls: Flex row, wrap on mobile, align to end on desktop */}
+                <div className="w-full md:w-auto flex justify-center md:justify-end items-center space-x-3 flex-shrink-0">
                     {showSearchInput ? (
                         <form onSubmit={handleSearchSubmit} className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-full px-3 py-1.5 w-full max-w-xs">
                             <input

@@ -1,24 +1,23 @@
-import React, { useEffect, useState, useCallback } from 'react'; // Added useCallback
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import BlogList from '../components/BlogList';
 import FeaturedBlogCarousel from '../components/FeaturedBlogCarousel';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 
-const INITIAL_PAGE_SIZE = 6;  
+const INITIAL_PAGE_SIZE = 6;
 
 const Home = ({ activeCategory, searchQuery }) => {
     const { t } = useTranslation();
 
-    const [blogs, setBlogs] = useState([]); // Stores all loaded blogs
+    const [blogs, setBlogs] = useState([]);
     const [featuredBlogs, setFeaturedBlogs] = useState([]);
-    const [loading, setLoading] = useState(true); // Initial loading state for first page
-    const [loadingMore, setLoadingMore] = useState(false); // State for subsequent 'Load More' clicks
+    const [loading, setLoading] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const [totalBlogsCount, setTotalBlogsCount] = useState(0); // To keep track of overall total
+    const [totalBlogsCount, setTotalBlogsCount] = useState(0);
 
-    // Animation variants for the welcome text and tagline
     const textVariants = {
         hidden: { opacity: 0, y: 20 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
@@ -29,7 +28,6 @@ const Home = ({ activeCategory, searchQuery }) => {
         visible: { opacity: 1, y: 0, transition: { delay: 0.3, duration: 0.8, ease: "easeOut" } },
     };
 
-    // Effect to fetch the 5 latest blogs for the carousel.
     useEffect(() => {
         const fetchFeaturedBlogs = async () => {
             try {
@@ -43,12 +41,11 @@ const Home = ({ activeCategory, searchQuery }) => {
         fetchFeaturedBlogs();
     }, []);
 
-    // Main blog fetching logic, now with pagination
     const fetchBlogs = useCallback(async (pageToLoad = 1, append = false) => {
         if (pageToLoad === 1) {
-            setLoading(true); // Show full loading spinner for first page load
+            setLoading(true);
         } else {
-            setLoadingMore(true); // Show small spinner for 'Load More'
+            setLoadingMore(true);
         }
 
         try {
@@ -66,31 +63,29 @@ const Home = ({ activeCategory, searchQuery }) => {
             if (append) {
                 setBlogs(prevBlogs => [...prevBlogs, ...newBlogs]);
             } else {
-                setBlogs(newBlogs); // Replace blogs for new search/category
+                setBlogs(newBlogs);
             }
             setCurrentPage(apiCurrentPage);
             setTotalPages(apiTotalPages);
             setTotalBlogsCount(apiTotalBlogs);
         } catch (err) {
             console.error("Error fetching blogs:", err);
-            setBlogs([]); // Clear blogs on error
+            setBlogs([]);
             setTotalPages(0);
             setTotalBlogsCount(0);
         } finally {
             setLoading(false);
             setLoadingMore(false);
         }
-    }, [activeCategory, searchQuery]); // Dependencies: re-fetch from page 1 if category/search changes
+    }, [activeCategory, searchQuery]);
 
-    // Effect to trigger initial fetch or re-fetch on category/search change
     useEffect(() => {
-        fetchBlogs(1, false); // Always start from page 1 when category or search query changes
-    }, [fetchBlogs]); // Dependency on fetchBlogs memoized function
+        fetchBlogs(1, false);
+    }, [fetchBlogs]);
 
-    // Function to load the next page of blogs
     const loadMoreBlogs = () => {
         if (currentPage < totalPages && !loadingMore) {
-            fetchBlogs(currentPage + 1, true); // Fetch next page, append to existing blogs
+            fetchBlogs(currentPage + 1, true);
         }
     };
 
@@ -105,10 +100,9 @@ const Home = ({ activeCategory, searchQuery }) => {
     }
 
     if (loading) {
-        return <div className="text-center py-20 dark:text-gray-200">{t('Loading blogs')}</div>;
+        return <div className="text-center py-20 dark:text-gray-200">{t('general.loading_blogs')}</div>; // Use general.loading_blogs
     }
 
-    // Determine if "Featured Posts" or the dynamic pageTitle should be displayed
     const showFeaturedPostsHeader = !isSearchView && !isCategoryView;
     const showDynamicPageTitle = isSearchView || isCategoryView;
     const hasBlogsToDisplay = blogs.length > 0;
@@ -119,11 +113,11 @@ const Home = ({ activeCategory, searchQuery }) => {
                 <FeaturedBlogCarousel blogs={featuredBlogs} />
             )}
 
-            <main className="container mx-auto px-4 py-8">
+            <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12"> {/* Adjusted horizontal padding and vertical padding */}
                 {!isSearchView && !isCategoryView && (
-                    <div className="text-center mb-16 mt-8">
+                    <div className="text-center mb-12 mt-6 md:mb-16 md:mt-8"> {/* Adjusted margins for better mobile spacing */}
                         <motion.h1
-                            className="text-4xl md:text-5xl font-extrabold mb-4 text-gray-900 dark:text-white"
+                            className="text-3xl md:text-5xl font-extrabold mb-3 md:mb-4 text-gray-900 dark:text-white leading-tight" // Adjusted font size for mobile, tighter leading
                             variants={textVariants}
                             initial="hidden"
                             animate="visible"
@@ -131,7 +125,7 @@ const Home = ({ activeCategory, searchQuery }) => {
                             {t('homepage.welcome_title')}
                         </motion.h1>
                         <motion.p
-                            className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto"
+                            className="text-lg md:text-2xl text-gray-600 dark:text-gray-400 max-w-xl mx-auto px-2" // Adjusted font size for mobile, added horizontal padding
                             variants={taglineVariants}
                             initial="hidden"
                             animate="visible"
@@ -142,30 +136,28 @@ const Home = ({ activeCategory, searchQuery }) => {
                 )}
 
                 {showFeaturedPostsHeader && (
-                    <h2 className="text-3xl font-semibold mb-6 text-gray-900 dark:text-white text-center md:text-left">
+                    <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-gray-900 dark:text-white text-center md:text-left"> {/* Adjusted font size for mobile */}
                         {t('homepage.featured_posts')}
                     </h2>
                 )}
 
                 {showDynamicPageTitle && (
-                    <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white capitalize text-center md:text-left">
+                    <h2 className="text-2xl md:text-3xl font-bold mb-6 text-gray-900 dark:text-white capitalize text-center md:text-left"> {/* Adjusted font size for mobile */}
                         {pageTitle}
                     </h2>
                 )}
 
-                {/* Always pass the loadMore function and pagination status to BlogList */}
-                {/* BlogList will decide whether to show the "Load More" button */}
                 <BlogList
                     blogs={blogs}
                     loadingMore={loadingMore}
                     hasMore={currentPage < totalPages}
                     onLoadMore={loadMoreBlogs}
-                    totalBlogsCount={totalBlogsCount} // Pass total count for "X of Y blogs"
+                    totalBlogsCount={totalBlogsCount}
                 />
 
                 {!hasBlogsToDisplay && !loading && (
                     <p className="text-center text-gray-500 dark:text-gray-400 py-10">
-                        {t('No blogs found')}
+                        {t('general.no_blogs_found')}
                     </p>
                 )}
             </main>
