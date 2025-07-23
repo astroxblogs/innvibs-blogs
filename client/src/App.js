@@ -1,24 +1,26 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios'; // <-- AXIOS IMPORT IS HERE
-
-
-axios.defaults.baseURL = 'https://innvibs-blogs.onrender.com';
-
 import './index.css';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import Footer1 from './components/Footer1';
 
+// Component Imports (ensure all imports are grouped at the very top)
+import Footer1 from './components/Footer1';
 import TopNavigation from './components/TopNavigation';
 import Home from './pages/Home';
 
-// Use React.lazy for code splitting these pages
+// Lazy-loaded page components (these are also technically imports, but wrapped in React.lazy)
 const BlogDetailPage = React.lazy(() => import('./pages/BlogDetailPage'));
 const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
 const AdminLogin = React.lazy(() => import('./pages/AdminLogin'));
 const CategoryPage = React.lazy(() => import('./pages/CategoryPage'));
 
-// --- THIS IS THE MISSING CODE BLOCK ---
+// --- GLOBAL AXIOS CONFIGURATION ---
+// THIS IS THE CORRECT PLACE: AFTER ALL IMPORTS AND BEFORE ANY OTHER LOGIC/COMPONENT DEFINITIONS.
+// Use your deployed backend URL for Vercel deployment.
+axios.defaults.baseURL = 'https://innvibs-blogs.onrender.com'; // <-- Use your deployed Render backend URL here!
+
+// --- Axios Interceptors ---
 // This interceptor will run before every API request is sent.
 axios.interceptors.request.use(
     (config) => {
@@ -37,8 +39,6 @@ axios.interceptors.request.use(
         return Promise.reject(error);
     }
 );
-// --- END OF FIX ---
-
 
 // This interceptor handles what happens AFTER a response is received.
 const AxiosInterceptorNavigate = () => {
