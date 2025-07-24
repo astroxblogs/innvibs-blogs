@@ -18,10 +18,12 @@ const TagPage = React.lazy(() => import('./pages/TagPage'));
 
 // --- GLOBAL AXIOS CONFIGURATION ---
 // Use environment variable for the API base URL
-axios.defaults.baseURL = process.env.REACT_APP_API_APP_BASE_URL; // Corrected env variable name if it was a typo before. If not, keep REACT_APP_API_BASE_URL
+// TEMPORARY DEBUGGING LOG: Check the value of the environment variable at runtime
+console.log('REACT_APP_API_BASE_URL from process.env:', process.env.REACT_APP_API_BASE_URL);
+
+axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL;
 
 // --- Axios Interceptors ---
-// This interceptor will run before every API request is sent.
 axios.interceptors.request.use(
     (config) => {
         const cloudinaryUploadUrl = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
@@ -77,7 +79,7 @@ function App() {
 
     const handleCategoryChange = (category) => {
         setActiveCategory(category);
-        setSearchQuery(''); // Clear search query when changing category
+        setSearchQuery('');
 
         if (category === 'all') {
             navigate('/');
@@ -87,11 +89,10 @@ function App() {
         }
     };
 
-    // --- NEW: Function to reset category to 'all' and navigate to home ---
     const handleLogoClick = () => {
-        setActiveCategory('all'); // Reset the active category state
-        setSearchQuery(''); // Clear any active search query
-        navigate('/'); // Navigate to the homepage
+        setActiveCategory('all');
+        setSearchQuery('');
+        navigate('/');
     };
 
     return (
@@ -103,7 +104,7 @@ function App() {
                     activeCategory={activeCategory}
                     onCategoryChange={handleCategoryChange}
                     setSearchQuery={setSearchQuery}
-                    onLogoClick={handleLogoClick} // <-- NEW: Pass the new handler to TopNavigation
+                    onLogoClick={handleLogoClick}
                 />
             )}
 
