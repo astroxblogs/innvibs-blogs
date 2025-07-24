@@ -58,6 +58,7 @@ const Home = ({ activeCategory, searchQuery }) => {
             }
 
             const res = await axios.get(url);
+            console.log(res);
             const { blogs: newBlogs, currentPage: apiCurrentPage, totalPages: apiTotalPages, totalBlogs: apiTotalBlogs } = res.data;
 
             if (append) {
@@ -105,7 +106,7 @@ const Home = ({ activeCategory, searchQuery }) => {
 
     const showFeaturedPostsHeader = !isSearchView && !isCategoryView;
     const showDynamicPageTitle = isSearchView || isCategoryView;
-    const hasBlogsToDisplay = blogs.length > 0;
+    const hasBlogsToDisplay = blogs?.length > 0;
 
     return (
         <div className="min-h-screen">
