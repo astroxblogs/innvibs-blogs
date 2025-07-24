@@ -21,13 +21,8 @@ const AdminDashboard = () => {
         const fetchBlogs = async () => {
             setLoading(true);
             try {
-                // The API now returns an object with 'blogs' array inside it.
-                // We need to request all blogs for the admin dashboard,
-                // potentially with a large limit if you have many, or implement pagination here too.
-                // For now, let's just assume fetching all.
-                const res = await axios.get('/api/blogs?limit=9999'); // Request a very high limit to get all blogs
-                // Fix: Access the 'blogs' array from res.data
-                setBlogs(res.data.blogs); // <-- FIXED: Access res.data.blogs
+                const res = await axios.get('/api/blogs?limit=9999');
+                setBlogs(res.data.blogs);
             } catch (err) {
                 console.error('Error fetching blogs:', err);
                 setError('Failed to load blog posts.');
@@ -43,28 +38,20 @@ const AdminDashboard = () => {
         fetchBlogs();
     }, [navigate]);
 
-    // This is the core logic for updating the UI after a save
     const handleSave = (savedBlog) => {
         const exists = blogs.some((b) => b._id === savedBlog._id);
 
-        // After saving, we should ideally re-fetch the entire list to ensure consistency,
-        // especially with pagination on the main frontend.
-        // For simplicity, for now, we'll mimic the old behavior of updating the array.
-        // A better approach would be to refetch `fetchBlogs()`.
         if (exists) {
-            // If UPDATING, replace the item in the array
             setBlogs(blogs.map((b) => (b._id === savedBlog._id ? savedBlog : b)));
         } else {
-            // If CREATING, add the new blog to the TOP of the list
             setBlogs([savedBlog, ...blogs]);
         }
-        // Clear the form by resetting the editing state
         setEditingBlog(null);
     };
 
     const handleEdit = (blog) => {
         setEditingBlog(blog);
-        window.scrollTo(0, 0); // Scroll to top to see the form
+        window.scrollTo(0, 0);
     };
 
     const handleDelete = async (id) => {
@@ -80,7 +67,6 @@ const AdminDashboard = () => {
         }
     };
 
-    // Clears the form to allow adding a new blog
     const handleAddNew = () => {
         setEditingBlog(null);
     };
@@ -97,7 +83,7 @@ const AdminDashboard = () => {
 
                 {/* Blog Form Section */}
                 <div className="mb-12">
-                    <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
+                    <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-gray-200 text-center"> {/* ADDED text-center and changed mb-4 to mb-6 */}
                         {editingBlog ? `Editing: ${editingBlog.title || ''}` : 'Add New Blog Post'}
                     </h2>
 

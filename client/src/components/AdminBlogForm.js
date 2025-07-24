@@ -17,7 +17,9 @@ const LANGUAGES = [
 
 const categories = [
     'Technology', 'Fashion', 'Health & Wellness', 'Travel',
-    'Food & Cooking', 'Sports', 'Business & Finance', 'Lifestyle'
+    'Food & Cooking', 'Sports', 'Business & Finance', 'Lifestyle',
+    'Trends', // <-- ADDED
+    'Relationship' // <-- ADDED
 ];
 
 const AdminBlogForm = ({ blog, onSave }) => {
@@ -52,7 +54,6 @@ const AdminBlogForm = ({ blog, onSave }) => {
 
             try {
                 const token = localStorage.getItem('adminToken');
-                // Access the editor via the single quillRef
                 const editor = quillRef.current?.getEditor();
                 if (!editor) {
                     console.error('Quill editor instance not found.');
@@ -61,7 +62,9 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 }
 
                 const range = editor.getSelection();
-                editor.insertEmbed(range.index, 'text', 'Uploading image...');
+                // Store the current cursor position before inserting placeholder
+                const cursorIndex = range ? range.index : 0;
+                editor.insertEmbed(cursorIndex, 'text', 'Uploading image...');
 
                 const res = await axios.post('/api/blogs/upload-image', formData, {
                     headers: {
@@ -71,21 +74,43 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 });
 
                 const imageUrl = res.data.imageUrl;
-                editor.deleteText(range.index, 16);
-                editor.insertEmbed(range.index, 'image', imageUrl);
+
+                // Remove the "Uploading image..." text from the current editor
+                editor.deleteText(cursorIndex, 16); // "Uploading image..." is 16 characters long
+
+                // Update the content for ALL languages
+                setContents(prevContents => {
+                    const newContents = { ...prevContents };
+                    const imageHtml = `<p><img src="${imageUrl}" alt="Uploaded Image" /></p>`; // Wrap in <p> for better formatting
+
+                    LANGUAGES.forEach(lang => {
+                        // Append the image to the existing content of each language
+                        // Ensure there's a line break or paragraph for proper rendering if the editor is empty
+                        newContents[lang.code] = (newContents[lang.code] || '') + imageHtml;
+                    });
+                    return newContents;
+                });
+
+                // Now, re-insert the actual image into the *currently active* editor
+                // This will make it immediately visible without needing to switch tabs
+                editor.insertEmbed(cursorIndex, 'image', imageUrl);
+
             } catch (error) {
                 console.error('Error uploading image to backend for Quill:', error.response?.data || error.message);
                 alert('Error uploading image to content: ' + (error.response?.data?.error || error.message));
                 const editor = quillRef.current?.getEditor();
                 if (editor) {
                     const range = editor.getSelection();
+                    // If the "Uploading image..." text was inserted, remove it on error
                     if (range && editor.getText(range.index - 16, 16) === 'Uploading image...') {
                         editor.deleteText(range.index - 16, 16);
+                    } else if (editor.getText(0, 16) === 'Uploading image...') { // Check if it was inserted at the very beginning
+                        editor.deleteText(0, 16);
                     }
                 }
             }
         };
-    }, []); // No dependency on activeLang needed here anymore, as there's only one active QuillRef
+    }, []); // No dependency on activeLang needed here anymore, as there's only one active QuillRef and we update all contents
 
     const modules = useMemo(() => ({
         imageResize: {
@@ -118,7 +143,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 newContents[lang.code] = blog[`content_${lang.code}`] || '';
             });
             setValue('title', blog.title || '');
-            newContents['en'] = newContents['en'] || blog.content || '';
+            newContents['en'] = newContents['en'] || blog.content || ''; // Fallback for old blogs
 
             setContents(newContents);
             setSelectedFile(null);
@@ -133,10 +158,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 category: categories[0]
             });
             const clearedContents = {};
-            LANGUAGES.forEach(lang => {
-                clearedContents[lang.code] = '';
-                setValue(`title_${lang.code}`, '');
-            });
+            LANGUAGES.forEach(lang => clearedContents[lang.code] = '');
             setContents(clearedContents);
             setActiveLang('en');
             setSelectedFile(null);
@@ -198,8 +220,8 @@ const AdminBlogForm = ({ blog, onSave }) => {
             image: data.image,
             tags,
             category: data.category,
-            title: data.title_en || data.title,
-            content: contents.en || data.content,
+            title: data.title_en || data.title, // Use title_en as primary, fallback to old title field
+            content: contents.en || data.content, // Use content_en as primary, fallback to old content field
         };
 
         LANGUAGES.forEach(lang => {
@@ -221,6 +243,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }
+            alert(blog ? "Blog updated successfully!" : "Blog added successfully!");
         } catch (error) {
             console.error('Error saving blog:', error);
             alert('Error saving blog: ' + (error.response?.data?.error || error.message));
@@ -272,12 +295,12 @@ const AdminBlogForm = ({ blog, onSave }) => {
                         onChange={handleFileChange}
                         ref={fileInputRef}
                         className="block w-full text-sm text-gray-900 dark:text-white
-                                   file:mr-4 file:py-2 file:px-4
-                                   file:rounded-md file:border-0
-                                   file:text-sm file:font-semibold
-                                   file:bg-blue-50 file:text-blue-700
-                                   hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300
-                                   dark:hover:file:bg-blue-800"
+                                     file:mr-4 file:py-2 file:px-4
+                                     file:rounded-md file:border-0
+                                     file:text-sm file:font-semibold
+                                     file:bg-blue-50 file:text-blue-700
+                                     hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300
+                                     dark:hover:file:bg-blue-800"
                     />
                     {selectedFile && (
                         <button
@@ -313,8 +336,8 @@ const AdminBlogForm = ({ blog, onSave }) => {
 
             {/* Language-specific Fields - RENDER ONLY THE ACTIVE ONE */}
             {LANGUAGES.map(lang => (
-                activeLang === lang.code && ( // <-- CRUCIAL CHANGE: Only render if activeLang matches
-                    <div key={lang.code}> {/* Removed absolute positioning and related classes */}
+                activeLang === lang.code && (
+                    <div key={lang.code}>
                         <h3 className="text-lg font-semibold mt-6 mb-2 text-gray-800 dark:text-gray-200">
                             {lang.name} Content
                         </h3>
@@ -329,7 +352,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
                                 Content ({lang.name})
                             </label>
                             <ReactQuill
-                                ref={quillRef} // Assign the single quillRef here
+                                ref={quillRef}
                                 theme="snow"
                                 value={contents[lang.code]}
                                 onChange={(value) => setContents(prev => ({ ...prev, [lang.code]: value }))}
@@ -340,7 +363,6 @@ const AdminBlogForm = ({ blog, onSave }) => {
                     </div>
                 )
             ))}
-            {/* REMOVED the spacer div, as content will now take up natural space */}
 
             <button
                 className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded font-semibold transition-colors w-full md:w-auto self-end mt-4"

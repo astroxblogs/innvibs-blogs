@@ -12,10 +12,11 @@ exports.getLatestBlogs = async (req, res) => {
     }
 };
 
-// UPDATED: Gets all blogs with pagination, OR filters by category if a 'category' query param is provided
+// UPDATED: Gets all blogs with pagination, OR filters by category or tag
 exports.getBlogs = async (req, res) => {
     try {
-        const { category, page = 1, limit = 10 } = req.query; // Default page to 1, limit to 10
+        // Destructure category, tag, page, and limit from query parameters
+        const { category, tag, page = 1, limit = 10 } = req.query; // Default page to 1, limit to 10
         const parsedLimit = parseInt(limit, 10);
         const parsedPage = parseInt(page, 10);
 
@@ -26,12 +27,25 @@ exports.getBlogs = async (req, res) => {
             return res.status(400).json({ error: 'Invalid page parameter. Must be a positive number.' });
         }
 
-        const filter = category ? { category: category.trim() } : {};
+        // Initialize an empty filter object
+        let filter = {};
+
+        // Add category filter if provided
+        if (category) {
+            filter.category = category.trim();
+        }
+
+         
+        if (tag) {
+         
+            filter.tags = { $in: [new RegExp(`^${tag.trim()}$`, 'i')] };
+             
+        }
         const skip = (parsedPage - 1) * parsedLimit;
 
-        // Fetch blogs for the current page
+        // Fetch blogs for the current page based on the constructed filter
         const blogs = await Blog.find(filter)
-            .sort({ date: -1 })
+            .sort({ date: -1 }) // Sort by date descending to get the newest first
             .skip(skip)
             .limit(parsedLimit);
 
@@ -46,7 +60,8 @@ exports.getBlogs = async (req, res) => {
             totalBlogs
         });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Error in getBlogs:", err); // Log the actual error for debugging
+        res.status(500).json({ error: err.message || 'Failed to retrieve blogs.' });
     }
 };
 
@@ -81,7 +96,7 @@ exports.searchBlogs = async (req, res) => {
                 { content_hi: regex },
                 { content_es: regex },
                 { content_fr: regex },
-                { tags: regex },
+                { tags: regex }, // This will search for the tag within the array
                 { category: regex }
             ]
         };
@@ -105,6 +120,7 @@ exports.searchBlogs = async (req, res) => {
         });
 
     } catch (err) {
+        console.error("Error in searchBlogs:", err); // Log the actual error for debugging
         res.status(500).json({ error: 'Failed to perform search.' });
     }
 };

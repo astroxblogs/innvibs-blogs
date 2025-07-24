@@ -21,19 +21,21 @@
     "fashion": "फैशन",
     "health_wellness": "स्वास्थ्य और कल्याण",
     "travel": "यात्रा",
-    "food_cooking": "खाना बनाना",
+    "food_cooking": "भोजन और पाक कला",
     "sports": "खेल",
     "business_finance": "व्यवसाय और वित्त",
-    "lifestyle": "जीवन शैली"
+    "lifestyle": "जीवन शैली",
+    "trends": "रुझान",
+    "relationship": "रिश्ता"
   },
   "homepage": {
     "welcome_title": "एस्ट्रोएक्सहब ब्लॉग में आपका स्वागत है",
-    "tagline": "प्रौद्योगिकी और बहुत कुछ पर आपकी दैनिक अंतर्दृष्टि।",
+    "tagline": "प्रौद्योगिकी और बहुत कुछ में अंतर्दृष्टि की आपकी दैनिक खुराक।",
     "featured_posts": "विशेष पोस्ट"
   },
   "language_selector": {
     "select_language": "भाषा चुनें",
-    "english": "अंग्रेजी",
+    "english": "अंग्रेज़ी",
     "spanish": "स्पेनिश",
     "french": "फ्रेंच",
     "hindi": "हिंदी"
@@ -46,25 +48,28 @@
     "like": "पसंद करें",
     "comment": "टिप्पणी",
     "submit": "जमा करें",
-    "login": "लॉगिन",
-    "logout": "लॉगआउट",
+    "login": "लॉगिन करें",
+    "logout": "लॉगआउट करें",
     "name": "नाम",
     "your_comment": "आपकी टिप्पणी",
     "no_blogs": "कोई ब्लॉग नहीं मिला।",
     "loading_blogs": "ब्लॉग लोड हो रहे हैं...",
     "latest_blogs": "नवीनतम ब्लॉग",
     "search_results_for": "\"{{query}}\" के लिए खोज परिणाम",
-    "blogs_in_category": "#{{category}} में ब्लॉग"
+    "blogs_in_category": "#{{category}} में ब्लॉग",
+    "loading_components": "घटक लोड हो रहे हैं...",
+    "error_loading_blogs": "ब्लॉग पोस्ट लोड करने में विफल। कृपया पुनः प्रयास करें।",
+    "error_loading_blogs_for_tag": "टैग '{tag}' के लिए ब्लॉग पोस्ट लोड करने में विफल रहा। कृपया पुनः प्रयास करें।"
   },
   "admin_panel": {
     "dashboard": "डैशबोर्ड",
-    "moderate_comments": "टिप्पणियाँ मॉडरेट करें",
+    "moderate_comments": "टिप्पणियों को नियंत्रित करें",
     "title": "शीर्षक",
     "content": "सामग्री",
-    "tags": "टैग्स",
-    "image": "कवर इमेज",
-    "date": "तारीख",
-    "actions": "क्रियाएँ",
+    "tags": "टैग",
+    "image": "कवर छवि",
+    "date": "दिनांक",
+    "actions": "कार्य",
     "edit": "संपादित करें",
     "delete": "हटाएँ",
     "blog_list": "ब्लॉग सूची",
@@ -72,8 +77,8 @@
   },
   "theme_toggle": {
     "theme": "थीम",
-    "light": "लाइट",
-    "dark": "डार्क",
+    "light": "हल्का",
+    "dark": "गहरा",
     "toggle_theme_title": "थीम बदलें",
     "mode": "मोड"
   },
@@ -82,20 +87,27 @@
     "company_title": "कंपनी",
     "about_us": "हमारे बारे में",
     "careers": "करियर",
-    "contact": "संपर्क करें",
+    "contact": "संपर्क",
     "categories_title": "श्रेणियाँ",
     "product_title": "उत्पाद",
     "features": "विशेषताएं",
     "pricing": "मूल्य निर्धारण",
-    "changelog": "चेंजलॉग",
+    "changelog": "परिवर्तन लॉग",
     "legal_title": "कानूनी",
     "privacy_policy": "गोपनीयता नीति",
     "terms_of_service": "सेवा की शर्तें",
-    "newsletter_title": "लूप में बने रहें",
+    "newsletter_title": "लूप में रहें",
     "email_placeholder": "आपका ईमेल पता",
-    "email_aria_label": "न्यूज़लेटर के लिए ईमेल",
+    "email_aria_label": "न्यूज़लेटर सदस्यता के लिए ईमेल",
     "subscribe_aria_label": "न्यूज़लेटर की सदस्यता लें",
     "subscribe_title": "सदस्यता लें",
     "copyright": "© {{year}} {{appName}}"
+  },
+  "page_titles": {
+    "tag_page": "#{{tag}} के लिए ब्लॉग - AstroXHub"
+  },
+  "tag_page": {
+    "blogs_for_tag": "टैग के साथ ब्लॉग: #{{tag}}",
+    "no_blogs_found_for_tag": "टैग '{tag}' के लिए कोई ब्लॉग पोस्ट नहीं मिली।"
   }
 }

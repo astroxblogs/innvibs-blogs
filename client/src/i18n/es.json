@@ -4,7 +4,7 @@
         "home": "Inicio",
         "blog": "Blog",
         "categories": "Categorías",
-        "admin": "Administrador",
+        "admin": "Administración",
         "prev_categories": "Categorías anteriores",
         "next_categories": "Siguientes categorías",
         "open_menu": "Abrir menú móvil",
@@ -16,19 +16,21 @@
         "close": "Cerrar búsqueda"
     },
     "category": {
-        "all": "Todo",
+        "all": "Todos",
         "technology": "Tecnología",
         "fashion": "Moda",
         "health_wellness": "Salud y Bienestar",
         "travel": "Viajes",
-        "food_cooking": "Comida y Cocina",
+        "food_cooking": "Cocina",
         "sports": "Deportes",
         "business_finance": "Negocios y Finanzas",
-        "lifestyle": "Estilo de Vida"
+        "lifestyle": "Estilo de Vida",
+        "trends": "Tendencias",
+        "relationship": "Relación"
     },
     "homepage": {
-        "welcome_title": "Bienvenido a AstroXHub Blogs",
-        "tagline": "Su dosis diaria de información sobre tecnología y más.",
+        "welcome_title": "Bienvenido a los Blogs de AstroXHub",
+        "tagline": "Tu dosis diaria de ideas sobre tecnología y más.",
         "featured_posts": "Publicaciones Destacadas"
     },
     "language_selector": {
@@ -39,12 +41,12 @@
         "hindi": "Hindi"
     },
     "blog_card": {
-        "read_more": "Leer Más"
+        "read_more": "Leer más"
     },
     "general": {
-        "welcome": "Bienvenido al blog",
+        "welcome": "Bienvenido al Blog",
         "like": "Me gusta",
-        "comment": "Comentario",
+        "comment": "Comentar",
         "submit": "Enviar",
         "login": "Iniciar sesión",
         "logout": "Cerrar sesión",
@@ -54,11 +56,14 @@
         "loading_blogs": "Cargando blogs...",
         "latest_blogs": "Últimos Blogs",
         "search_results_for": "Resultados de búsqueda para \"{{query}}\"",
-        "blogs_in_category": "Blogs en #{{category}}"
+        "blogs_in_category": "Blogs en #{{category}}",
+        "loading_components": "Cargando componentes...",
+        "error_loading_blogs": "No se pudieron cargar las entradas del blog. Por favor, inténtelo de nuevo.",
+        "error_loading_blogs_for_tag": "No se pudieron cargar las entradas de blog para la etiqueta '{tag}'. Por favor, inténtelo de nuevo."
     },
     "admin_panel": {
         "dashboard": "Panel de control",
-        "moderate_comments": "Moderar comentarios",
+        "moderate_comments": "Moderar Comentarios",
         "title": "Título",
         "content": "Contenido",
         "tags": "Etiquetas",
@@ -68,7 +73,7 @@
         "edit": "Editar",
         "delete": "Eliminar",
         "blog_list": "Lista de blogs",
-        "add_blog": "Agregar blog"
+        "add_blog": "Añadir Blog"
     },
     "theme_toggle": {
         "theme": "Tema",
@@ -78,24 +83,31 @@
         "mode": "Modo"
     },
     "footer": {
-        "tagline": "Un espacio curado para ideas, historias y conocimientos importantes.",
-        "company_title": "Compañía",
-        "about_us": "Nosotros",
+        "tagline": "Un espacio curado para ideas, historias y perspectivas que importan.",
+        "company_title": "Empresa",
+        "about_us": "Sobre nosotros",
         "careers": "Carreras",
         "contact": "Contacto",
         "categories_title": "Categorías",
         "product_title": "Producto",
         "features": "Características",
         "pricing": "Precios",
-        "changelog": "Registro de cambios",
+        "changelog": "Historial de cambios",
         "legal_title": "Legal",
-        "privacy_policy": "Política de Privacidad",
-        "terms_of_service": "Términos de Servicio",
-        "newsletter_title": "Mantente informado",
+        "privacy_policy": "Política de privacidad",
+        "terms_of_service": "Términos de servicio",
+        "newsletter_title": "Mantente al día",
         "email_placeholder": "Tu dirección de correo electrónico",
-        "email_aria_label": "Correo electrónico para suscripción al boletín",
-        "subscribe_aria_label": "Suscribirse al boletín",
+        "email_aria_label": "Correo electrónico para suscripción a newsletter",
+        "subscribe_aria_label": "Suscribirse a newsletter",
         "subscribe_title": "Suscribirse",
         "copyright": "© {{year}} {{appName}}"
+    },
+    "page_titles": {
+        "tag_page": "Blogs para #{{tag}} - AstroXHub"
+    },
+    "tag_page": {
+        "blogs_for_tag": "Blogs con la etiqueta: #{{tag}}",
+        "no_blogs_found_for_tag": "No se encontraron entradas de blog para la etiqueta: '{tag}'."
     }
 }

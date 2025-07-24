@@ -14,48 +14,39 @@ const BlogDetailPage = React.lazy(() => import('./pages/BlogDetailPage'));
 const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
 const AdminLogin = React.lazy(() => import('./pages/AdminLogin'));
 const CategoryPage = React.lazy(() => import('./pages/CategoryPage'));
+const TagPage = React.lazy(() => import('./pages/TagPage'));
 
 // --- GLOBAL AXIOS CONFIGURATION ---
 // Use environment variable for the API base URL
-axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL;
+axios.defaults.baseURL = process.env.REACT_APP_API_APP_BASE_URL; // Corrected env variable name if it was a typo before. If not, keep REACT_APP_API_BASE_URL
 
 // --- Axios Interceptors ---
 // This interceptor will run before every API request is sent.
 axios.interceptors.request.use(
     (config) => {
-        // Check if the request URL is NOT Cloudinary's upload URL
-        // This prevents sending Authorization header to Cloudinary's unsigned upload endpoint
         const cloudinaryUploadUrl = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
         if (config.url && !config.url.startsWith(cloudinaryUploadUrl)) {
-            // Get the token from local storage
             const adminToken = localStorage.getItem('adminToken');
-
-            // If a token exists, add the 'Authorization: Bearer <token>' header
             if (adminToken) {
                 config.headers['Authorization'] = `Bearer ${adminToken}`;
             }
         }
-        // If it IS a Cloudinary upload URL, the Authorization header will NOT be added.
-
-        return config; // Continue with the request
+        return config;
     },
     (error) => {
-        // Handle any request errors
         return Promise.reject(error);
     }
 );
 
-// This interceptor handles what happens AFTER a response is received.
 const AxiosInterceptorNavigate = () => {
     const navigate = useNavigate();
     useEffect(() => {
         const interceptor = axios.interceptors.response.use(
             response => response,
             error => {
-                // If the server responds with 401, the token is invalid/expired.
                 if (error.response && error.response.status === 401) {
                     localStorage.removeItem('adminToken');
-                    navigate('/admin/login'); // Redirect to the login page
+                    navigate('/admin/login');
                 }
                 return Promise.reject(error);
             }
@@ -67,7 +58,6 @@ const AxiosInterceptorNavigate = () => {
     return null;
 };
 
-// Helper function to create URL-friendly slugs
 const slugify = (text) => {
     return text.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-');
 };
@@ -78,11 +68,16 @@ function App() {
     const location = useLocation();
     const navigate = useNavigate();
 
+    // Scroll to top on route change
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [location.pathname]);
+
     const isAdminPath = location.pathname.startsWith('/admin');
 
     const handleCategoryChange = (category) => {
         setActiveCategory(category);
-        setSearchQuery('');
+        setSearchQuery(''); // Clear search query when changing category
 
         if (category === 'all') {
             navigate('/');
@@ -90,6 +85,13 @@ function App() {
             const categorySlug = slugify(category);
             navigate(`/category/${categorySlug}`);
         }
+    };
+
+    // --- NEW: Function to reset category to 'all' and navigate to home ---
+    const handleLogoClick = () => {
+        setActiveCategory('all'); // Reset the active category state
+        setSearchQuery(''); // Clear any active search query
+        navigate('/'); // Navigate to the homepage
     };
 
     return (
@@ -101,6 +103,7 @@ function App() {
                     activeCategory={activeCategory}
                     onCategoryChange={handleCategoryChange}
                     setSearchQuery={setSearchQuery}
+                    onLogoClick={handleLogoClick} // <-- NEW: Pass the new handler to TopNavigation
                 />
             )}
 
@@ -112,6 +115,7 @@ function App() {
                             element={<Home activeCategory={activeCategory} searchQuery={searchQuery} />}
                         />
                         <Route path="/category/:categoryName" element={<CategoryPage />} />
+                        <Route path="/tag/:tagName" element={<TagPage />} />
                         <Route path="/blog/:id" element={<BlogDetailPage />} />
                         <Route path="/admin" element={<AdminDashboard />} />
                         <Route path="/admin/login" element={<AdminLogin />} />

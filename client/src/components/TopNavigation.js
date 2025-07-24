@@ -18,13 +18,16 @@ const categories = [
     { labelKey: "category.sports", value: "Sports" },
     { labelKey: "category.business_finance", value: "Business & Finance" },
     { labelKey: "category.lifestyle", value: "Lifestyle" },
+    { labelKey: "category.trends", value: "Trends" },
+    { labelKey: "category.relationship", value: "Relationship" },
 ];
 
 // MAX_VISIBLE_CATEGORIES is now only relevant for the desktop category slider (which will be hidden on mobile)
 // For the mobile menu, all categories will be shown vertically.
 const MAX_VISIBLE_CATEGORIES = 4;
 
-const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery }) => {
+// Add onLogoClick to the destructured props
+const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLogoClick }) => {
     const { t } = useTranslation();
 
     const [showSearchInput, setShowSearchInput] = useState(false);
@@ -44,7 +47,7 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery }) => 
         e.preventDefault();
         if (!inputValue.trim()) return;
         setSearchQuery(inputValue);
-        setIsMobileMenuOpen(false); // Close menu after search (if opened from menu)
+        setIsMobileMenuOpen(false);
     };
 
     const handleCloseSearch = () => {
@@ -54,6 +57,13 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery }) => 
     };
 
     const handleSearchClick = () => setShowSearchInput(true);
+
+    // Call onLogoClick when the logo Link is clicked
+    const handleLogoLinkClick = () => {
+        if (onLogoClick) {
+            onLogoClick();
+        }
+    };
 
     const showLeftArrow = categories.length > MAX_VISIBLE_CATEGORIES && startIndex > 0;
     const showRightArrow = categories.length > MAX_VISIBLE_CATEGORIES && startIndex < categories.length - MAX_VISIBLE_CATEGORIES;
@@ -70,7 +80,8 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery }) => 
             {/* Main Header Row: Always visible */}
             <div className="py-3 px-4 md:px-8 flex justify-between items-center">
                 {/* Logo Section */}
-                <Link to="/" className="flex items-center gap-2 text-2xl font-extrabold text-text-dark dark:text-white flex-shrink-0">
+                {/* Add onClick handler to the Link component */}
+                <Link to="/" onClick={handleLogoLinkClick} className="flex items-center gap-2 text-2xl font-extrabold text-text-dark dark:text-white flex-shrink-0">
                     <img src="/logo.png" alt={t('application_name')} className="h-8 w-8" />
                     <span>{t('application_name')}</span>
                 </Link>
@@ -133,11 +144,10 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery }) => 
 
                 {/* Mobile-specific Controls (Visible on mobile, hidden on desktop) */}
                 <div className="flex md:hidden items-center space-x-3">
-                    {/* Mobile Search Icon (positioned to the left of menu/language/theme) */}
                     {showSearchInput ? (
                         <form onSubmit={handleSearchSubmit} className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-full px-3 py-1.5 w-full max-w-xs">
                             <input
-                                id="search-blog-input-mobile" // Unique ID for mobile search
+                                id="search-blog-input-mobile"
                                 type="text"
                                 placeholder={t('search.placeholder')}
                                 value={inputValue}
@@ -190,7 +200,7 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery }) => 
                         <div className="w-full flex flex-col items-center p-4 space-y-6">
                             {/* Categories */}
                             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                                {t('footer.categories_title')} {/* Reusing categories title from footer */}
+                                {t('footer.categories_title')}
                             </h3>
                             <ul className="w-full text-center space-y-3">
                                 {categories.map((cat) => (

@@ -24,7 +24,9 @@
         "food_cooking": "Food & Cooking",
         "sports": "Sports",
         "business_finance": "Business & Finance",
-        "lifestyle": "Lifestyle"
+        "lifestyle": "Lifestyle",
+        "trends": "Trends",
+        "relationship": "Relationship"
     },
     "homepage": {
         "welcome_title": "Welcome to AstroXHub Blogs",
@@ -54,7 +56,10 @@
         "loading_blogs": "Loading blogs...",
         "latest_blogs": "Latest Blogs",
         "search_results_for": "Search Results for \"{{query}}\"",
-        "blogs_in_category": "Blogs in #{{category}}"
+        "blogs_in_category": "Blogs in #{{category}}",
+        "loading_components": "Loading components...",
+        "error_loading_blogs": "Failed to load blog posts. Please try again.",
+        "error_loading_blogs_for_tag": "Failed to load blog posts for tag '{tag}'. Please try again."
     },
     "admin_panel": {
         "dashboard": "Dashboard",
@@ -97,5 +102,12 @@
         "subscribe_aria_label": "Subscribe to newsletter",
         "subscribe_title": "Subscribe",
         "copyright": "© {{year}} {{appName}}"
+    },
+    "page_titles": {
+        "tag_page": "Blogs for #{{tag}} - AstroXHub"
+    },
+    "tag_page": {
+        "blogs_for_tag": "Blogs with Tag: #{{tag}}",
+        "no_blogs_found_for_tag": "No blog posts found for tag: '{tag}'."
     }
 }

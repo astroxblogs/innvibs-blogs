@@ -9,7 +9,6 @@ const BlogCard = ({ blog }) => {
     const { i18n } = useTranslation();
     const currentLang = i18n.language;
 
-    // Function to get the language-specific title and content
     const getLocalizedContent = (field) => {
         const localizedField = blog[`${field}_${currentLang}`];
         if (localizedField) {
@@ -24,7 +23,6 @@ const BlogCard = ({ blog }) => {
     const displayTitle = getLocalizedContent('title');
     const displayContent = getLocalizedContent('content');
 
-    // Update the excerpt function to correctly handle Markdown and selected content
     const getPlainTextExcerpt = (markdownContent) => {
         if (!markdownContent) return '';
 
@@ -44,7 +42,7 @@ const BlogCard = ({ blog }) => {
         <div className="flex flex-col md:flex-row items-stretch bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden w-full">
             {/* Image Section: Order on mobile, fixed width on desktop */}
             {blog.image && (
-                <Link to={`/blog/${blog._id}`} className="order-first md:order-last w-full md:w-56 h-48 md:h-auto flex-shrink-0">
+                <Link to={`/blog/${blog._id}`} className="order-first md:order-last w-full md:w-56 h-48 flex-shrink-0">
                     <img
                         src={blog.image}
                         alt={displayTitle}
@@ -55,20 +53,29 @@ const BlogCard = ({ blog }) => {
             )}
 
             {/* Content Section: Order on mobile, flex-grow to fill space */}
-            <div className="flex-1 p-4 sm:p-5 flex flex-col order-last md:order-first"> {/* Adjusted padding */}
+            <div className="flex-1 p-4 sm:p-5 flex flex-col order-last md:order-first">
                 <div className="flex-grow">
                     <Link to={`/blog/${blog._id}`} className="block">
-                        <h2 className="text-xl sm:text-2xl font-bold mb-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors leading-tight"> {/* Adjusted font size, added leading-tight */}
+                        <h2 className="text-xl sm:text-2xl font-bold mb-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors leading-tight">
                             {displayTitle}
                         </h2>
                     </Link>
+                    {/* Make tags clickable */}
                     <div className="flex flex-wrap gap-2 mb-2 text-xs text-gray-500 dark:text-gray-400">
                         <span>{new Date(blog.date).toLocaleDateString()}</span>
                         {blog.tags && blog.tags.map((tag) => (
-                            <span key={tag} className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded">#{tag}</span>
+                            <Link
+                                key={tag}
+                                to={`/tag/${encodeURIComponent(tag.toLowerCase())}`} // Link to a new tag-specific route
+                                className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded
+                                           hover:bg-blue-200 dark:hover:bg-blue-600 hover:text-blue-700 dark:hover:text-blue-100
+                                           transition-colors cursor-pointer" // Add hover effects and cursor
+                            >
+                                #{tag}
+                            </Link>
                         ))}
                     </div>
-                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4"> {/* Adjusted font size */}
+                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4">
                         {excerpt}
                         {excerpt.length >= 150 && (
                             <Link to={`/blog/${blog._id}`} className="text-blue-500 hover:underline font-semibold ml-1">

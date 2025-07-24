@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { marked } from 'marked';
-import { useTranslation } from 'react-i18next'; // <-- Import useTranslation
+import { useTranslation } from 'react-i18next';
 
 const FeaturedBlogCarousel = ({ blogs }) => {
-    const { i18n, t } = useTranslation(); // <-- Get i18n instance and t function
+    const { i18n, t } = useTranslation();
     const currentLang = i18n.language;
 
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [imageLoaded, setImageLoaded] = useState(false); // State to track image loading
+    const [imageLoaded, setImageLoaded] = useState(false);
 
-    // Function to get the language-specific title and content (re-used from BlogCard)
     const getLocalizedContent = (field, blogData, lang) => {
         const localizedField = blogData[`${field}_${lang}`];
         if (localizedField) {
@@ -25,24 +24,21 @@ const FeaturedBlogCarousel = ({ blogs }) => {
     useEffect(() => {
         if (!blogs || blogs.length === 0) return;
 
-        // Reset imageLoaded state when the current index changes
-        // This ensures the fade-in animation triggers for each new image
         setImageLoaded(false);
 
-        // Preload the image to ensure it's in cache before setting background
         const img = new Image();
         img.src = blogs[currentIndex].image;
         img.onload = () => setImageLoaded(true);
         img.onerror = () => {
             console.error("Failed to load carousel image:", blogs[currentIndex].image);
-            setImageLoaded(true); // Still set to true to avoid infinite loading state
+            setImageLoaded(true);
         };
 
         const interval = setInterval(() => {
             setCurrentIndex((prevIndex) => (prevIndex + 1) % blogs.length);
-        }, 5000); // Auto-slide every 5 seconds
+        }, 5000);
         return () => clearInterval(interval);
-    }, [blogs, currentIndex]); // Rerun when blogs or currentIndex changes
+    }, [blogs, currentIndex]);
 
     if (!blogs || blogs.length === 0) {
         return null;
@@ -51,7 +47,6 @@ const FeaturedBlogCarousel = ({ blogs }) => {
     const currentBlog = blogs[currentIndex];
     const displayTitle = getLocalizedContent('title', currentBlog, currentLang);
     const displayContent = getLocalizedContent('content', currentBlog, currentLang);
-
 
     const getPlainTextExcerpt = (markdownContent, maxLength = 200) => {
         if (!markdownContent) return '';
@@ -69,9 +64,12 @@ const FeaturedBlogCarousel = ({ blogs }) => {
     const excerpt = getPlainTextExcerpt(displayContent, 200);
 
     return (
-        <section className="relative w-full h-[500px] overflow-hidden bg-gray-900 text-white">
+        <section className="relative w-full h-[600px] overflow-hidden bg-gray-900 text-white">
             <div
-                className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                className={`absolute inset-0 bg-cover bg-center 
+                            transition-opacity duration-1000 ease-in-out 
+                            ${imageLoaded ? 'opacity-100' : 'opacity-0'}
+                            w-full h-full`}
                 style={{ backgroundImage: `url(${currentBlog.image})` }}
             >
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
@@ -82,26 +80,31 @@ const FeaturedBlogCarousel = ({ blogs }) => {
                     {currentBlog.tags && currentBlog.tags.length > 0 && (
                         <div className="mb-2 flex flex-wrap gap-2 text-sm text-gray-300">
                             {currentBlog.tags.map(tag => (
-                                <span key={tag} className="bg-gray-700 px-2 py-0.5 rounded-full text-xs">
+                                <Link
+                                    key={tag}
+                                    to={`/tag/${encodeURIComponent(tag.toLowerCase())}`} // Link to a new tag-specific route
+                                    className="bg-gray-700 px-2 py-0.5 rounded-full text-xs
+                                               hover:bg-blue-600 hover:text-white transition-colors cursor-pointer" // Add hover effects and cursor
+                                >
                                     #{tag}
-                                </span>
+                                </Link>
                             ))}
                         </div>
                     )}
 
                     <h2 className="text-4xl md:text-5xl font-extrabold leading-tight mb-4 drop-shadow-lg">
-                        {displayTitle} {/* Translated blog title */}
+                        {displayTitle}
                     </h2>
 
                     <p className="text-lg text-gray-200 mb-6 line-clamp-3">
-                        {excerpt} {/* Translated excerpt */}
+                        {excerpt}
                     </p>
 
                     <Link
                         to={`/blog/${currentBlog._id}`}
                         className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold rounded-lg shadow-lg transition-colors duration-200"
                     >
-                        {t('blog_card.read_more')} {/* Translated "Read Blog" button */}
+                        {t('blog_card.read_more')}
                         <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
                     </Link>
                 </div>

@@ -24,11 +24,13 @@
         "food_cooking": "Cuisine",
         "sports": "Sports",
         "business_finance": "Affaires et Finance",
-        "lifestyle": "Style de Vie"
+        "lifestyle": "Mode de Vie",
+        "trends": "Tendances",
+        "relationship": "Relation"
     },
     "homepage": {
-        "welcome_title": "Bienvenue sur les blogs AstroXHub",
-        "tagline": "Votre dose quotidienne d'informations sur la technologie et plus encore.",
+        "welcome_title": "Bienvenue sur les Blogs AstroXHub",
+        "tagline": "Votre dose quotidienne d'idées sur la technologie et plus encore.",
         "featured_posts": "Articles en vedette"
     },
     "language_selector": {
@@ -42,19 +44,22 @@
         "read_more": "Lire la suite"
     },
     "general": {
-        "welcome": "Bienvenue sur le blog",
+        "welcome": "Bienvenido al Blog",
         "like": "J'aime",
         "comment": "Commentaire",
         "submit": "Soumettre",
-        "login": "Se connecter",
-        "logout": "Se déconnecter",
+        "login": "Connexion",
+        "logout": "Déconnexion",
         "name": "Nom",
         "your_comment": "Votre commentaire",
         "no_blogs": "Aucun blog trouvé.",
         "loading_blogs": "Chargement des blogs...",
-        "latest_blogs": "Derniers blogs",
+        "latest_blogs": "Derniers articles",
         "search_results_for": "Résultats de recherche pour \"{{query}}\"",
-        "blogs_in_category": "Blogs dans #{{category}}"
+        "blogs_in_category": "Blogs dans #{{category}}",
+        "loading_components": "Chargement des composants...",
+        "error_loading_blogs": "Échec du chargement des articles de blog. Veuillez réessayer.",
+        "error_loading_blogs_for_tag": "Échec du chargement des articles de blog pour le tag '{tag}'. Veuillez réessayer."
     },
     "admin_panel": {
         "dashboard": "Tableau de bord",
@@ -74,19 +79,19 @@
         "theme": "Thème",
         "light": "Clair",
         "dark": "Sombre",
-        "toggle_theme_title": "Basculer le thème",
+        "toggle_theme_title": "Changer de thème",
         "mode": "Mode"
     },
     "footer": {
-        "tagline": "Un espace organisé pour les idées, les histoires et les idées qui comptent.",
+        "tagline": "Un espace curaté pour des idées, des histoires et des idées qui comptent.",
         "company_title": "Entreprise",
         "about_us": "À propos de nous",
         "careers": "Carrières",
         "contact": "Contact",
         "categories_title": "Catégories",
         "product_title": "Produit",
-        "features": "Caractéristiques",
-        "pricing": "Prix",
+        "features": "Fonctionnalités",
+        "pricing": "Tarifs",
         "changelog": "Journal des modifications",
         "legal_title": "Légal",
         "privacy_policy": "Politique de confidentialité",
@@ -97,5 +102,12 @@
         "subscribe_aria_label": "S'abonner à la newsletter",
         "subscribe_title": "S'abonner",
         "copyright": "© {{year}} {{appName}}"
+    },
+    "page_titles": {
+        "tag_page": "Blogs pour #{{tag}} - AstroXHub"
+    },
+    "tag_page": {
+        "blogs_for_tag": "Blogs avec le tag : #{{tag}}",
+        "no_blogs_found_for_tag": "Aucun article de blog trouvé pour le tag : '{tag}'."
     }
 }

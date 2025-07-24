@@ -12,6 +12,8 @@ const categories = [
   { label: "Sports", value: "Sports" },
   { label: "Business & Finance", value: "Business & Finance" },
   { label: "Lifestyle", value: "Lifestyle" },
+  { label: "Trends", value: "Trends" }, // <-- ADDED
+  { label: "Relationship", value: "Relationship" }, // <-- ADDED
 ];
 
 
