@@ -100,7 +100,7 @@ const Home = ({ activeCategory, searchQuery }) => {
     }
 
     if (loading) {
-        return <div className="text-center py-20 dark:text-gray-200">{t('general.loading_blogs')}</div>; // Use general.loading_blogs
+        return <div className="text-center py-20 dark:text-gray-200">{t('general.loading_blogs')}</div>;
     }
 
     const showFeaturedPostsHeader = !isSearchView && !isCategoryView;
@@ -113,11 +113,11 @@ const Home = ({ activeCategory, searchQuery }) => {
                 <FeaturedBlogCarousel blogs={featuredBlogs} />
             )}
 
-            <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12"> {/* Adjusted horizontal padding and vertical padding */}
+            <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
                 {!isSearchView && !isCategoryView && (
-                    <div className="text-center mb-12 mt-6 md:mb-16 md:mt-8"> {/* Adjusted margins for better mobile spacing */}
+                    <div className="text-center mb-12 mt-6 md:mb-16 md:mt-8">
                         <motion.h1
-                            className="text-3xl md:text-5xl font-extrabold mb-3 md:mb-4 text-gray-900 dark:text-white leading-tight" // Adjusted font size for mobile, tighter leading
+                            className="text-3xl md:text-5xl font-extrabold mb-3 md:mb-4 text-gray-900 dark:text-white leading-tight"
                             variants={textVariants}
                             initial="hidden"
                             animate="visible"
@@ -125,7 +125,7 @@ const Home = ({ activeCategory, searchQuery }) => {
                             {t('homepage.welcome_title')}
                         </motion.h1>
                         <motion.p
-                            className="text-lg md:text-2xl text-gray-600 dark:text-gray-400 max-w-xl mx-auto px-2" // Adjusted font size for mobile, added horizontal padding
+                            className="text-lg md:text-2xl text-gray-600 dark:text-gray-400 max-w-xl mx-auto px-2"
                             variants={taglineVariants}
                             initial="hidden"
                             animate="visible"
@@ -136,13 +136,13 @@ const Home = ({ activeCategory, searchQuery }) => {
                 )}
 
                 {showFeaturedPostsHeader && (
-                    <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-gray-900 dark:text-white text-center md:text-left"> {/* Adjusted font size for mobile */}
+                    <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-gray-900 dark:text-white text-center md:text-left">
                         {t('homepage.featured_posts')}
                     </h2>
                 )}
 
                 {showDynamicPageTitle && (
-                    <h2 className="text-2xl md:text-3xl font-bold mb-6 text-gray-900 dark:text-white capitalize text-center md:text-left"> {/* Adjusted font size for mobile */}
+                    <h2 className="text-2xl md:text-3xl font-bold mb-6 text-gray-900 dark:text-white capitalize text-center md:text-left">
                         {pageTitle}
                     </h2>
                 )}
@@ -157,7 +157,7 @@ const Home = ({ activeCategory, searchQuery }) => {
 
                 {!hasBlogsToDisplay && !loading && (
                     <p className="text-center text-gray-500 dark:text-gray-400 py-10">
-                        {t('')}
+                        {t('general.no_blogs')}  
                     </p>
                 )}
             </main>
