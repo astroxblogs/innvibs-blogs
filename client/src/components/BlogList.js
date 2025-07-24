@@ -8,7 +8,7 @@ const BlogList = ({ blogs, loadingMore, hasMore, onLoadMore, totalBlogsCount }) 
 
     // Corrected translation key usage for "No blogs found"
     if (!blogs.length && !loadingMore) {
-        return <div className="text-center text-gray-500 mt-10">{t('No Blogs Found')}</div>;
+        return <div className="text-center text-gray-500 mt-10">{t('')}</div>;
     }
 
     return (

@@ -56,7 +56,7 @@
         "loading_blogs": "Cargando blogs...",
         "latest_blogs": "Últimos Blogs",
         "search_results_for": "Resultados de búsqueda para \"{{query}}\"",
-        "blogs_in_category": "Blogs en #{{category}}",
+        "blogs_in_category": "Tus Lecturas Esenciales en {{category}}",
         "loading_components": "Cargando componentes...",
         "error_loading_blogs": "No se pudieron cargar las entradas del blog. Por favor, inténtelo de nuevo.",
         "error_loading_blogs_for_tag": "No se pudieron cargar las entradas de blog para la etiqueta '{tag}'. Por favor, inténtelo de nuevo."

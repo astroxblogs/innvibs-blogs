@@ -56,7 +56,7 @@
     "loading_blogs": "ब्लॉग लोड हो रहे हैं...",
     "latest_blogs": "नवीनतम ब्लॉग",
     "search_results_for": "\"{{query}}\" के लिए खोज परिणाम",
-    "blogs_in_category": "#{{category}} में ब्लॉग",
+    "blogs_in_category": "{{category}} में आपके आवश्यक लेख",
     "loading_components": "घटक लोड हो रहे हैं...",
     "error_loading_blogs": "ब्लॉग पोस्ट लोड करने में विफल। कृपया पुनः प्रयास करें।",
     "error_loading_blogs_for_tag": "टैग '{tag}' के लिए ब्लॉग पोस्ट लोड करने में विफल रहा। कृपया पुनः प्रयास करें।"

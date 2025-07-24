@@ -1,13 +1,14 @@
 import React, { useState, useEffect, Suspense } from 'react';
-import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'; // REMOVED BrowserRouter import
 import axios from 'axios';
 import './index.css';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
-// Component Imports (ensure all imports are grouped at the very top)
+// Component Imports
 import Footer1 from './components/Footer1';
 import TopNavigation from './components/TopNavigation';
 import Home from './pages/Home';
+import ScrollToTop from './components/ScrollToTop'; // Import ScrollToTop
 
 // Lazy-loaded page components
 const BlogDetailPage = React.lazy(() => import('./pages/BlogDetailPage'));
@@ -17,10 +18,7 @@ const CategoryPage = React.lazy(() => import('./pages/CategoryPage'));
 const TagPage = React.lazy(() => import('./pages/TagPage'));
 
 // --- GLOBAL AXIOS CONFIGURATION ---
-// Use environment variable for the API base URL
-// TEMPORARY DEBUGGING LOG: Check the value of the environment variable at runtime
-console.log('REACT_APP_API_BASE_URL from process.env:', process.env.REACT_APP_API_BASE_URL);
-
+console.log('REACT_APP_API_BASE_URL from process.env:', process.env.REACT_APP_API_BASE_URL); // Keep for now
 axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL;
 
 // --- Axios Interceptors ---
@@ -70,11 +68,6 @@ function App() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    // Scroll to top on route change
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, [location.pathname]);
-
     const isAdminPath = location.pathname.startsWith('/admin');
 
     const handleCategoryChange = (category) => {
@@ -96,7 +89,9 @@ function App() {
     };
 
     return (
+        // REMOVED BrowserRouter tags here. It's already in index.js
         <div className="min-h-screen bg-light-bg-primary dark:bg-dark-bg-primary transition-colors flex flex-col">
+            <ScrollToTop /> {/* Render ScrollToTop here */}
             <AxiosInterceptorNavigate />
 
             {!isAdminPath && (
