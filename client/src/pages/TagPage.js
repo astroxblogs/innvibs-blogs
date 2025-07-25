@@ -6,8 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 // Lazy load BlogList as it's a heavier component
 const BlogList = lazy(() => import('../components/BlogList'));
-const Footer1 = lazy(() => import('../components/Footer1'));
-const Footer2 = lazy(() => import('../components/Footer2'));
+
 
 const TagPage = () => {
     const { tagName } = useParams(); // Get the tag from the URL parameter
@@ -93,8 +92,7 @@ const TagPage = () => {
                     isLoading={loading} // Pass loading state to BlogList
                 />
             </div>
-            <Footer1 />
-            <Footer2 />
+             
         </Suspense>
     );
 };
