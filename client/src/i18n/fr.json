@@ -1,5 +1,5 @@
 {
-    "application_name": "AstroXHub",
+    "application_name": "innvibs",
     "navigation": {
         "home": "Accueil",
         "blog": "Blog",
@@ -29,7 +29,7 @@
         "relationship": "Relation"
     },
     "homepage": {
-        "welcome_title": "Bienvenue sur les Blogs AstroXHub",
+        "welcome_title": "Bienvenue sur les Blogs innvibs",
         "tagline": "Votre dose quotidienne d'idées sur la technologie et plus encore.",
         "featured_posts": "Articles en vedette"
     },
@@ -107,7 +107,7 @@
         "tag_page": "Blogs pour #{{tag}} - AstroXHub"
     },
     "tag_page": {
-        "blogs_for_tag": "Blogs avec le tag : #{{tag}}",
-        "no_blogs_found_for_tag": "Aucun article de blog trouvé pour le tag : '{tag}'."
+        "blogs_for_tag": "Lectures Curatées #{{tag}}",
+        "no_blogs_found_for_tag": "Aucun article trouvé pour '#{tag}'. Essayez d'explorer d'autres tags ou catégories ! 😔"
     }
 }

@@ -11,7 +11,6 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                // ... your custom colors ...
                 'light-bg-primary': '#F7F8F9',
                 'light-bg-secondary': '#FFFFFF',
                 'dark-bg-primary': '#1A202C',
@@ -28,22 +27,21 @@ module.exports = {
                 'border-dark': '#4A5568',
             },
 
+            fontFamily: {
+                sans: ['ui-sans-serif', 'system-ui', 'Helvetica', 'Arial', 'sans-serif'],
+            },
+
             typography: ({ theme }) => ({
                 DEFAULT: {
                     css: {
-                        // This sets the base font to serif
-                        fontFamily: `Georgia, ${defaultTheme.fontFamily.serif.join(', ')}`,
-
-                        // --- THIS IS THE NEW FIX ---
-                        // This forces all headings to also use the serif font
+                        fontFamily: theme('fontFamily.sans').join(', '),
                         'h1, h2, h3, h4, h5, h6': {
-                            fontFamily: `Georgia, ${defaultTheme.fontFamily.serif.join(', ')}`,
+                            fontFamily: theme('fontFamily.sans').join(', '),
                             color: theme('colors.text-dark'),
                         },
-                        // This handles heading colors in dark mode
                         '.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6': {
                             color: theme('colors.text-light'),
-                        }
+                        },
                     },
                 },
             }),

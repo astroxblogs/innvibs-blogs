@@ -18,8 +18,8 @@ const LANGUAGES = [
 const categories = [
     'Technology', 'Fashion', 'Health & Wellness', 'Travel',
     'Food & Cooking', 'Sports', 'Business & Finance', 'Lifestyle',
-    'Trends', // <-- ADDED
-    'Relationship' // <-- ADDED
+    'Trends', 
+    'Relationship'  
 ];
 
 const AdminBlogForm = ({ blog, onSave }) => {
@@ -75,24 +75,21 @@ const AdminBlogForm = ({ blog, onSave }) => {
 
                 const imageUrl = res.data.imageUrl;
 
-                // Remove the "Uploading image..." text from the current editor
-                editor.deleteText(cursorIndex, 16); // "Uploading image..." is 16 characters long
-
-                // Update the content for ALL languages
+                 
+                editor.deleteText(cursorIndex, 16);  
+              
                 setContents(prevContents => {
                     const newContents = { ...prevContents };
-                    const imageHtml = `<p><img src="${imageUrl}" alt="Uploaded Image" /></p>`; // Wrap in <p> for better formatting
+                    const imageHtml = `<p><img src="${imageUrl}" alt="Uploaded Image" /></p>`;  
 
                     LANGUAGES.forEach(lang => {
-                        // Append the image to the existing content of each language
-                        // Ensure there's a line break or paragraph for proper rendering if the editor is empty
+                         
                         newContents[lang.code] = (newContents[lang.code] || '') + imageHtml;
                     });
                     return newContents;
                 });
 
-                // Now, re-insert the actual image into the *currently active* editor
-                // This will make it immediately visible without needing to switch tabs
+                
                 editor.insertEmbed(cursorIndex, 'image', imageUrl);
 
             } catch (error) {
@@ -101,7 +98,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 const editor = quillRef.current?.getEditor();
                 if (editor) {
                     const range = editor.getSelection();
-                    // If the "Uploading image..." text was inserted, remove it on error
+                   
                     if (range && editor.getText(range.index - 16, 16) === 'Uploading image...') {
                         editor.deleteText(range.index - 16, 16);
                     } else if (editor.getText(0, 16) === 'Uploading image...') { // Check if it was inserted at the very beginning
@@ -110,7 +107,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 }
             }
         };
-    }, []); // No dependency on activeLang needed here anymore, as there's only one active QuillRef and we update all contents
+    }, []); 
 
     const modules = useMemo(() => ({
         imageResize: {
@@ -220,8 +217,8 @@ const AdminBlogForm = ({ blog, onSave }) => {
             image: data.image,
             tags,
             category: data.category,
-            title: data.title_en || data.title, // Use title_en as primary, fallback to old title field
-            content: contents.en || data.content, // Use content_en as primary, fallback to old content field
+            title: data.title_en || data.title,  
+            content: contents.en || data.content,  
         };
 
         LANGUAGES.forEach(lang => {
@@ -276,8 +273,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 ))}
             </div>
 
-            {/* Common Fields */}
-            {/* Main Cover Image URL Input & File Upload */}
+        
             <div className="flex flex-col gap-2">
                 <label className="block font-medium text-sm text-gray-700 dark:text-gray-300">
                     Main Cover Image
@@ -334,7 +330,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 ))}
             </select>
 
-            {/* Language-specific Fields - RENDER ONLY THE ACTIVE ONE */}
+             
             {LANGUAGES.map(lang => (
                 activeLang === lang.code && (
                     <div key={lang.code}>

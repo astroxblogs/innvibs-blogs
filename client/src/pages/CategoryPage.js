@@ -1,9 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import Home from './Home';
-
-// Helper function to convert URL slug back to the proper category name
-// e.g., "health-wellness" -> "Health & Wellness"
+ 
 const unslugify = (slug) => {
     return slug
         .split('-')
