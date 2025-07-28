@@ -1,7 +1,8 @@
 // client/src/components/EmailSubscriptionPopup.jsx
-import React, { useState, useEffect } from 'react';
-import { getSubscriberId, setSubscriberId, hasSubscriberId } from '../utils/localStorage';
+import React, { useState } from 'react';
+import { setSubscriberId } from '../utils/localStorage';
 import { subscribeUser } from '../services/api';
+
 
 // NEW: Accept 'showPopup' and 'onClose' and 'onSubscribeSuccess' as props
 const EmailSubscriptionPopup = ({ showPopup, onClose, onSubscribeSuccess }) => {
@@ -75,7 +76,7 @@ const EmailSubscriptionPopup = ({ showPopup, onClose, onSubscribeSuccess }) => {
                 </button>
 
                 <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white text-center">
-                    Stay Updated with AstroXHub!
+                    Stay Updated with innvibs
                 </h2>
                 <p className="text-gray-700 dark:text-gray-300 mb-6 text-center">
                     Enter your email to get the latest blog posts directly in your inbox.

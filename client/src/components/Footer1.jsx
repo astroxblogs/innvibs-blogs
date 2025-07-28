@@ -82,11 +82,9 @@ export default function BalancedMonumentFooter() {
         {/* --- Logo (in its own container) --- */}
         <div className="mb-2">
           <img
-            src="/1.png"
-            // ✅ Increase height as much as you want (e.g., h-36, h-40).
-            // ✅ `max-w-full` prevents it from overflowing its container.
-            className="h-36 w-auto max-w-full"
-            alt="AstroXHub Logo"
+            src="/header.png"
+            className="h-20 w-auto max-w-full"  // ↓ from h-28 to h-24
+            alt="innvibs Logo"
           />
         </div>
 
