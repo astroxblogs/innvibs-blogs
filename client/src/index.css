@@ -78,5 +78,86 @@ body {
 .rdw-fontsize-dropdown {
     color: #333 !important;
 }
+/* Custom styles for Admin Blog Form Quill Editor */
+.admin-quill-editor {
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
 
+.admin-quill-editor .ql-container {
+    border: 1px solid #d1d5db;
+    border-top: none;
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    min-height: 200px;
+    max-height: 400px;
+    /* Keeping max-height for container at 400px, adjust if content still doesn't scroll */
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-quill-editor .ql-editor {
+    flex-grow: 1;
+    min-height: 150px;
+    /* NEW: Aggressively set max-height to force overflow and ensure padding for scrollbar */
+    max-height: 350px;
+    /* Forcing a smaller max-height to ensure content overflows, adjust later if needed */
+    overflow-y: auto;
+    padding-bottom: 50px;
+    /* Ensure padding on all sides within the editor */
+    padding-left: 15px;
+    /* Default Quill padding */
+    padding-right: 15px;
+    /* Default Quill padding */
+    padding-top: 10px;
+    /* Default Quill padding */
+}
+
+/* NEW: Make scrollbar extremely visible for debugging */
+.admin-quill-editor .ql-editor::-webkit-scrollbar {
+    width: 15px;
+    /* Make it very wide */
+    background: gray;
+    /* Make track yellow */
+}
+
+.admin-quill-editor .ql-editor::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+    border: 1px solid gray;
+    /* Add a red border to the track */
+}
+
+.dark .admin-quill-editor .ql-editor::-webkit-scrollbar-track {
+    background: #374151;
+    border: 1px solid gray;
+    /* Add a red border to the track in dark mode */
+}
+
+.admin-quill-editor .ql-editor::-webkit-scrollbar-thumb {
+    background:gray;
+    /* Make thumb bright red */
+    border-radius: 10px;
+    border: 2px solid black;
+    /* Add yellow border to thumb */
+}
+
+.dark .admin-quill-editor .ql-editor::-webkit-scrollbar-thumb {
+    background: #ff0000;
+    /* Make thumb brigh
+    t red in dark mode */
+    border: 2px solid gray;
+    /* Add yellow border to thumb in dark mode */
+}
+
+
+
+
+
+/* Ensure the toolbar doesn't scroll with content */
+.admin-quill-editor .ql-toolbar {
+    z-index: 1;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+}
 /* === END OF FIX === */

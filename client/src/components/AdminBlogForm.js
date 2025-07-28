@@ -18,8 +18,8 @@ const LANGUAGES = [
 const categories = [
     'Technology', 'Fashion', 'Health & Wellness', 'Travel',
     'Food & Cooking', 'Sports', 'Business & Finance', 'Lifestyle',
-    'Trends', 
-    'Relationship'  
+    'Trends',
+    'Relationship'
 ];
 
 const AdminBlogForm = ({ blog, onSave }) => {
@@ -36,8 +36,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
     const [uploadingImage, setUploadingImage] = useState(false);
     const fileInputRef = useRef(null);
 
-    // REVERTED to a single quillRef, as only one editor will be mounted at a time
-    const quillRef = useRef(null);
+    const quillRef = useRef(null); // REVERTED to a single quillRef
 
     const quillImageUploadHandler = useCallback(() => {
         const input = document.createElement('input');
@@ -62,7 +61,6 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 }
 
                 const range = editor.getSelection();
-                // Store the current cursor position before inserting placeholder
                 const cursorIndex = range ? range.index : 0;
                 editor.insertEmbed(cursorIndex, 'text', 'Uploading image...');
 
@@ -75,21 +73,23 @@ const AdminBlogForm = ({ blog, onSave }) => {
 
                 const imageUrl = res.data.imageUrl;
 
-                 
-                editor.deleteText(cursorIndex, 16);  
-              
+                editor.deleteText(cursorIndex, 16);
+
+                // Note: The following setContents block for `imageHtml` is redundant
+                // if `editor.insertEmbed(cursorIndex, 'image', imageUrl);` is used.
+                // The insertEmbed directly adds the image to the Quill editor.
+                // It's usually better to just use insertEmbed and let Quill manage its content state internally.
+                // Keeping it as per your existing code for now, but flagging it.
                 setContents(prevContents => {
                     const newContents = { ...prevContents };
-                    const imageHtml = `<p><img src="${imageUrl}" alt="Uploaded Image" /></p>`;  
+                    const imageHtml = `<p><img src="${imageUrl}" alt="Uploaded Image" /></p>`;
 
                     LANGUAGES.forEach(lang => {
-                         
                         newContents[lang.code] = (newContents[lang.code] || '') + imageHtml;
                     });
                     return newContents;
                 });
 
-                
                 editor.insertEmbed(cursorIndex, 'image', imageUrl);
 
             } catch (error) {
@@ -98,7 +98,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 const editor = quillRef.current?.getEditor();
                 if (editor) {
                     const range = editor.getSelection();
-                   
+
                     if (range && editor.getText(range.index - 16, 16) === 'Uploading image...') {
                         editor.deleteText(range.index - 16, 16);
                     } else if (editor.getText(0, 16) === 'Uploading image...') { // Check if it was inserted at the very beginning
@@ -107,7 +107,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 }
             }
         };
-    }, []); 
+    }, []);
 
     const modules = useMemo(() => ({
         imageResize: {
@@ -217,8 +217,8 @@ const AdminBlogForm = ({ blog, onSave }) => {
             image: data.image,
             tags,
             category: data.category,
-            title: data.title_en || data.title,  
-            content: contents.en || data.content,  
+            title: data.title_en || data.title,
+            content: contents.en || data.content,
         };
 
         LANGUAGES.forEach(lang => {
@@ -273,7 +273,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 ))}
             </div>
 
-        
+
             <div className="flex flex-col gap-2">
                 <label className="block font-medium text-sm text-gray-700 dark:text-gray-300">
                     Main Cover Image
@@ -291,12 +291,12 @@ const AdminBlogForm = ({ blog, onSave }) => {
                         onChange={handleFileChange}
                         ref={fileInputRef}
                         className="block w-full text-sm text-gray-900 dark:text-white
-                                     file:mr-4 file:py-2 file:px-4
-                                     file:rounded-md file:border-0
-                                     file:text-sm file:font-semibold
-                                     file:bg-blue-50 file:text-blue-700
-                                     hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300
-                                     dark:hover:file:bg-blue-800"
+                                    file:mr-4 file:py-2 file:px-4
+                                    file:rounded-md file:border-0
+                                    file:text-sm file:font-semibold
+                                    file:bg-blue-50 file:text-blue-700
+                                    hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300
+                                    dark:hover:file:bg-blue-800"
                     />
                     {selectedFile && (
                         <button
@@ -330,35 +330,36 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 ))}
             </select>
 
-             
-            {LANGUAGES.map(lang => (
-                activeLang === lang.code && (
-                    <div key={lang.code}>
-                        <h3 className="text-lg font-semibold mt-6 mb-2 text-gray-800 dark:text-gray-200">
-                            {lang.name} Content
-                        </h3>
-                        <input
-                            className="border border-gray-300 dark:border-gray-700 p-2 rounded w-full mb-4 text-gray-900 dark:text-white bg-white dark:bg-gray-700"
-                            placeholder={`Title (${lang.name})`}
-                            {...register(`title_${lang.code}`, { required: lang.code === 'en' })}
-                        />
-
-                        <div>
-                            <label className="block font-medium text-sm mb-1 text-gray-700 dark:text-gray-300">
-                                Content ({lang.name})
-                            </label>
-                            <ReactQuill
-                                ref={quillRef}
-                                theme="snow"
-                                value={contents[lang.code]}
-                                onChange={(value) => setContents(prev => ({ ...prev, [lang.code]: value }))}
-                                modules={modules}
-                                className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            {
+                LANGUAGES.map(lang => (
+                    activeLang === lang.code && (
+                        <div key={lang.code}>
+                            <h3 className="text-lg font-semibold mt-6 mb-2 text-gray-800 dark:text-gray-200">
+                                {lang.name} Content
+                            </h3>
+                            <input
+                                className="border border-gray-300 dark:border-gray-700 p-2 rounded w-full mb-4 text-gray-900 dark:text-white bg-white dark:bg-gray-700"
+                                placeholder={`Title (${lang.name})`}
+                                {...register(`title_${lang.code}`, { required: lang.code === 'en' })}
                             />
+
+                            <div>
+                                <label className="block font-medium text-sm mb-1 text-gray-700 dark:text-gray-300">
+                                    Content ({lang.name})
+                                </label>
+                                <ReactQuill
+                                    ref={quillRef}
+                                    theme="snow"
+                                    value={contents[lang.code]}
+                                    onChange={(value) => setContents(prev => ({ ...prev, [lang.code]: value }))}
+                                    modules={modules}
+                                    className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white admin-quill-editor" // Custom class
+                                />
+                            </div>
                         </div>
-                    </div>
-                )
-            ))}
+                    )
+                ))
+            }
 
             <button
                 className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded font-semibold transition-colors w-full md:w-auto self-end mt-4"

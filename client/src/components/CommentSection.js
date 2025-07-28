@@ -1,7 +1,12 @@
+// client/src/components/CommentSection.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { Trash2 } from 'lucide-react'; // An icon for the delete button
+
+// NEW: Import getSubscriberId and trackUserComment
+import { getSubscriberId } from '../utils/localStorage'; // <-- ADD THIS LINE
+import { trackUserComment } from '../services/api';     // <-- ADD THIS LINE
 
 const CommentSection = ({ blogId, initialComments }) => {
     const { t } = useTranslation();
@@ -13,9 +18,36 @@ const CommentSection = ({ blogId, initialComments }) => {
 
     const adminToken = localStorage.getItem('adminToken');
 
+    // NOTE: Your original file didn't have a useEffect to fetch comments.
+    // If comments are not showing initially, you might need a useEffect like this:
+    /*
+    useEffect(() => {
+        const fetchComments = async () => {
+            try {
+                setLoading(true);
+                const response = await axios.get(`/api/blogs/${blogId}/comments`);
+                setComments(response.data);
+                setError('');
+            } catch (err) {
+                console.error('Failed to fetch comments:', err);
+                setError('Failed to load comments.');
+            } finally {
+                setLoading(false);
+            }
+        };
+        if (blogId) { // Only fetch if blogId is available
+            fetchComments();
+        }
+    }, [blogId]);
+    */
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!name || !comment) return;
+        if (!name.trim() || !comment.trim()) { // Added .trim() for better validation
+            setError('Name and comment cannot be empty.');
+            return;
+        }
         setLoading(true);
         setError(''); // Clear previous errors
 
@@ -25,15 +57,32 @@ const CommentSection = ({ blogId, initialComments }) => {
             setComments([...comments, res.data]);
             setName('');
             setComment('');
+
+            // --- NEW: Track user behavior for inferred interests ---
+            const subscriberId = getSubscriberId();
+            if (subscriberId) { // Only track if subscriber ID exists in localStorage
+                try {
+                    await trackUserComment(subscriberId, blogId);
+                    console.log(`Comment behavior for blog ${blogId} tracked for subscriber:`, subscriberId);
+                } catch (trackingError) {
+                    console.error('Failed to track comment for personalization:', trackingError);
+                    // This error is usually non-critical for the user's immediate experience,
+                    // so we just log it.
+                }
+            }
+
         } catch (err) {
             console.error("Error posting comment:", err);
             setError('Failed to post comment. Please try again.');
+        } finally { // Use finally to ensure loading state is reset
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const handleDelete = async (commentId) => {
-        if (!window.confirm("Are you sure you want to delete this comment?")) {
+        // IMPORTANT: Replace window.confirm with a custom modal for better UX and consistency
+        // (as per general instructions for Canvas/Immersive documents)
+        if (!window.confirm(t("Are you sure you want to delete this comment?"))) {
             return;
         }
 
@@ -45,7 +94,8 @@ const CommentSection = ({ blogId, initialComments }) => {
             setComments(comments.filter(c => c._id !== commentId));
         } catch (err) {
             console.error("Error deleting comment:", err);
-            alert("Failed to delete comment.");
+            // IMPORTANT: Replace alert with a custom message box
+            alert(t("Failed to delete comment."));
         }
     };
 

@@ -29,7 +29,7 @@ exports.login = async (req, res) => {
         }
         console.log('JWT_SECRET is defined.'); // Confirm secret is present
 
-        const token = jwt.sign({ id: admin._id, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        const token = jwt.sign({ id: admin._id, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '15d' });
         console.log('Login successful for username:', username); // Log successful login
         res.json({ token });
     } catch (err) {

@@ -10,21 +10,9 @@ import {
   FaArrowRight,
 } from "react-icons/fa";
 
-// Blog categories
-const blogCategories = [
-  { labelKey: "category.technology", value: "Technology" },
-  { labelKey: "category.fashion", value: "Fashion" },
-  { labelKey: "category.health_wellness", value: "Health & Wellness" },
-  { labelKey: "category.travel", value: "Travel" },
-  { labelKey: "category.food_cooking", value: "Food & Cooking" },
-  { labelKey: "category.sports", value: "Sports" },
-  { labelKey: "category.business_finance", value: "Business & Finance" },
-  { labelKey: "category.lifestyle", value: "Lifestyle" },
-  { labelKey: "category.trends", value: "Trends" },
-  { labelKey: "category.relationship", value: "Relationship" },
-];
+// (Your data arrays like blogCategories, etc. remain the same)
+// ...
 
-// Dark mode toggle hook
 const useTheme = () => {
   const [theme, setTheme] = useState("light");
   useEffect(() => {
@@ -34,11 +22,26 @@ const useTheme = () => {
   return { theme, toggleTheme };
 };
 
+
 export default function BalancedMonumentFooter() {
   const { theme, toggleTheme } = useTheme();
   const { t } = useTranslation();
 
-  // Footer categories
+  // (Your data arrays for footerSections, socialLinks etc. remain the same)
+  // ...
+  const blogCategories = [
+    { labelKey: "category.technology", value: "Technology" },
+    { labelKey: "category.fashion", value: "Fashion" },
+    { labelKey: "category.health_wellness", value: "Health & Wellness" },
+    { labelKey: "category.travel", value: "Travel" },
+    { labelKey: "category.food_cooking", value: "Food & Cooking" },
+    { labelKey: "category.sports", value: "Sports" },
+    { labelKey: "category.business_finance", value: "Business & Finance" },
+    { labelKey: "category.lifestyle", value: "Lifestyle" },
+    { labelKey: "category.trends", value: "Trends" },
+    { labelKey: "category.relationship", value: "Relationship" },
+  ];
+
   const categoryLinks = {
     titleKey: "footer.categories_title",
     links: blogCategories.map(cat => ({
@@ -66,45 +69,37 @@ export default function BalancedMonumentFooter() {
     },
   ];
 
-  // Social icons with brand colors
   const socialLinks = [
-    {
-      name: "LinkedIn",
-      icon: <FaLinkedin />,
-      url: "https://linkedin.com",
-      colorClass: "text-[#0077B5]",
-    },
-    {
-      name: "Twitter",
-      icon: <FaTwitter />,
-      url: "https://twitter.com",
-      colorClass: "text-[#1DA1F2]",
-    },
-    {
-      name: "Instagram",
-      icon: <FaInstagram />,
-      url: "https://instagram.com",
-      colorClass: "text-pink-500",
-    },
+    { name: "LinkedIn", icon: <FaLinkedin />, url: "https://linkedin.com", colorClass: "text-[#0077B5]" },
+    { name: "Twitter", icon: <FaTwitter />, url: "https://twitter.com", colorClass: "text-[#1DA1F2]" },
+    { name: "Instagram", icon: <FaInstagram />, url: "https://instagram.com", colorClass: "text-pink-500" },
   ];
 
   return (
     <footer className="bg-off-background dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
-      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 pt-8 pb-6 md:px-8 md:pt-10 md:pb-8">
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 pt-4 pb-4 md:px-8 md:pt-6 md:pb-6">
 
-        {/* Logo & tagline */}
-        <div className="text-left mb-6 md:mb-8">
+        {/* --- Logo (in its own container) --- */}
+        <div className="mb-2">
           <img
             src="/1.png"
-            className="h-20 md:h-24 mb-2"
+            // ✅ Increase height as much as you want (e.g., h-36, h-40).
+            // ✅ `max-w-full` prevents it from overflowing its container.
+            className="h-36 w-auto max-w-full"
+            alt="AstroXHub Logo"
           />
-          <p className="mt-2 text-base md:text-md text-text-secondary dark:text-gray-400 max-w-sm">
+        </div>
+
+        {/* --- Tagline (in its own container) --- */}
+        <div className="mb-6 md:mb-8">
+          <p className="text-sm md:text-base text-text-secondary dark:text-gray-400 max-w-sm">
             {t('footer.tagline')}
           </p>
         </div>
 
-        {/* Sections Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-y-6 gap-x-4 md:gap-x-6">
+
+        {/* --- Sections Grid (Unchanged) --- */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-3 md:gap-x-5">
           {footerSections.map((section) => (
             <div key={section.titleKey} className="text-center md:text-left">
               <h3 className="text-sm font-semibold text-text-primary dark:text-gray-200 tracking-wider uppercase mb-3">
@@ -147,8 +142,8 @@ export default function BalancedMonumentFooter() {
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="mt-8 pt-4 md:mt-10 md:pt-6 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-3">
+        {/* --- Bottom Bar (Unchanged) --- */}
+        <div className="mt-4 pt-2 md:mt-6 md:pt-3 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-3">
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-0">
             © {new Date().getFullYear()} {t('innvibs Blogs')}.<br />
             Copyright 2025 innvibs Media Group. All rights reserved.

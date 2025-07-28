@@ -1,3 +1,5 @@
+// server/server.js
+
 require('dotenv').config(); // Keep this at the very top
 
 const express = require('express');
@@ -11,6 +13,8 @@ const path = require('path'); // Still good to have
 
 const blogRoutes = require('./routes/blogs');
 const adminRoutes = require('./routes/admin');
+// NEW: Import subscriber routes
+const subscriberRoutes = require('./routes/subscribers'); // <-- ADD THIS LINE
 
 const app = express();
 
@@ -84,10 +88,12 @@ app.post('/api/blogs/upload-image', upload.single('image'), async (req, res) => 
 // API Routes
 app.use('/api/blogs', blogRoutes);
 app.use('/api/admin', adminRoutes);
+// NEW: Use subscriber routes
+app.use('/api', subscriberRoutes); // <-- ADD THIS LINE
 
 // Default route
 app.get('/', (req, res) => {
-    res.send('AstroXHub Backend API is running!');
+    res.send('innvibs Backend API is running!');
 });
 
 // Database connection

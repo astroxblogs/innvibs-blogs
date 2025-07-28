@@ -1,5 +1,6 @@
+// client/src/App.js
 import React, { useState, useEffect, Suspense } from 'react';
-import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'; // REMOVED BrowserRouter import
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './index.css';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
@@ -8,7 +9,10 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import Footer1 from './components/Footer1';
 import TopNavigation from './components/TopNavigation';
 import Home from './pages/Home';
-import ScrollToTop from './components/ScrollToTop'; // Import ScrollToTop
+import ScrollToTop from './components/ScrollToTop';
+
+// REMOVED: EmailSubscriptionPopup import
+// import EmailSubscriptionPopup from './components/EmailSubscriptionPopup'; // <-- REMOVE THIS LINE
 
 // Lazy-loaded page components
 const BlogDetailPage = React.lazy(() => import('./pages/BlogDetailPage'));
@@ -89,18 +93,21 @@ function App() {
     };
 
     return (
-        // REMOVED BrowserRouter tags here. It's already in index.js
         <div className="min-h-screen bg-light-bg-primary dark:bg-dark-bg-primary transition-colors flex flex-col">
-            <ScrollToTop /> {/* Render ScrollToTop here */}
+            <ScrollToTop />
             <AxiosInterceptorNavigate />
 
             {!isAdminPath && (
-                <TopNavigation
-                    activeCategory={activeCategory}
-                    onCategoryChange={handleCategoryChange}
-                    setSearchQuery={setSearchQuery}
-                    onLogoClick={handleLogoClick}
-                />
+                <>
+                    <TopNavigation
+                        activeCategory={activeCategory}
+                        onCategoryChange={handleCategoryChange}
+                        setSearchQuery={setSearchQuery}
+                        onLogoClick={handleLogoClick}
+                    />
+                    {/* REMOVED: EmailSubscriptionPopup rendering */}
+                    {/* <EmailSubscriptionPopup /> */} {/* <-- REMOVE THIS LINE */}
+                </>
             )}
 
             <main className="flex-1 overflow-y-auto">
