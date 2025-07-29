@@ -10,9 +10,6 @@ import {
   FaArrowRight,
 } from "react-icons/fa";
 
-// (Your data arrays like blogCategories, etc. remain the same)
-// ...
-
 const useTheme = () => {
   const [theme, setTheme] = useState("light");
   useEffect(() => {
@@ -22,13 +19,10 @@ const useTheme = () => {
   return { theme, toggleTheme };
 };
 
-
 export default function BalancedMonumentFooter() {
   const { theme, toggleTheme } = useTheme();
   const { t } = useTranslation();
 
-  // (Your data arrays for footerSections, socialLinks etc. remain the same)
-  // ...
   const blogCategories = [
     { labelKey: "category.technology", value: "Technology" },
     { labelKey: "category.fashion", value: "Fashion" },
@@ -79,24 +73,30 @@ export default function BalancedMonumentFooter() {
     <footer className="bg-off-background dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 pt-4 pb-4 md:px-8 md:pt-6 md:pb-6">
 
-        {/* --- Logo (in its own container) --- */}
+        {/* --- Logo (Light/Dark Mode) --- */}
         <div className="mb-2">
+          {/* Light Mode Logo */}
           <img
             src="/header.png"
-            className="h-20 w-auto max-w-full"  // ↓ from h-28 to h-24
-            alt="innvibs Logo"
+            className="h-20 w-auto max-w-full block dark:hidden"
+            alt="innvibs Logo Light"
+          />
+          {/* Dark Mode Logo */}
+          <img
+            src="logoo1.png"
+            className="h-20 w-auto max-w-full hidden dark:block"
+            alt="innvibs Logo Dark"
           />
         </div>
 
-        {/* --- Tagline (in its own container) --- */}
+        {/* --- Tagline --- */}
         <div className="mb-6 md:mb-8">
           <p className="text-sm md:text-base text-text-secondary dark:text-gray-400 max-w-sm">
             {t('footer.tagline')}
           </p>
         </div>
 
-
-        {/* --- Sections Grid (Unchanged) --- */}
+        {/* --- Sections Grid --- */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-3 md:gap-x-5">
           {footerSections.map((section) => (
             <div key={section.titleKey} className="text-center md:text-left">
@@ -140,7 +140,7 @@ export default function BalancedMonumentFooter() {
           </div>
         </div>
 
-        {/* --- Bottom Bar (Unchanged) --- */}
+        {/* --- Bottom Bar --- */}
         <div className="mt-4 pt-2 md:mt-6 md:pt-3 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-3">
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-0">
             © {new Date().getFullYear()} {t('innvibs Blogs')}.<br />

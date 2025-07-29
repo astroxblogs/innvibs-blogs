@@ -69,14 +69,12 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
         }
     }, [checkArrows]);
 
-    const SCROLL_AMOUNT_FACTOR = 0.5;
-
     const handleNext = () => {
-        scrollRef.current?.scrollBy({ left: scrollRef.current.clientWidth * SCROLL_AMOUNT_FACTOR, behavior: "smooth" });
+        scrollRef.current?.scrollBy({ left: scrollRef.current.clientWidth * 0.5, behavior: "smooth" });
     };
 
     const handlePrev = () => {
-        scrollRef.current?.scrollBy({ left: -scrollRef.current.clientWidth * SCROLL_AMOUNT_FACTOR, behavior: "smooth" });
+        scrollRef.current?.scrollBy({ left: -scrollRef.current.clientWidth * 0.5, behavior: "smooth" });
     };
 
     const handleCategoryClick = (categoryValue) => {
@@ -105,7 +103,6 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
     };
 
     const handleSearchClick = () => setShowSearchInput(true);
-
     const handleLogoLinkClick = () => {
         onLogoClick?.();
         setIsSidebarOpen(false);
@@ -134,7 +131,16 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                         onClick={handleLogoLinkClick}
                         className="flex items-center gap-2 flex-shrink-0 max-w-[120px] sm:max-w-[140px] md:max-w-none"
                     >
-                        <img src="/header.png" alt="Logo" className="h-8 w-auto sm:h-10 object-contain" />
+                        <img
+                            src="/header.png"
+                            alt="Logo Light"
+                            className="h-8 sm:h-10 w-auto object-contain block dark:hidden"
+                        />
+                        <img
+                            src="/Top1.png"
+                            alt="Logo Dark"
+                            className="h-8 sm:h-10 w-auto object-contain hidden dark:block"
+                        />
                     </Link>
                 </div>
 
@@ -163,8 +169,8 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                                     ref={(el) => (itemRefs.current[idx] = el)}
                                     onClick={() => handleCategoryClick(cat.value)}
                                     className={`flex-shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-200 ${activeCategory === cat.value
-                                        ? "bg-gray-900 text-white dark:bg-gray-50 dark:text-gray-900"
-                                        : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                                            ? "bg-gray-900 text-white dark:bg-gray-50 dark:text-gray-900"
+                                            : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                                         }`}
                                 >
                                     {t(cat.labelKey)}
@@ -234,7 +240,16 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                         >
                             <div className="w-full flex justify-between items-center p-4 pb-0">
                                 <Link to="/" onClick={handleLogoLinkClick}>
-                                    <img src="/header.png" alt="Logo" className="h-10 w-auto object-contain" />
+                                    <img
+                                        src="/header.png"
+                                        alt="Logo Light"
+                                        className="h-10 w-auto object-contain block dark:hidden"
+                                    />
+                                    <img
+                                        src="/Top1.png"
+                                        alt="Logo Dark"
+                                        className="h-10 w-auto object-contain hidden dark:block"
+                                    />
                                 </Link>
                                 <button
                                     onClick={() => setIsSidebarOpen(false)}
@@ -243,18 +258,21 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                                     <X size={24} />
                                 </button>
                             </div>
+
                             <div className="w-full h-px bg-gray-200 dark:bg-gray-700 my-4" />
                             <div className="px-4 space-y-4">
                                 <div>
-                                    <h3 className="text-xl font-semibold mb-2">{t('footer.categories_title')}</h3>
+                                    <h3 className="text-xl font-semibold mb-2 text-black dark:text-white">
+                                        {t('footer.categories_title')}
+                                    </h3>
                                     <ul className="space-y-2">
                                         {categories.map((cat) => (
                                             <li key={cat.value}>
                                                 <button
                                                     onClick={() => handleCategoryClick(cat.value)}
                                                     className={`w-full py-1.5 text-lg font-medium rounded-md ${activeCategory === cat.value
-                                                        ? "bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-white"
-                                                        : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                                                            ? "bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-white"
+                                                            : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
                                                         }`}
                                                 >
                                                     {t(cat.labelKey)}
@@ -263,11 +281,18 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                                         ))}
                                     </ul>
                                 </div>
+
                                 <div>
                                     <h3 className="text-sm font-semibold text-gray-600 dark:text-white mb-2">{t('Connect With Us')}</h3>
                                     <div className="flex gap-3 mb-4">
                                         {socialLinks.map(({ name, icon: Icon, url, className }) => (
-                                            <a key={name} href={url} target="_blank" rel="noopener noreferrer" className={`p-2 rounded-full bg-white dark:bg-gray-800 shadow-md hover:scale-110 transition-all ${className}`}>
+                                            <a
+                                                key={name}
+                                                href={url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className={`p-2 rounded-full bg-white dark:bg-gray-800 shadow-md hover:scale-110 transition-all ${className}`}
+                                            >
                                                 <Icon size={25} />
                                             </a>
                                         ))}

@@ -14,21 +14,29 @@ exports.subscribe = async (req, res) => {
     }
 
     try {
-        let subscriber = await Subscriber.findOne({ email });
+        // NEW DEBUG LOG: Log the email being searched for
+        console.log('Backend DEBUG (Subscribe): Attempting to find subscriber with email:', email.toLowerCase());
 
+        let subscriber = await Subscriber.findOne({ email: email.toLowerCase() }); // Ensure search is lowercase
+
+        // NEW DEBUG LOG: Log what was found
         if (subscriber) {
-            // Ensure subscriberId is returned even if already subscribed
+            console.log('Backend DEBUG (Subscribe): Found existing subscriber:', subscriber.email, 'ID:', subscriber._id);
             return res.status(200).json({ msg: 'You are already subscribed.', subscriberId: subscriber._id });
+        } else {
+            console.log('Backend DEBUG (Subscribe): No existing subscriber found. Proceeding to create new.');
         }
 
         subscriber = new Subscriber({ email });
         await subscriber.save();
+        console.log('Backend DEBUG (Subscribe): New subscriber saved successfully:', subscriber.email, 'ID:', subscriber._id, '__v:', subscriber.__v); // NEW DEBUG LOG
 
         res.status(201).json({ msg: 'Subscription successful!', subscriberId: subscriber._id });
 
     } catch (err) {
-        console.error('Error subscribing user:', err.message);
-        if (err.code === 11000) {
+        console.error('Backend DEBUG (Subscribe): Error subscribing user:', err.message); // Updated log
+        if (err.code === 11000) { // This is for duplicate key error on save
+            console.log('Backend DEBUG (Subscribe): Duplicate key error (11000) for email:', email); // NEW DEBUG LOG
             return res.status(409).json({ msg: 'This email is already subscribed.' });
         }
         res.status(500).json({ msg: 'Server Error' });
