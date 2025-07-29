@@ -132,12 +132,12 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                         className="flex items-center gap-2 flex-shrink-0 max-w-[120px] sm:max-w-[140px] md:max-w-none"
                     >
                         <img
-                            src="/header.png"
+                            src="/lm1.png"
                             alt="Logo Light"
                             className="h-8 sm:h-10 w-auto object-contain block dark:hidden"
                         />
                         <img
-                            src="/Top1.png"
+                            src="/tp2..png"
                             alt="Logo Dark"
                             className="h-8 sm:h-10 w-auto object-contain hidden dark:block"
                         />
@@ -241,12 +241,12 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                             <div className="w-full flex justify-between items-center p-4 pb-0">
                                 <Link to="/" onClick={handleLogoLinkClick}>
                                     <img
-                                        src="/header.png"
+                                        src="/lm1.png"
                                         alt="Logo Light"
                                         className="h-10 w-auto object-contain block dark:hidden"
                                     />
                                     <img
-                                        src="/Top1.png"
+                                        src="/tp2..png"
                                         alt="Logo Dark"
                                         className="h-10 w-auto object-contain hidden dark:block"
                                     />

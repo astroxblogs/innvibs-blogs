@@ -77,7 +77,7 @@ export default function BalancedMonumentFooter() {
         <div className="mb-2">
           {/* Light Mode Logo */}
           <img
-            src="/header.png"
+            src="/lm..png"
             className="h-20 w-auto max-w-full block dark:hidden"
             alt="innvibs Logo Light"
           />
