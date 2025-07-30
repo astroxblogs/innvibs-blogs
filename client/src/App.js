@@ -1,9 +1,9 @@
-// client/src/App.js
 import React, { useState, useEffect, Suspense } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './index.css';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import { useTranslation } from 'react-i18next'; // ADDED: Import useTranslation
 
 // Component Imports
 import Footer1 from './components/Footer1';
@@ -11,8 +11,8 @@ import TopNavigation from './components/TopNavigation';
 import Home from './pages/Home';
 import ScrollToTop from './components/ScrollToTop';
 
-// REMOVED: EmailSubscriptionPopup import
-// import EmailSubscriptionPopup from './components/EmailSubscriptionPopup'; // <-- REMOVE THIS LINE
+// REMOVED: EmailSubscriptionPopup import (as per your comment)
+// import EmailSubscriptionPopup from './components/EmailSubscriptionPopup';
 
 // Lazy-loaded page components
 const BlogDetailPage = React.lazy(() => import('./pages/BlogDetailPage'));
@@ -22,7 +22,7 @@ const CategoryPage = React.lazy(() => import('./pages/CategoryPage'));
 const TagPage = React.lazy(() => import('./pages/TagPage'));
 
 // --- GLOBAL AXIOS CONFIGURATION ---
-console.log('REACT_APP_API_BASE_URL from process.env:', process.env.REACT_APP_API_BASE_URL); // Keep for now
+console.log('REACT_APP_API_BASE_URL from process.env:', process.env.REACT_APP_API_BASE_URL);
 axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL;
 
 // --- Axios Interceptors ---
@@ -42,6 +42,7 @@ axios.interceptors.request.use(
     }
 );
 
+// Axios Interceptor for Navigation (placed outside App to use useNavigate)
 const AxiosInterceptorNavigate = () => {
     const navigate = useNavigate();
     useEffect(() => {
@@ -67,6 +68,7 @@ const slugify = (text) => {
 };
 
 function App() {
+    const { t } = useTranslation(); // ADDED: Initialize t function
     const [activeCategory, setActiveCategory] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
     const location = useLocation();
@@ -105,13 +107,13 @@ function App() {
                         setSearchQuery={setSearchQuery}
                         onLogoClick={handleLogoClick}
                     />
-                    {/* REMOVED: EmailSubscriptionPopup rendering */}
-                    {/* <EmailSubscriptionPopup /> */} {/* <-- REMOVE THIS LINE */}
+                    {/* REMOVED: EmailSubscriptionPopup rendering (as per your comment) */}
+                    {/* <EmailSubscriptionPopup /> */}
                 </>
             )}
 
             <main className="flex-1 overflow-y-auto">
-                <Suspense fallback={<div className="text-center py-20 dark:text-gray-200">Loading page...</div>}>
+                <Suspense fallback={<div className="text-center py-20 dark:text-gray-200">{t('general.loading_page')}</div>}> {/* UPDATED: Translated loading message */}
                     <Routes>
                         <Route
                             path="/"

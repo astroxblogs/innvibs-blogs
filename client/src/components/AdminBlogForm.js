@@ -4,6 +4,7 @@ import axios from 'axios';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ImageResize from 'quill-image-resize-module-react';
+// import { useTranslation } from 'react-i18next'; // You can add this back if you plan to translate within this component later
 
 // Register the resize module with Quill
 Quill.register('modules/imageResize', ImageResize);
@@ -11,7 +12,6 @@ Quill.register('modules/imageResize', ImageResize);
 const LANGUAGES = [
     { code: 'en', name: 'English' },
     { code: 'hi', name: 'Hindi' },
- 
 ];
 
 const categories = [
@@ -23,6 +23,7 @@ const categories = [
 
 const AdminBlogForm = ({ blog, onSave }) => {
     const { register, handleSubmit, reset, setValue, watch } = useForm();
+    // const { t } = useTranslation(); // Uncomment this line if you need translations directly in this component
     const [activeLang, setActiveLang] = useState('en');
     const [contents, setContents] = useState(() => {
         const initialContents = {};
@@ -35,7 +36,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
     const [uploadingImage, setUploadingImage] = useState(false);
     const fileInputRef = useRef(null);
 
-    const quillRef = useRef(null); // REVERTED to a single quillRef
+    const quillRef = useRef(null);
 
     const quillImageUploadHandler = useCallback(() => {
         const input = document.createElement('input');
@@ -51,62 +52,56 @@ const AdminBlogForm = ({ blog, onSave }) => {
             formData.append('image', file);
 
             try {
-                const token = localStorage.getItem('adminToken');
+                // SECURITY IMPROVEMENT: Rely on global Axios interceptor for Authorization header
+                // REMOVED: const token = localStorage.getItem('adminToken');
                 const editor = quillRef.current?.getEditor();
                 if (!editor) {
                     console.error('Quill editor instance not found.');
-                    alert('Quill editor not ready. Please try again.');
+                    alert('Quill editor not ready. Please try again.'); // Consider translating this if useTranslation is added
                     return;
                 }
 
                 const range = editor.getSelection();
                 const cursorIndex = range ? range.index : 0;
-                editor.insertEmbed(cursorIndex, 'text', 'Uploading image...');
+                editor.insertEmbed(cursorIndex, 'text', 'Uploading image...'); // Consider translating this
 
                 const res = await axios.post('/api/blogs/upload-image', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
-                        Authorization: `Bearer ${token}`
+                        // REMOVED: Authorization: `Bearer ${token}` as it's now handled by the global interceptor in App.js
                     },
                 });
 
                 const imageUrl = res.data.imageUrl;
 
-                editor.deleteText(cursorIndex, 16);
+                editor.deleteText(cursorIndex, 16); // Assuming "Uploading image..." is 16 chars
+                editor.insertEmbed(cursorIndex, 'image', imageUrl);
 
-                // Note: The following setContents block for `imageHtml` is redundant
-                // if `editor.insertEmbed(cursorIndex, 'image', imageUrl);` is used.
-                // The insertEmbed directly adds the image to the Quill editor.
-                // It's usually better to just use insertEmbed and let Quill manage its content state internally.
-                // Keeping it as per your existing code for now, but flagging it.
                 setContents(prevContents => {
                     const newContents = { ...prevContents };
-                    const imageHtml = `<p><img src="${imageUrl}" alt="Uploaded Image" /></p>`;
-
+                    const imageHtml = `<p><img src="${imageUrl}" alt="Uploaded Image" /></p>`; // Consider translating "Uploaded Image"
                     LANGUAGES.forEach(lang => {
                         newContents[lang.code] = (newContents[lang.code] || '') + imageHtml;
                     });
                     return newContents;
                 });
 
-                editor.insertEmbed(cursorIndex, 'image', imageUrl);
-
             } catch (error) {
                 console.error('Error uploading image to backend for Quill:', error.response?.data || error.message);
-                alert('Error uploading image to content: ' + (error.response?.data?.error || error.message));
+                alert('Error uploading image to content: ' + (error.response?.data?.error || error.message)); // Consider translating this
+
                 const editor = quillRef.current?.getEditor();
                 if (editor) {
                     const range = editor.getSelection();
-
                     if (range && editor.getText(range.index - 16, 16) === 'Uploading image...') {
                         editor.deleteText(range.index - 16, 16);
-                    } else if (editor.getText(0, 16) === 'Uploading image...') { // Check if it was inserted at the very beginning
+                    } else if (editor.getText(0, 16) === 'Uploading image...') {
                         editor.deleteText(0, 16);
                     }
                 }
             }
         };
-    }, []);
+    }, []); // Removed 't' from dependencies as it's not directly used here after translation changes
 
     const modules = useMemo(() => ({
         imageResize: {
@@ -181,11 +176,12 @@ const AdminBlogForm = ({ blog, onSave }) => {
         formData.append('image', selectedFile);
 
         try {
-            const token = localStorage.getItem('adminToken');
+            // SECURITY IMPROVEMENT: Rely on global Axios interceptor for Authorization header
+            // REMOVED: const token = localStorage.getItem('adminToken');
             const res = await axios.post('/api/blogs/upload-image', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    Authorization: `Bearer ${token}`
+                    // REMOVED: Authorization: `Bearer ${token}` as it's now handled by the global interceptor in App.js
                 },
             });
 
@@ -195,10 +191,10 @@ const AdminBlogForm = ({ blog, onSave }) => {
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }
-            alert('Main cover image uploaded successfully!');
+            alert('Main cover image uploaded successfully!'); // Consider translating this
         } catch (error) {
             console.error('Error uploading main cover image to backend:', error.response?.data || error.message);
-            alert('Error uploading main cover image: ' + (error.response?.data?.error || error.message));
+            alert('Error uploading main cover image: ' + (error.response?.data?.error || error.message)); // Consider translating this
         } finally {
             setUploadingImage(false);
         }
@@ -208,7 +204,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
         const tags = typeof data.tags === 'string' ? data.tags.split(',').map(tag => tag.trim()) : [];
 
         if (selectedFile) {
-            alert('Please upload the selected main cover image first or clear the file selection.');
+            alert('Please upload the selected main cover image first or clear the file selection.'); // Consider translating this
             return;
         }
 
@@ -226,6 +222,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
         });
 
         try {
+            // These calls correctly rely on the global Axios interceptor for authorization
             const res = blog
                 ? await axios.put(`/api/blogs/${blog._id}`, payload)
                 : await axios.post('/api/blogs', payload);
@@ -239,10 +236,10 @@ const AdminBlogForm = ({ blog, onSave }) => {
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }
-            alert(blog ? "Blog updated successfully!" : "Blog added successfully!");
+            alert(blog ? "Blog updated successfully!" : "Blog added successfully!"); // Consider translating these
         } catch (error) {
             console.error('Error saving blog:', error);
-            alert('Error saving blog: ' + (error.response?.data?.error || error.message));
+            alert('Error saving blog: ' + (error.response?.data?.error || error.message)); // Consider translating this
         }
     };
 
@@ -275,11 +272,11 @@ const AdminBlogForm = ({ blog, onSave }) => {
 
             <div className="flex flex-col gap-2">
                 <label className="block font-medium text-sm text-gray-700 dark:text-gray-300">
-                    Main Cover Image
+                    Main Cover Image {/* Consider translating this */}
                 </label>
                 <input
                     className="border border-gray-300 dark:border-gray-700 p-2 rounded w-full text-gray-900 dark:text-white bg-white dark:bg-gray-700"
-                    placeholder="Paste Image URL"
+                    placeholder="Paste Image URL" 
                     {...register('image')}
                     disabled={!!selectedFile}
                 />
@@ -290,12 +287,12 @@ const AdminBlogForm = ({ blog, onSave }) => {
                         onChange={handleFileChange}
                         ref={fileInputRef}
                         className="block w-full text-sm text-gray-900 dark:text-white
-                                    file:mr-4 file:py-2 file:px-4
-                                    file:rounded-md file:border-0
-                                    file:text-sm file:font-semibold
-                                    file:bg-blue-50 file:text-blue-700
-                                    hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300
-                                    dark:hover:file:bg-blue-800"
+                                        file:mr-4 file:py-2 file:px-4
+                                        file:rounded-md file:border-0
+                                        file:text-sm file:font-semibold
+                                        file:bg-blue-50 file:text-blue-700
+                                        hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300
+                                        dark:hover:file:bg-blue-800"
                     />
                     {selectedFile && (
                         <button
@@ -304,13 +301,13 @@ const AdminBlogForm = ({ blog, onSave }) => {
                             disabled={uploadingImage}
                             className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
                         >
-                            {uploadingImage ? 'Uploading...' : 'Upload Image'}
+                            {uploadingImage ? 'Uploading...' : 'Upload Image'} {/* Consider translating these */}
                         </button>
                     )}
                 </div>
                 {watch('image') && (
                     <div className="mt-2 text-center">
-                        <img src={watch('image')} alt="Cover Preview" className="max-h-48 object-contain mx-auto rounded-md shadow-md" />
+                        <img src={watch('image')} alt="Cover Preview" className="max-h-48 object-contain mx-auto rounded-md shadow-md" /> {/* Consider translating this */}
                     </div>
                 )}
             </div>
@@ -325,7 +322,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 {...register('category', { required: true })}
             >
                 {categories.map((category) => (
-                    <option key={category} value={category}>{category}</option>
+                    <option key={category} value={category}>{category}</option> 
                 ))}
             </select>
 
@@ -334,17 +331,17 @@ const AdminBlogForm = ({ blog, onSave }) => {
                     activeLang === lang.code && (
                         <div key={lang.code}>
                             <h3 className="text-lg font-semibold mt-6 mb-2 text-gray-800 dark:text-gray-200">
-                                {lang.name} Content
+                                {lang.name} Content {/* Consider translating "Content" */}
                             </h3>
                             <input
                                 className="border border-gray-300 dark:border-gray-700 p-2 rounded w-full mb-4 text-gray-900 dark:text-white bg-white dark:bg-gray-700"
-                                placeholder={`Title (${lang.name})`}
+                                placeholder={`Title (${lang.name})`} 
                                 {...register(`title_${lang.code}`, { required: lang.code === 'en' })}
                             />
 
                             <div>
                                 <label className="block font-medium text-sm mb-1 text-gray-700 dark:text-gray-300">
-                                    Content ({lang.name})
+                                    Content ({lang.name}) {/* Consider translating "Content" */}
                                 </label>
                                 <ReactQuill
                                     ref={quillRef}
@@ -364,7 +361,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded font-semibold transition-colors w-full md:w-auto self-end mt-4"
                 type="submit"
             >
-                {blog ? 'Update' : 'Add'} Blog
+                {blog ? 'Update' : 'Add'} Blog {/* Consider translating these */}
             </button>
         </form>
     );

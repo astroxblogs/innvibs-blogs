@@ -44,6 +44,7 @@
   "general": {
     "welcome": "ब्लॉग में आपका स्वागत है",
     "like": "पसंद करें",
+    "error": "Error",
     "comment": "टिप्पणी",
     "submit": "जमा करें",
     "login": "लॉगिन करें",
@@ -57,6 +58,8 @@
     "blogs_in_category": "{{category}} में आपके आवश्यक लेख",
     "loading_components": "घटक लोड हो रहे हैं...",
     "error_loading_blogs": "ब्लॉग पोस्ट लोड करने में विफल। कृपया पुनः प्रयास करें।",
+    "cancel": "रद्द करें",
+      
     "error_loading_blogs_for_tag": "टैग '{tag}' के लिए ब्लॉग पोस्ट लोड करने में विफल रहा। कृपया पुनः प्रयास करें।"
   },
   "admin_panel": {
@@ -71,7 +74,15 @@
     "edit": "संपादित करें",
     "delete": "हटाएँ",
     "blog_list": "ब्लॉग सूची",
-    "add_blog": "ब्लॉग जोड़ें"
+    "add_blog": "ब्लॉग जोड़ें",
+    "category": "श्रेणी",             
+    "confirm_delete_title": "हटाने की पुष्टि करें",    
+    "confirm_delete_message": "क्या आप वाकई इस ब्लॉग को हटाना चाहते हैं?",
+ 
+    "loading_dashboard": "डैशबोर्ड लोड हो रहा है...",             
+    "add_new_blog_post": "नया ब्लॉग पोस्ट जोड़ें",             
+    "manage_existing_blogs": "मौजूदा ब्लॉग प्रबंधित करें",     
+    "delete_error_message": "ब्लॉग हटाने में त्रुटि:"
   },
   "theme_toggle": {
     "theme": "थीम",

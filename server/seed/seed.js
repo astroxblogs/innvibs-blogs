@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config(); // Keep this at the very top
 const mongoose = require('mongoose');
 const Blog = require('../models/Blog');
 const Admin = require('../models/Admin');
@@ -35,34 +35,35 @@ const seedBlogs = [
     comments: [],
     // language: "hi", // Removed this
   }
-   
-];
 
+];
+ 
 const seedAdmin = async () => {
   const hash = await bcrypt.hash('Astrox123', 10);
   return {
     username: 'Astrox',
-    password: hash
+    password: hash,
+    role: 'admin' //  
   };
 };
 
 async function seed() {
   try {
     await Blog.deleteMany({});
-    console.log('Existing blogs cleared.'); // Added log
+    console.log('Existing blogs cleared.');
     await Blog.insertMany(seedBlogs);
-    console.log('Blogs seeded successfully!'); // Added log
+    console.log('Blogs seeded successfully!');
 
     await Admin.deleteMany({});
-    console.log('Existing admins cleared.'); // Added log
-    await Admin.create(await seedAdmin());
-    console.log('Admin user seeded successfully!'); // Added log
+    console.log('Existing admins cleared.');
+    await Admin.create(await seedAdmin());  
+    console.log('Admin user seeded successfully!');
 
     console.log('Seeding complete: blogs and admin are in the database!');
   } catch (error) {
-    console.error('Error during seeding process:', error); // Catch and log any seeding errors
+    console.error('Error during seeding process:', error);
   } finally {
-    mongoose.disconnect(); // Ensure disconnection happens
+    mongoose.disconnect();
   }
 }
 
