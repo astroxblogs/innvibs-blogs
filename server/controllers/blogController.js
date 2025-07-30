@@ -90,12 +90,12 @@ exports.searchBlogs = async (req, res) => {
                 { content: regex },
                 { title_en: regex },
                 { title_hi: regex },
-                { title_es: regex },
-                { title_fr: regex },
+               
+                
                 { content_en: regex },
                 { content_hi: regex },
-                { content_es: regex },
-                { content_fr: regex },
+               
+             
                 { tags: regex }, // This will search for the tag within the array
                 { category: regex }
             ]

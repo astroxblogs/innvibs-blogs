@@ -11,8 +11,7 @@ Quill.register('modules/imageResize', ImageResize);
 const LANGUAGES = [
     { code: 'en', name: 'English' },
     { code: 'hi', name: 'Hindi' },
-    { code: 'es', name: 'Español' },
-    { code: 'fr', name: 'Français' },
+ 
 ];
 
 const categories = [

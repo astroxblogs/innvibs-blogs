@@ -1,21 +1,21 @@
+// client/src/i18n/index.js
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-import en from './en.json';
-import hi from './hi.json';
-import es from './es.json';
-import fr from './fr.json';
+import en from './en.json'; // Keep English
+import hi from './hi.json'; // Keep Hindi
+
+// Removed all other language imports (es, fr, bn, mr, te, ta, gu)
 
 i18n
   .use(initReactI18next)
   .init({
     resources: {
-      en: { translation: en },
-      hi: { translation: hi },
-      es: { translation: es },
-      fr: { translation: fr }
+      en: { translation: en },  
+      hi: { translation: hi }  
+       
     },
-    lng: localStorage.getItem('lang') || 'en', // Default language
+    lng: localStorage.getItem('lang') || 'en', 
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false

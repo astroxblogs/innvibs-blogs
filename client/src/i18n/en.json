@@ -36,8 +36,7 @@
     "language_selector": {
         "select_language": "Select Language",
         "english": "English",
-        "spanish": "Spanish",
-        "french": "French",
+        
         "hindi": "Hindi"
     },
     "blog_card": {
