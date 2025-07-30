@@ -1,17 +1,27 @@
+// server/routes/admin.js
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
-const { adminAuth } = require('../middleware/auth'); // Import the auth middleware
-const blogController = require('../controllers/blogController'); // Assuming blog management routes might be here or linked
 
-// Admin Login Route (No authentication needed here, as this is how admin gets token)
+// --- ADD THESE DEBUG LOGS ---
+const authModule = require('../middleware/auth'); // Capture the entire module export
+console.log('DEBUG: authModule received:', authModule); // Log what require returns
+const { adminAuth } = authModule; // Then destructure
+console.log('DEBUG: adminAuth type:', typeof adminAuth); // Log the type of adminAuth
+// --- END DEBUG LOGS ---
+
+const blogController = require('../controllers/blogController');
+console.log('DEBUG: blogController object:', blogController);
+
 router.post('/login', adminController.login);
- 
- 
-router.post('/blogs', adminAuth, blogController.createBlog);      // Example: Create a new blog (requires admin)
-router.put('/blogs/:id', adminAuth, blogController.updateBlog);   // Example: Update a blog (requires admin)
-router.delete('/blogs/:id', adminAuth, blogController.deleteBlog); // Example: Delete a blog (requires admin)
-router.get('/blogs', adminAuth, blogController.getAllBlogsAdmin); // Example: Get all blogs for admin table
 
+router.get('/verify-token', adminAuth, (req, res) => {
+    res.status(200).json({ message: 'Token is valid', isAdmin: true });
+});
+
+router.post('/blogs', adminAuth, blogController.createBlog);
+router.put('/blogs/:id', adminAuth, blogController.updateBlog);
+router.delete('/blogs/:id', adminAuth, blogController.deleteBlog);
+router.get('/blogs', adminAuth, blogController.getLatestBlogs);
 
 module.exports = router;
