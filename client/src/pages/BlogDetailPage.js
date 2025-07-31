@@ -49,7 +49,7 @@ const BlogDetailPage = () => {
         }
     }, [id, t]);
 
-    // Added a useEffect to log the 'blog' state as it changes in BlogDetailPage
+     
     useEffect(() => {
         console.log('DEBUG (BlogDetailPage): Current blog state after render cycle:', blog);
     }, [blog]);
@@ -58,7 +58,7 @@ const BlogDetailPage = () => {
     if (loading) return <div className="text-center mt-20 p-4 dark:text-gray-300">{t('loading post...')}</div>;
     if (error) return <div className="text-center mt-20 p-4 text-red-500">{error}</div>;
 
-    // This condition should only be true if loading is false, and there's no error, but blog is still null
+   
     if (!blog) return <div className="text-center mt-20 p-4 dark:text-gray-300">{t('Blog post not found')}</div>;
 
     console.log('DEBUG (BlogDetailPage): Rendering BlogDetail component with blog data:', blog); // NEW LOG

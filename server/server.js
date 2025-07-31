@@ -27,9 +27,11 @@ cloudinary.config({
 });
  
 app.use(cors({
-    origin: process.env.CORS_ORIGIN
+    origin: [
+        process.env.CORS_ORIGIN_DEV, // e.g., 'http://localhost:3000'
+        process.env.CORS_ORIGIN_PROD // e.g., 'https://www.innvibs.com'
+    ]
 }));
-
  
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
