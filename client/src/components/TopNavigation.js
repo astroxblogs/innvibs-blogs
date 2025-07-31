@@ -196,28 +196,42 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                 </div>
 
                 {/* Right - Controls */}
+                 
                 <div className="flex items-center gap-3 flex-shrink-0">
                     {showSearchInput ? (
-                        <form onSubmit={handleSearchSubmit} className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-full px-3 py-1.5 max-w-xs">
+                        <form
+                            onSubmit={handleSearchSubmit}
+                            className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-1 w-full max-w-xs"
+                        >
                             <input
                                 type="text"
-                                placeholder={t('search.placeholder')}
+                                placeholder={t('Search...')}
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
-                                className="bg-transparent focus:outline-none text-text-dark dark:text-text-light w-full"
+                                className="bg-transparent text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-0 border-none w-full"
                             />
-                            <button type="button" onClick={handleCloseSearch} className="ml-2 text-gray-500 hover:text-red-500">
-                                <X className="w-5 h-5" />
+                            <button
+                                type="button"
+                                onClick={handleCloseSearch}
+                                // className="ml-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                            >
+                                <X className="w-4 h-4" />
                             </button>
                         </form>
                     ) : (
-                        <button onClick={handleSearchClick} className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-                            <Search className="w-6 h-6" />
+                        <button
+                            onClick={handleSearchClick}
+                            className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                        >
+                            <Search className="w-5 h-5" />
                         </button>
                     )}
+
                     <LanguageSelector />
                     <ThemeToggle />
                 </div>
+
+
             </div>
 
             {/* Sidebar */}

@@ -11,21 +11,18 @@ import TopNavigation from './components/TopNavigation';
 import Home from './pages/Home';
 import ScrollToTop from './components/ScrollToTop';
 
-// REMOVED: EmailSubscriptionPopup import (as per your comment)
-// import EmailSubscriptionPopup from './components/EmailSubscriptionPopup';
-
-// Lazy-loaded page components
+ 
 const BlogDetailPage = React.lazy(() => import('./pages/BlogDetailPage'));
 const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
 const AdminLogin = React.lazy(() => import('./pages/AdminLogin'));
 const CategoryPage = React.lazy(() => import('./pages/CategoryPage'));
 const TagPage = React.lazy(() => import('./pages/TagPage'));
 
-// --- GLOBAL AXIOS CONFIGURATION ---
+ 
 console.log('REACT_APP_API_BASE_URL from process.env:', process.env.REACT_APP_API_BASE_URL);
 axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL;
 
-// --- Axios Interceptors ---
+ 
 axios.interceptors.request.use(
     (config) => {
         const cloudinaryUploadUrl = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;

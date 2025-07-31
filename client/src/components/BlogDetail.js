@@ -1,5 +1,5 @@
 // client/src/components/BlogDetail.js
-import React, { useState, useEffect, Suspense, useRef } from 'react';
+import React, { useState, useEffect, Suspense, useRef, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
@@ -33,64 +33,71 @@ const getLocalizedContent = (field, blogData, currentLang) => {
     return blogData[field] || '';
 };
 
-const MIN_READ_DURATION_SECONDS = 30; // Minimum duration to track a 'read' event
-const EXCERPT_LENGTH_CHARS = 500; // Characters to show for non-subscribers
+const MIN_READ_DURATION_SECONDS = 30;
+const EXCERPT_LENGTH_CHARS = 500;
 
-const BlogDetail = () => {
+const BlogDetail = ({ blog: initialBlog }) => {
     const { id } = useParams();
-    const { i18n } = useTranslation();
-    const [blog, setBlog] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const { i18n, t } = useTranslation();
+    const [blog, setBlog] = useState(initialBlog || null);
+    const [loading, setLoading] = useState(!initialBlog);
     const [error, setError] = useState(null);
 
-    // State for Subscription Wall
     const [isSubscribed, setIsSubscribed] = useState(hasSubscriberId());
-    const [showGatedPopup, setShowGatedPopup] = useState(false); // To explicitly show popup for gated content
+    const [showGatedPopup, setShowGatedPopup] = useState(false);
 
-    // Read time tracking refs
     const startTimeRef = useRef(null);
     const timeSpentRef = useRef(0);
     const lastActivityTimeRef = useRef(Date.now());
 
-    // Function to send read duration to backend
-    const sendReadTrackingData = async (currentBlogId, currentSubscriberId, duration) => {
-        // NEW DEBUG LOGS
-        console.log('DEBUG: sendReadTrackingData called with:', { currentBlogId, currentSubscriberId, duration }); // <-- Debug Log
+    const sendReadTrackingData = useCallback(async (currentBlogId, currentSubscriberId, duration) => {
         if (!currentSubscriberId || !currentBlogId || duration < MIN_READ_DURATION_SECONDS) {
-            console.log('DEBUG: Read tracking skipped due to conditions:', { currentSubscriberId, currentBlogId, duration }); // <-- Debug Log
+            console.log('DEBUG: Read tracking skipped due to conditions:', { currentSubscriberId, currentBlogId, duration });
             return;
         }
         try {
             await trackUserRead(currentSubscriberId, currentBlogId, Math.round(duration));
-            console.log(`DEBUG: Read behavior for blog ${currentBlogId} tracked successfully. Duration: ${Math.round(duration)}s`); // <-- Debug Log
+            console.log(`DEBUG: Read behavior for blog ${currentBlogId} tracked successfully. Duration: ${Math.round(duration)}s`);
         } catch (trackingError) {
-            console.error('DEBUG: Failed to track read behavior:', trackingError); // <-- Debug Log
+            console.error('DEBUG: Failed to track read behavior:', trackingError);
         }
-    };
+    }, []);
 
-
-    // --- useEffect for fetching blog data and initializing timer ---
     useEffect(() => {
+        if (initialBlog) {
+            setBlog(initialBlog);
+            setLoading(false);
+            setError(null);
+            if (hasSubscriberId()) {
+                startTimeRef.current = Date.now();
+                timeSpentRef.current = 0;
+                lastActivityTimeRef.current = Date.now();
+                console.log('DEBUG: Read tracking timer started for blog:', id);
+            } else {
+                console.log('DEBUG: Not subscribed, read tracking timer not started for blog:', id);
+            }
+            return;
+        }
+
         const fetchBlog = async () => {
+            setLoading(true);
             try {
-                setLoading(true);
                 const res = await axios.get(`/api/blogs/${id}`);
                 setBlog(res.data);
                 setError(null);
 
-                // Initialize timer if user is subscribed (only track subscribed users' full reads)
-                if (hasSubscriberId()) { // Only start timer for subscribed users
+                if (hasSubscriberId()) {
                     startTimeRef.current = Date.now();
                     timeSpentRef.current = 0;
                     lastActivityTimeRef.current = Date.now();
-                    console.log('DEBUG: Read tracking timer started for blog:', id); // <-- Debug Log
+                    console.log('DEBUG: Read tracking timer started for blog:', id);
                 } else {
-                    console.log('DEBUG: Not subscribed, read tracking timer not started for blog:', id); // <-- Debug Log
+                    console.log('DEBUG: Not subscribed, read tracking timer not started for blog:', id);
                 }
 
             } catch (err) {
                 console.error("Failed to fetch blog post:", err);
-                setError('Failed to load the blog post. Please try again later.');
+                setError(t('general.error_loading_blogs_detail'));
                 setBlog(null);
             } finally {
                 setLoading(false);
@@ -101,28 +108,23 @@ const BlogDetail = () => {
             fetchBlog();
         }
 
-        // Cleanup function for this useEffect. Send read data if subscribed
         return () => {
             const currentSubscriberId = getSubscriberId();
             const currentBlogId = id;
 
-            // NEW DEBUG LOG
-            console.log('DEBUG: useEffect[id] cleanup running for blog:', currentBlogId, 'isSubscribed:', !!currentSubscriberId, 'timeSpent:', timeSpentRef.current / 1000, 'startTimeRef:', startTimeRef.current); // <-- Debug Log
+            console.log('DEBUG: useEffect[id/initialBlog] cleanup running for blog:', currentBlogId, 'isSubscribed:', !!currentSubscriberId, 'timeSpent:', timeSpentRef.current / 1000, 'startTimeRef:', startTimeRef.current);
 
             if (currentSubscriberId && startTimeRef.current && timeSpentRef.current > 0) {
                 sendReadTrackingData(currentBlogId, currentSubscriberId, timeSpentRef.current / 1000);
             }
-            // Reset refs for next potential mount/fetch
             startTimeRef.current = null;
             timeSpentRef.current = 0;
             lastActivityTimeRef.current = 0;
         };
-    }, [id]);
+    }, [id, initialBlog, sendReadTrackingData, t]);
 
-    // --- useEffect for tracking active reading time based on visibility ---
-    // Only track if subscribed
     useEffect(() => {
-        if (!blog || !startTimeRef.current || !hasSubscriberId()) return; // Only run if blog loaded, timer started, AND subscribed
+        if (!blog || !startTimeRef.current || !hasSubscriberId()) return;
 
         const updateTimeSpent = () => {
             const now = Date.now();
@@ -152,28 +154,25 @@ const BlogDetail = () => {
         };
     }, [blog]);
 
-    // --- useEffect to send data on page unload/close (using sendBeacon) ---
-    // Only send if subscribed
     useEffect(() => {
         const handleBeforeUnload = () => {
             const currentSubscriberId = getSubscriberId();
             const currentBlogId = id;
 
-            // NEW DEBUG LOG
-            console.log('DEBUG: beforeunload event firing for blog:', currentBlogId, 'isSubscribed:', !!currentSubscriberId, 'timeSpent:', timeSpentRef.current / 1000, 'startTimeRef:', startTimeRef.current); // <-- Debug Log
+            console.log('DEBUG: beforeunload event firing for blog:', currentBlogId, 'isSubscribed:', !!currentSubscriberId, 'timeSpent:', timeSpentRef.current / 1000, 'startTimeRef:', startTimeRef.current);
 
             if (currentSubscriberId && startTimeRef.current && timeSpentRef.current > 0) {
                 const duration = Math.round(timeSpentRef.current / 1000);
                 if (duration >= MIN_READ_DURATION_SECONDS) {
                     const payload = JSON.stringify({ subscriberId: currentSubscriberId, blogId: currentBlogId, duration });
                     const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-                    navigator.sendBeacon(`${API_BASE_URL}/api/track/read`, payload);
-                    console.log('DEBUG: Sent read behavior via sendBeacon:', payload); // <-- Debug Log
+                    navigator.sendBeacon(`${API_BASE_URL}/api/track/read`, new Blob([payload], { type: 'application/json' }));
+                    console.log('DEBUG: Sent read behavior via sendBeacon:', payload);
                 } else {
-                    console.log('DEBUG: sendBeacon skipped, duration too short for unload:', duration); // <-- Debug Log
+                    console.log('DEBUG: sendBeacon skipped, duration too short for unload:', duration);
                 }
             } else {
-                console.log('DEBUG: sendBeacon skipped, no subscriber/no start time/no time spent for unload.'); // <-- Debug Log
+                console.log('DEBUG: sendBeacon skipped, no subscriber/no start time/no time spent for unload.');
             }
         };
 
@@ -184,56 +183,54 @@ const BlogDetail = () => {
         };
     }, [id]);
 
-    // Check subscription status on mount and if it changes (e.g., after subscribing)
     useEffect(() => {
         const updateSubscriptionStatus = () => {
             setIsSubscribed(hasSubscriberId());
+            if (hasSubscriberId() && showGatedPopup) {
+                setShowGatedPopup(false);
+            }
         };
         window.addEventListener('storage', updateSubscriptionStatus);
         return () => {
             window.removeEventListener('storage', updateSubscriptionStatus);
         };
-    }, []);
+    }, [showGatedPopup]);
 
+    // Conditional rendering for content:
+    if (loading) return <div className="text-center mt-20 p-4 dark:text-gray-300">Loading post...</div>;
+    if (error) return <div className="text-center mt-20 p-4 text-red-500">{error}</div>;
+    // If blog is null after loading, means not found
+    if (!blog) return <div className="text-center mt-20 p-4 dark:text-gray-300">Blog post not found.</div>;
 
     const currentLang = i18n.language;
-    const displayTitle = blog ? getLocalizedContent('title', blog, currentLang) : '';
-    const displayContent = blog ? getLocalizedContent('content', blog, currentLang) : '';
+    const displayTitle = getLocalizedContent('title', blog, currentLang);
+    const displayContent = getLocalizedContent('content', blog, currentLang);
 
-    // Declare cleanContentHtml and rawContentHtml BEFORE content gating logic
     const rawContentHtml = marked.parse(displayContent);
     const cleanContentHtml = DOMPurify.sanitize(rawContentHtml);
 
-    if (loading) return <div className="text-center mt-20 p-4 dark:text-gray-300">Loading post...</div>;
-    if (error) return <div className="text-center mt-20 p-4 text-red-500">{error}</div>;
-    if (!blog) return <div className="text-center mt-20 p-4 dark:text-gray-300">Blog post not found.</div>;
-
-
-    // --- Content Gating Logic ---
-    let contentToDisplay = cleanContentHtml; // Default to full content
+    let contentToDisplay = cleanContentHtml;
     let showContentOverlay = false;
 
     if (!isSubscribed && blog && displayContent) {
-        // Truncate content for non-subscribers
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = rawContentHtml;
         const textContent = tempDiv.textContent || tempDiv.innerText || '';
 
-        const effectiveExcerptLength = Math.min(EXCERPT_LENGTH_CHARS, textContent.length);
-
         if (textContent.length > EXCERPT_LENGTH_CHARS) {
-            const excerptText = textContent.substring(0, effectiveExcerptLength);
-            contentToDisplay = DOMPurify.sanitize(marked.parse(excerptText));
+            const excerptText = textContent.substring(0, EXCERPT_LENGTH_CHARS);
+            contentToDisplay = DOMPurify.sanitize(marked.parse(excerptText + '...'));
             showContentOverlay = true;
         } else {
             if (textContent.trim().length > 0) {
+                // If content is short but user is not subscribed, still show overlay to prompt subscription
                 showContentOverlay = true;
             }
         }
     }
 
-
-    const coverImage = blog.image ? blog.image : 'https://placehold.co/800x400/666/fff?text=No+Image';
+    // Ensure blog.image exists and is not just whitespace before using it
+    const coverImage = blog.image && blog.image.trim() !== '' ? blog.image.trim() : 'https://placehold.co/800x400/666/fff?text=No+Image';
     const cleanAltTitle = createSafeAltText(displayTitle);
 
     return (
@@ -247,7 +244,7 @@ const BlogDetail = () => {
 
             <h1 className="text-2xl sm:text-3xl md:text-5xl font-semibold mb-2 md:mb-3 text-gray-900 dark:text-white leading-tight" style={{ fontFamily: 'Arial, sans-serif' }}>{displayTitle}</h1>
             <div className="flex flex-wrap gap-x-3 gap-y-1 items-center text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-6 md:mb-8">
-                <span>Published on: {new Date(blog.date).toLocaleDateString()}</span>
+                <span>Published on: {blog.date ? new Date(blog.date).toLocaleDateString() : 'Invalid Date'}</span> {/* Added conditional rendering for date */}
                 <span className="flex items-center gap-1">
                     <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.562 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.865.802V10.333z"></path></svg>
                     {blog.likes || 0}
@@ -259,19 +256,18 @@ const BlogDetail = () => {
             </div>
 
             {/* Main Blog Content Section & Gradient Overlay */}
-            <div className={`relative ${showContentOverlay ? 'h-80 overflow-hidden' : ''}`}> {/* Only apply height/overflow if overlay is active */}
+            <div className={`relative ${showContentOverlay ? 'h-96 overflow-hidden' : ''}`}>
                 <div
-                    className="prose prose-base sm:prose-lg lg:prose-xl dark:prose-invert max-w-none mb-6 md:mb-8
-                               prose-img:rounded-xl prose-img:max-h-[400px] prose-img:mx-auto"
+                    className={`prose prose-base sm:prose-lg lg:prose-xl dark:prose-invert max-w-none mb-6 md:mb-8
+                                 prose-img:rounded-xl prose-img:max-h-[400px] prose-img:mx-auto
+                                 ${showContentOverlay ? 'filter blur-sm' : ''}`}
                     dangerouslySetInnerHTML={{ __html: isSubscribed ? cleanContentHtml : contentToDisplay }}
                 />
 
-                {/* Gradient overlay - now a sibling to the content div, absolutely positioned over it */}
                 {showContentOverlay && (
-                    <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-white dark:from-gray-900 to-transparent pointer-events-none"></div>
+                    <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-white dark:from-gray-900 to-transparent pointer-events-none"></div>
                 )}
             </div>
-
 
             {/* Call-to-action overlay for non-subscribers (positioned below the content div) */}
             {showContentOverlay && (
@@ -307,8 +303,8 @@ const BlogDetail = () => {
                         key={tag}
                         to={`/tag/${encodeURIComponent(tag.toLowerCase())}`}
                         className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 text-sm font-medium rounded-full
-                                   hover:bg-blue-200 dark:hover:bg-blue-600 hover:text-blue-700 dark:hover:text-blue-100
-                                   transition-colors cursor-pointer"
+                                     hover:bg-blue-200 dark:hover:bg-blue-600 hover:text-blue-700 dark:hover:text-blue-100
+                                     transition-colors cursor-pointer"
                     >
                         #{tag}
                     </Link>

@@ -1,6 +1,6 @@
 const Blog = require('../models/Blog');
 
-// NEW: Get the 5 latest blogs for the homepage carousel
+ 
 exports.getLatestBlogs = async (req, res) => {
     try {
         const blogs = await Blog.find({})
@@ -12,11 +12,11 @@ exports.getLatestBlogs = async (req, res) => {
     }
 };
 
-// UPDATED: Gets all blogs with pagination, OR filters by category or tag
+ 
 exports.getBlogs = async (req, res) => {
     try {
-        // Destructure category, tag, page, and limit from query parameters
-        const { category, tag, page = 1, limit = 10 } = req.query; // Default page to 1, limit to 10
+    
+        const { category, tag, page = 1, limit = 10 } = req.query;
         const parsedLimit = parseInt(limit, 10);
         const parsedPage = parseInt(page, 10);
 
@@ -27,29 +27,24 @@ exports.getBlogs = async (req, res) => {
             return res.status(400).json({ error: 'Invalid page parameter. Must be a positive number.' });
         }
 
-        // Initialize an empty filter object
+  
         let filter = {};
 
-        // Add category filter if provided
+     
         if (category) {
             filter.category = category.trim();
         }
 
-         
         if (tag) {
-         
             filter.tags = { $in: [new RegExp(`^${tag.trim()}$`, 'i')] };
-             
         }
         const skip = (parsedPage - 1) * parsedLimit;
-
-        // Fetch blogs for the current page based on the constructed filter
-        const blogs = await Blog.find(filter)
-            .sort({ date: -1 }) // Sort by date descending to get the newest first
+ 
+        const blogs = await Blog.find(filter) // <--- ADDED 'const blogs = await' HERE
+            .sort({ date: -1 })
             .skip(skip)
             .limit(parsedLimit);
-
-        // Get total count of blogs matching the filter
+ 
         const totalBlogs = await Blog.countDocuments(filter);
         const totalPages = Math.ceil(totalBlogs / parsedLimit);
 
@@ -60,14 +55,14 @@ exports.getBlogs = async (req, res) => {
             totalBlogs
         });
     } catch (err) {
-        console.error("Error in getBlogs:", err); // Log the actual error for debugging
+        console.error("Error in getBlogs:", err);
         res.status(500).json({ error: err.message || 'Failed to retrieve blogs.' });
     }
 };
 
-// UPDATED: Search functionality to include all language fields with pagination
+ 
 exports.searchBlogs = async (req, res) => {
-    const { q, page = 1, limit = 10 } = req.query; // Default page to 1, limit to 10
+    const { q, page = 1, limit = 10 } = req.query;
     const parsedLimit = parseInt(limit, 10);
     const parsedPage = parseInt(page, 10);
 
@@ -90,12 +85,12 @@ exports.searchBlogs = async (req, res) => {
                 { content: regex },
                 { title_en: regex },
                 { title_hi: regex },
-               
-                
+
+
                 { content_en: regex },
                 { content_hi: regex },
-               
-             
+
+
                 { tags: regex }, // This will search for the tag within the array
                 { category: regex }
             ]
@@ -130,9 +125,9 @@ exports.searchBlogs = async (req, res) => {
 // Get a single blog by ID
 exports.getBlog = async (req, res) => {
     try {
-        const blog = await Blog.findById(req.params.id);
+        const blog = await Blog.findById(req.params.id); // This correctly fetches one blog
         if (!blog) return res.status(404).json({ error: 'Blog not found' });
-        res.json(blog);
+        res.json(blog); // <--- This should send ONLY the blog object
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

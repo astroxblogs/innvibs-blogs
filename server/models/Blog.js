@@ -22,11 +22,11 @@ const BlogSchema = new mongoose.Schema({
     // Multilingual fields - Make them NOT required
     title_en: { type: String }, // Assuming English is the primary default, can be required if always needed
     title_hi: { type: String },
-     
+
 
     content_en: { type: String }, // Assuming English is the primary default, can be required if always needed
     content_hi: { type: String },
- 
+
 
     image: { type: String },
     date: { type: Date, default: Date.now },

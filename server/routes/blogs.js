@@ -1,33 +1,38 @@
+// server/routes/blogs.js
 const express = require('express');
 const router = express.Router();
 const blogController = require('../controllers/blogController');
-const { adminAuth } = require('../middleware/auth');
+const { adminAuth } = require('../middleware/auth'); // Assuming you use this
+
+// --- CRITICAL ROUTE ORDERING ---
+
+// 1. Define specific GET routes first that don't use an ID as their primary segment.
+// Route to get the 5 latest blogs (for carousel)
+router.get('/latest', blogController.getLatestBlogs); // <-- THIS MUST COME BEFORE '/:id'
+
+// Route for search functionality
+router.get('/search', blogController.searchBlogs);     // <-- THIS ALSO MUST COME BEFORE '/:id'
+
+// 2. Then, define the general GET route for a single blog by ID.
+router.get('/:id', blogController.getBlog);           // <-- This catches anything like /blogs/someId
+
+// 3. Then, define the general GET route for all blogs (with optional queries like category/page).
+router.get('/', blogController.getBlogs);            // <-- This catches just /blogs
 
 
-// --- Public Routes ---
-// IMPORTANT: Specific routes like '/latest' and '/search' must come before the dynamic '/:id' route.
+// --- Other HTTP methods (order among themselves less critical, but logically group) ---
 
-// NEW: Route to get the 5 latest blogs for the carousel
-router.get('/latest', blogController.getLatestBlogs);
+// Routes that might require admin authentication
+router.post('/', adminAuth, blogController.createBlog); // For creating new blogs
+router.put('/:id', adminAuth, blogController.updateBlog); // For updating existing blogs
+router.delete('/:id', adminAuth, blogController.deleteBlog); // For deleting blogs
 
-// RE-ADDED: Route to handle blog searches (e.g., /blogs/search?q=Technology)
-router.get('/search', blogController.searchBlogs);
-
-// Gets all blogs OR filters by category (e.g., /blogs?category=Fashion)
-router.get('/', blogController.getBlogs);
-
-// Gets a single blog by its ID. This must be last among the GET routes.
-router.get('/:id', blogController.getBlog);
-
+// Comment routes (if not in a separate comments.js)
 router.post('/:id/comments', blogController.addComment);
+router.delete('/:id/comments/:commentId', adminAuth, blogController.deleteComment); // Assuming comments delete needs auth
+
+// Like route
 router.post('/:id/like', blogController.likeBlog);
-
-
-// --- Admin Routes (Protected) ---
-router.post('/', adminAuth, blogController.createBlog);
-router.put('/:id', adminAuth, blogController.updateBlog);
-router.delete('/:id', adminAuth, blogController.deleteBlog);
-router.delete('/:id/comments/:commentId', adminAuth, blogController.deleteComment);
 
 
 module.exports = router;

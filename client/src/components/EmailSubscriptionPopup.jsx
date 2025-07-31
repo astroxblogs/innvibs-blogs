@@ -1,5 +1,5 @@
 // client/src/components/EmailSubscriptionPopup.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Added useEffect for potential body class toggle
 import { setSubscriberId } from '../utils/localStorage';
 import { subscribeUser } from '../services/api';
 
@@ -11,8 +11,25 @@ const EmailSubscriptionPopup = ({ showPopup, onClose, onSubscribeSuccess }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
 
-    // REMOVED: The useEffect that previously controlled automatic popup display.
-    // Its visibility is now entirely controlled by the 'showPopup' prop from its parent.
+    // Effect to manage body overflow and potential blur class on body
+    useEffect(() => {
+        if (showPopup) {
+            document.body.style.overflow = 'hidden'; // Prevent scrolling when popup is open
+            // OPTIONAL: Add a class to the body for a global blur if needed (e.g., in App.js or index.css)
+            // document.body.classList.add('popup-active');
+        } else {
+            document.body.style.overflow = ''; // Restore scrolling
+            // OPTIONAL: Remove the class
+            // document.body.classList.remove('popup-active');
+        }
+
+        // Cleanup function
+        return () => {
+            document.body.style.overflow = ''; // Ensure overflow is reset if component unmounts while popup is active
+            // document.body.classList.remove('popup-active'); // Ensure class is removed
+        };
+    }, [showPopup]);
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -28,31 +45,28 @@ const EmailSubscriptionPopup = ({ showPopup, onClose, onSubscribeSuccess }) => {
 
         try {
             const data = await subscribeUser(email);
-            // NEW DEBUG LOG: What data is received from the backend?
             console.log('DEBUG (Popup): Backend response data after subscription:', data);
 
-            if (data && data.subscriberId) { // Ensure data and subscriberId exist before attempting to store
-                setSubscriberId(data.subscriberId); // Store the received ID in localStorage
-                console.log('DEBUG (Popup): setSubscriberId called with:', data.subscriberId); // NEW DEBUG LOG
+            if (data && data.subscriberId) {
+                setSubscriberId(data.subscriberId);
+                console.log('DEBUG (Popup): setSubscriberId called with:', data.subscriberId);
             } else {
-                console.error('DEBUG (Popup): Backend response did NOT contain subscriberId:', data); // NEW DEBUG LOG
+                console.error('DEBUG (Popup): Backend response did NOT contain subscriberId:', data);
             }
 
             setMessage(data.msg || 'Thank you for subscribing!');
             setIsSuccess(true);
 
-            // NEW: Call the onSubscribeSuccess prop to inform the parent component
             if (onSubscribeSuccess) {
                 onSubscribeSuccess();
             }
 
-            // Optionally hide popup after a short delay on success
             setTimeout(() => {
-                if (onClose) onClose(); // Use the onClose prop to hide
-            }, 1500); // Shorter delay for better UX
+                if (onClose) onClose();
+            }, 1500);
 
         } catch (error) {
-            console.error('DEBUG (Popup): Error during subscription API call in Popup:', error); // NEW DEBUG LOG
+            console.error('DEBUG (Popup): Error during subscription API call in Popup:', error);
             setMessage(error.message || 'Subscription failed. Please try again.');
             setIsSuccess(false);
         } finally {
@@ -60,15 +74,20 @@ const EmailSubscriptionPopup = ({ showPopup, onClose, onSubscribeSuccess }) => {
         }
     };
 
-    if (!showPopup) { // Now directly uses the 'showPopup' prop
+    if (!showPopup) {
         return null;
     }
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 md:p-8 w-full max-w-md relative">
+        // Added role="dialog" and aria-modal for accessibility
+        <div
+            className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[1000] p-4 backdrop-blur-sm" // Increased z-index significantly, added backdrop-blur-sm
+            role="dialog"
+            aria-modal="true"
+        >
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 md:p-8 w-full max-w-md relative animate-fade-in-scale"> {/* Added animation class (you'll need to define this in CSS) */}
                 <button
-                    onClick={onClose} // Use onClose prop for the close button
+                    onClick={onClose}
                     className="absolute top-3 right-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-200 text-2xl font-bold"
                     aria-label="Close popup"
                 >
@@ -100,8 +119,8 @@ const EmailSubscriptionPopup = ({ showPopup, onClose, onSubscribeSuccess }) => {
                     <button
                         type="submit"
                         className={`w-full px-4 py-2 rounded-md font-semibold ${isSubmitting
-                                ? 'bg-indigo-400 cursor-not-allowed'
-                                : 'bg-indigo-600 hover:bg-indigo-700'
+                            ? 'bg-indigo-400 cursor-not-allowed'
+                            : 'bg-indigo-600 hover:bg-indigo-700'
                             } text-white transition-colors duration-200`}
                         disabled={isSubmitting || isSuccess}
                     >

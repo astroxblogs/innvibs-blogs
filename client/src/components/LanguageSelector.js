@@ -11,6 +11,7 @@ const LanguageSelector = () => {
     };
 
     return (
+        // The outer div might not need specific width/height, but ensure it allows content to breathe
         <div className="language-selector flex items-center">
             <label htmlFor="language-select" className="sr-only">
                 {t('language_selector.select_language')}
@@ -20,12 +21,14 @@ const LanguageSelector = () => {
                 onChange={changeLanguage}
                 value={i18n.language}
                 className="
-          p-2 border rounded-md shadow-sm
-          bg-white text-gray-900
-          dark:bg-gray-700 dark:text-white
-          focus:outline-none focus:ring-2 focus:ring-blue-500
-          transition-colors duration-200
-        "
+                    p-2 border rounded-md shadow-sm
+                    bg-white text-gray-900
+                    dark:bg-gray-700 dark:text-white
+                    focus:outline-none focus:ring-2 focus:ring-blue-500
+                    transition-colors duration-200
+                    w-auto min-w-[100px]  // Added auto width and minimum width
+                    px-3 py-2               // Adjusted padding for better fit
+                "
             >
                 <option value="en">{t('language_selector.english')}</option>
                 <option value="hi">{t('language_selector.hindi')}</option>
