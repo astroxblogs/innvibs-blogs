@@ -100,7 +100,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
             }
         };
     
-    }, [activeLang, setValue, watch]) // activeLang is still needed if you want to update the main cover logic based on content from a specific language
+    }, []) // activeLang is still needed if you want to update the main cover logic based on content from a specific language
 
     const modules = useMemo(() => ({
         imageResize: {

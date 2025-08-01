@@ -26,8 +26,7 @@ const TagPage = () => {
             setLoading(true);
             setError(null);
             try {
-                // Fetch blogs based on the tag parameter and current page
-                // We'll need to update the backend to handle a 'tag' query parameter
+        
                 const res = await axios.get(`/api/blogs?tag=${tagName}&page=${currentPage}&limit=${blogsPerPage}`);
                 setBlogs(res.data.blogs);
                 setCurrentPage(res.data.currentPage);

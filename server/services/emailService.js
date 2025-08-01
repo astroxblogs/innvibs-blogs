@@ -17,7 +17,7 @@ if (!SENDER_EMAIL) {
 let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 let apiKey = apiInstance.authentications['apiKey'];
 apiKey.apiKey = BREVO_API_KEY
-console.log('Brevo API client configured with API key:', apiKey, 'BREVO_API_KEY', BREVO_API_KEY)
+ 
 /**
  * Sends a single email using Brevo.
  * @param {string} toEmail - The recipient's email address.
