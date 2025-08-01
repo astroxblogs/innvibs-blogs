@@ -1,4 +1,4 @@
-// client/src/components/BlogDetail.js
+ 
 import React, { useState, useEffect, Suspense, useRef, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';

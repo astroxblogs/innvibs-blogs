@@ -92,11 +92,11 @@ const FeaturedBlogCarousel = ({ blogs }) => {
                         </div>
                     )}
 
-                    <h2 className="text-4xl md:text-5xl font-extrabold leading-tight mb-4 drop-shadow-lg">
+                    <h3 className="text-3xl md:text-4xl font-extrabold leading-tight mb-4 drop-shadow-lg">
                         {displayTitle}
-                    </h2>
+                    </h3>
 
-                    <p className="text-lg text-gray-200 mb-6 line-clamp-3">
+                    <p className="text-lg text-gray-200 mb-4 line-clamp-3">
                         {excerpt}
                     </p>
 

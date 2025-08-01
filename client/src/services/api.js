@@ -8,7 +8,7 @@ const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
  * @returns {Promise<Object>} The response data from the backend.
  */
 export const subscribeUser = async (email) => {
-    // ... (your existing subscribeUser function code here) ...
+     
     try {
         const response = await fetch(`${API_BASE_URL}/api/subscribe`, {
             method: 'POST',
@@ -85,7 +85,7 @@ export const trackUserComment = async (subscriberId, blogId) => { // <-- ADD THI
     }
 };
 
-export const trackUserRead = async (subscriberId, blogId, duration) => { // <-- ADD THIS NEW FUNCTION
+export const trackUserRead = async (subscriberId, blogId, duration) => {  
     try {
         const response = await fetch(`${API_BASE_URL}/api/track/read`, {
             method: 'POST',

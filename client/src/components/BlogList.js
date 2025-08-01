@@ -2,7 +2,7 @@ import React from 'react';
 import BlogCard from './BlogCard';
 import { useTranslation } from 'react-i18next';
 
-// BlogList now accepts pagination props
+ 
 const BlogList = ({ blogs, loadingMore, hasMore, onLoadMore, totalBlogsCount }) => {
     const { t } = useTranslation();
 
