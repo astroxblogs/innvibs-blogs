@@ -16,7 +16,7 @@ const BlogList = ({ blogs, loadingMore, hasMore, onLoadMore, totalBlogsCount }) 
             {/* REMOVED: Display count (general.showing_blogs_count) as per your request */}
             {/* {totalBlogsCount > 0 && (
                 <p className="text-right text-sm text-gray-600 dark:text-gray-400 mb-4">
-                    {t('general.showing_blogs_count', {
+                    {t('showing blogs count', {
                         currentCount: blogs.length,
                         totalCount: totalBlogsCount
                     })}
@@ -37,7 +37,7 @@ const BlogList = ({ blogs, loadingMore, hasMore, onLoadMore, totalBlogsCount }) 
                         className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {/* Corrected translation keys */}
-                        {loadingMore ? t('general.loading_more') : t('general.load_more')}
+                        {loadingMore ? t('loading more') : t('loading more')}
                     </button>
                 </div>
             )}
@@ -45,7 +45,7 @@ const BlogList = ({ blogs, loadingMore, hasMore, onLoadMore, totalBlogsCount }) 
             {loadingMore && (
                 <div className="text-center py-4 text-gray-500 dark:text-gray-400">
                     {/* Corrected translation key for loading message */}
-                    {t('general.loading_blogs_dot_dot_dot')}
+                    {t('loading blogs....')}
                 </div>
             )}
         </div>

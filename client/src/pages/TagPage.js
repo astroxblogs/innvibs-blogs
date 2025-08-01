@@ -26,7 +26,6 @@ const TagPage = () => {
             setLoading(true);
             setError(null);
             try {
-        
                 const res = await axios.get(`/api/blogs?tag=${tagName}&page=${currentPage}&limit=${blogsPerPage}`);
                 setBlogs(res.data.blogs);
                 setCurrentPage(res.data.currentPage);
@@ -34,20 +33,23 @@ const TagPage = () => {
                 setTotalBlogs(res.data.totalBlogs);
             } catch (err) {
                 console.error(`Error fetching blogs for tag "${tagName}":`, err);
-                setError(t('general.error_loading_blogs_for_tag', { tag: tagName })); // Use translation
+                setError(t('error loading blogs for tag', { tag: tagName }));
             } finally {
                 setLoading(false);
             }
         };
 
-        // Reset page to 1 if tag changes
         const urlPage = parseInt(searchParams.get('page')) || 1;
-        if (urlPage !== currentPage && !loading) { // Avoid re-fetching on initial load if page is already 1
+
+        // Always update currentPage from URL, and let it trigger re-fetch
+        if (urlPage !== currentPage) {
             setCurrentPage(urlPage);
-        } else {
-            fetchBlogsByTag();
+            return; // skip fetch this time, it will re-run after page state updates
         }
+
+        fetchBlogsByTag();
     }, [tagName, currentPage, searchParams, t]);
+
 
     // Handle pagination button click
     const handleLoadMore = () => {
