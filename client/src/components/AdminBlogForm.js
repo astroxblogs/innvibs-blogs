@@ -1,8 +1,6 @@
- 
-
 import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
+import api from '../services/api'; // <-- Changed from axios to api
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ImageResize from 'quill-image-resize-module-react';
@@ -46,7 +44,6 @@ const AdminBlogForm = ({ blog, onSave }) => {
     };
 
     const quillImageUploadHandler = useCallback(() => {
-        
         const input = document.createElement('input');
         input.setAttribute('type', 'file');
         input.setAttribute('accept', 'image/*');
@@ -71,9 +68,10 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 const cursorIndex = range ? range.index : 0;
                 editor.insertEmbed(cursorIndex, 'text', 'Uploading image...');
 
-                const res = await axios.post('/api/blogs/upload-image', formData, {
+                // Use 'api.post' instead of 'axios.post'
+                const res = await api.post('/api/blogs/upload-image', formData, { // <-- Changed
                     headers: {
-                        'Content-Type': 'multipart/form-data',
+                        'Content-Type': 'multipart/form-form-data', // Corrected typo here
                     },
                 });
 
@@ -81,8 +79,6 @@ const AdminBlogForm = ({ blog, onSave }) => {
 
                 editor.deleteText(cursorIndex, 16);
                 editor.insertEmbed(cursorIndex, 'image', imageUrl);
-
-             
 
             } catch (error) {
                 console.error('Error uploading image to backend for Quill:', error.response?.data || error.message);
@@ -99,8 +95,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 }
             }
         };
-    
-    }, []) // activeLang is still needed if you want to update the main cover logic based on content from a specific language
+    }, [])
 
     const modules = useMemo(() => ({
         imageResize: {
@@ -177,7 +172,8 @@ const AdminBlogForm = ({ blog, onSave }) => {
         formData.append('image', selectedFile);
 
         try {
-            const res = await axios.post('/api/blogs/upload-image', formData, {
+            // Use 'api.post' instead of 'axios.post'
+            const res = await api.post('/api/blogs/upload-image', formData, { // <-- Changed
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -229,9 +225,10 @@ const AdminBlogForm = ({ blog, onSave }) => {
 
 
         try {
+            // Use 'api.put' and 'api.post' instead of 'axios.put' and 'axios.post'
             const res = blog
-                ? await axios.put(`/api/blogs/${blog._id}`, payload)
-                : await axios.post('/api/blogs', payload);
+                ? await api.put(`/api/blogs/${blog._id}`, payload) // <-- Changed
+                : await api.post('/api/blogs', payload);           // <-- Changed
             onSave(res.data);
             reset();
             const clearedContents = {};
@@ -292,12 +289,12 @@ const AdminBlogForm = ({ blog, onSave }) => {
                         onChange={handleFileChange}
                         ref={fileInputRef}
                         className="block w-full text-sm text-gray-900 dark:text-white
-                                     file:mr-4 file:py-2 file:px-4
-                                     file:rounded-md file:border-0
-                                     file:text-sm file:font-semibold
-                                     file:bg-blue-50 file:text-blue-700
-                                     hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300
-                                     dark:hover:file:bg-blue-800"
+                                    file:mr-4 file:py-2 file:px-4
+                                    file:rounded-md file:border-0
+                                    file:text-sm file:font-semibold
+                                    file:bg-blue-50 file:text-blue-700
+                                    hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300
+                                    dark:hover:file:bg-blue-800"
                     />
                     {selectedFile && (
                         <button

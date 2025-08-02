@@ -1,50 +1,57 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import BlogCard from './BlogCard';
 import { useTranslation } from 'react-i18next';
 
- 
 const BlogList = ({ blogs, loadingMore, hasMore, onLoadMore, totalBlogsCount }) => {
     const { t } = useTranslation();
+    const observerRef = useRef(null); // Reference to the last element
 
-    // Corrected translation key usage for "No blogs found"
+    useEffect(() => {
+        if (!hasMore || loadingMore) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) {
+                    onLoadMore(); // Trigger loading more blogs
+                }
+            },
+            {
+                root: null, // viewport
+                rootMargin: '0px',
+                threshold: 1.0, // 100% visibility
+            }
+        );
+
+        const currentObserver = observerRef.current;
+        if (currentObserver) {
+            observer.observe(currentObserver);
+        }
+
+        return () => {
+            if (currentObserver) observer.unobserve(currentObserver);
+        };
+    }, [hasMore, loadingMore, onLoadMore]);
+
     if (!blogs.length && !loadingMore) {
-        return <div className="text-center text-gray-500 mt-10">{t('')}</div>;
+        return <div className="text-center text-gray-500 mt-10">{t('no blogs found')}</div>;
     }
 
     return (
         <div className="max-w-4xl w-full mx-auto px-4">
-            {/* REMOVED: Display count (general.showing_blogs_count) as per your request */}
-            {/* {totalBlogsCount > 0 && (
-                <p className="text-right text-sm text-gray-600 dark:text-gray-400 mb-4">
-                    {t('showing blogs count', {
-                        currentCount: blogs.length,
-                        totalCount: totalBlogsCount
-                    })}
-                </p>
-            )} */}
-
             <div className="grid grid-cols-1 gap-6">
-                {blogs.map((blog) => (
-                    <BlogCard key={blog._id} blog={blog} />
-                ))}
+                {blogs.map((blog, index) => {
+                    // Attach the observer to the last blog card
+                    const isLast = index === blogs.length - 1;
+                    return (
+                        <div key={blog._id} ref={isLast ? observerRef : null}>
+                            <BlogCard blog={blog} />
+                        </div>
+                    );
+                })}
             </div>
-
-            {hasMore && (
-                <div className="text-center mt-8">
-                    <button
-                        onClick={onLoadMore}
-                        disabled={loadingMore}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        {/* Corrected translation keys */}
-                        {loadingMore ? t('loading more') : t('loading more')}
-                    </button>
-                </div>
-            )}
 
             {loadingMore && (
                 <div className="text-center py-4 text-gray-500 dark:text-gray-400">
-                    {/* Corrected translation key for loading message */}
                     {t('loading blogs....')}
                 </div>
             )}

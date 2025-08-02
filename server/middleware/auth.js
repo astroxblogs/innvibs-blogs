@@ -1,9 +1,13 @@
+// This file has been slightly modified to be more generic in its 401 response,
+// which is what the client-side interceptor needs to trigger the refresh flow.
+
 const jwt = require('jsonwebtoken');
-const Admin = require('../models/Admin');  
+const Admin = require('../models/Admin');
 
 exports.adminAuth = (req, res, next) => {
     const authHeader = req.headers['authorization'];
 
+    // Check if the Authorization header exists and has the correct format
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ message: 'Access denied. Token is missing or malformed.' });
     }
@@ -14,30 +18,28 @@ exports.adminAuth = (req, res, next) => {
         return res.status(401).json({ message: 'Access denied. Token is missing.' });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => { // ADDED 'async' here
+    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
         if (err) {
             console.log('Auth middleware - Invalid token:', err.message);
-            if (err.name === 'TokenExpiredError') {
-                return res.status(401).json({ message: 'Token has expired. Please log in again.' });
-            }
-            return res.status(401).json({ message: 'Invalid token.' });
+            // Any JWT verification error (expired, invalid signature, etc.) will result in a 401.
+            // This is the signal for our client-side interceptor to attempt a token refresh.
+            return res.status(401).json({ message: 'Invalid or expired token.' });
         }
 
-      
         try {
-            const admin = await Admin.findById(decoded.id);  
+            const admin = await Admin.findById(decoded.id);
 
             if (!admin) {
                 console.log('Auth middleware - User from token not found in DB:', decoded.id);
                 return res.status(401).json({ message: 'Unauthorized: User no longer exists.' });
             }
 
-            if (admin.role !== 'admin') {  
+            if (admin.role !== 'admin') {
                 console.log('Auth middleware - User from token is not an admin:', decoded.id);
                 return res.status(403).json({ message: 'Forbidden: Admin access required.' });
             }
 
-            req.user = decoded;  
+            req.user = decoded;
             next();
         } catch (dbErr) {
             console.error('Auth middleware - Database error during user check:', dbErr.message);

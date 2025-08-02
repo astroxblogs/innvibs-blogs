@@ -1,6 +1,6 @@
- 
+// This file has been updated to include cookie-parser middleware and to adjust CORS settings.
 
-require('dotenv').config(); 
+require('dotenv').config();
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -10,37 +10,42 @@ const cloudinary = require('cloudinary').v2;
 const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
+const cookieParser = require('cookie-parser'); // <-- Added for reading cookies
 
 const blogRoutes = require('./routes/blogs');
 const adminRoutes = require('./routes/admin');
 const subscriberRoutes = require('./routes/subscribers');
 
-const { adminAuth } = require('./middleware/auth'); 
+const { adminAuth } = require('./middleware/auth');
 const { startEmailJob } = require('./jobs/sendPersonalizedEmails');
 const app = express();
 
- 
+// Cloudinary configuration (no changes here)
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
+
  
 app.use(cors({
     origin: [
-        process.env.CORS_ORIGIN_DEV, // e.g., 'http://localhost:3000'
-        process.env.CORS_ORIGIN_PROD // e.g., 'https://www.innvibs.com'
-    ]
+        process.env.CORS_ORIGIN_DEV,  
+        process.env.CORS_ORIGIN_PROD  
+    ],
+    credentials: true  
 }));
- 
+
+// Express middleware
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(cookieParser());  
 
  
-const storage = multer.memoryStorage();  
+const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 20 * 1024 * 1024 },  
+    limits: { fileSize: 20 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
         if (file.mimetype.startsWith('image/')) {
             cb(null, true);
@@ -49,7 +54,6 @@ const upload = multer({
         }
     }
 });
-
  
 app.post('/api/blogs/upload-image', adminAuth, upload.single('image'), async (req, res) => {
     try {
@@ -85,20 +89,19 @@ app.use('/api/blogs', blogRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api', subscriberRoutes);
 
-// Default route
+// Default route (no changes here)
 app.get('/', (req, res) => {
     res.send('innvibs Backend API is running!');
 });
 
-// Database connection
+// Database connection (no changes here)
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         console.log('MongoDB connected successfully');
-         
-        startEmailJob(); 
+        startEmailJob();
     })
     .catch(err => console.error('MongoDB connection error:', err));
- 
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

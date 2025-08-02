@@ -14,6 +14,9 @@ const blogController = require('../controllers/blogController');
 console.log('DEBUG: blogController object:', blogController);
 
 router.post('/login', adminController.login);
+router.post('/refresh-token', adminController.refreshAdminToken); // <-- NEW ROUTE
+ 
+router.post('/logout', adminController.logout);  
 
 router.get('/verify-token', adminAuth, (req, res) => {
     res.status(200).json({ message: 'Token is valid', isAdmin: true });
