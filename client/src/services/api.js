@@ -1,4 +1,4 @@
-// client/src/services/api.js
+ 
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -36,7 +36,7 @@ api.interceptors.request.use(
     (config) => {
         const token = getAccessToken();
         if (token) {
-            console.log('Request Interceptor: Sending request for', config.url, 'with token:', token.substring(0, 20) + '...');
+            // console.log('Request Interceptor: Sending request for', config.url, 'with token:', token.substring(0, 20) + '...');
             config.headers['Authorization'] = `Bearer ${token}`;
         } else {
             console.log('Request Interceptor: Sending request for', config.url, 'without token.');
