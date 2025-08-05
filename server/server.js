@@ -27,21 +27,21 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
- 
+
 app.use(cors({
     origin: [
-        process.env.CORS_ORIGIN_DEV,  
-        process.env.CORS_ORIGIN_PROD  
+        process.env.CORS_ORIGIN_DEV,
+        process.env.CORS_ORIGIN_PROD
     ],
-    credentials: true  
+    credentials: true
 }));
 
 // Express middleware
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
-app.use(cookieParser());  
+app.use(cookieParser());
 
- 
+
 const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
@@ -54,7 +54,7 @@ const upload = multer({
         }
     }
 });
- 
+
 app.post('/api/blogs/upload-image', adminAuth, upload.single('image'), async (req, res) => {
     try {
         if (!req.file) {
