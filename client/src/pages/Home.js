@@ -1,3 +1,4 @@
+// astroxblogs-innvibs-blogs/client/src/pages/Home.js
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import BlogList from '../components/BlogList';
@@ -37,7 +38,6 @@ const Home = ({ activeCategory, searchQuery }) => {
                 console.error("Error fetching featured blogs:", err);
             }
         };
-
         fetchFeaturedBlogs();
     }, []);
 
@@ -53,12 +53,11 @@ const Home = ({ activeCategory, searchQuery }) => {
 
             if (searchQuery) {
                 url = `/api/blogs/search?q=${encodeURIComponent(searchQuery)}&page=${pageToLoad}&limit=${INITIAL_PAGE_SIZE}`;
-            } else if (activeCategory && activeCategory !== 'all') {
-                url = `/api/blogs?category=${activeCategory}&page=${pageToLoad}&limit=${INITIAL_PAGE_SIZE}`;
+            } else if (activeCategory && activeCategory.toLowerCase() !== 'all') {
+                url = `/api/blogs?category=${encodeURIComponent(activeCategory)}&page=${pageToLoad}&limit=${INITIAL_PAGE_SIZE}`;
             }
 
             const res = await axios.get(url);
-            console.log(res);
             const { blogs: newBlogs, currentPage: apiCurrentPage, totalPages: apiTotalPages, totalBlogs: apiTotalBlogs } = res.data;
 
             if (append) {
@@ -91,14 +90,13 @@ const Home = ({ activeCategory, searchQuery }) => {
     };
 
     const isSearchView = !!searchQuery;
-    const isCategoryView = activeCategory && activeCategory !== 'all';
+    const isCategoryView = activeCategory && activeCategory.toLowerCase() !== 'all';
 
-    let pageTitle = '';
-    if (isSearchView) {
-        pageTitle = t('general.search_results_for', { query: searchQuery });
-    } else if (isCategoryView) {
-        pageTitle = t('general.blogs_in_category', { category: activeCategory });
-    }
+    const pageTitle = isSearchView
+        ? t('general.search_results_for', { query: searchQuery })
+        : isCategoryView
+            ? t('general.blogs_in_category', { category: activeCategory })
+            : '';
 
     if (loading) {
         return <div className="text-center py-20 dark:text-gray-200">{t('general.loading_blogs')}</div>;
@@ -158,7 +156,7 @@ const Home = ({ activeCategory, searchQuery }) => {
 
                 {!hasBlogsToDisplay && !loading && (
                     <p className="text-center text-gray-500 dark:text-gray-400 py-10">
-                        {t('general.no_blogs')}  
+                        {t('general.no_blogs')}
                     </p>
                 )}
             </main>

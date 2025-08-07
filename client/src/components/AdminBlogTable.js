@@ -11,10 +11,10 @@ const AdminBlogTable = ({ blogs, onEdit, onDelete }) => {
                 <thead>
                     <tr className="border-b border-gray-200 dark:border-gray-700">
                         {/* Using translation keys for table headers */}
-                        <th className="p-4 text-left font-semibold text-gray-700 dark:text-gray-200">{t('admin_panel.title')}</th>
-                        <th className="p-4 text-left font-semibold text-gray-700 dark:text-gray-200">{t('admin_panel.category')}</th> {/* Changed key for category header */}
-                        <th className="p-4 text-left font-semibold text-gray-700 dark:text-gray-200">{t('admin_panel.date')}</th>
-                        <th className="p-4 text-left font-semibold text-gray-700 dark:text-gray-200">{t('admin_panel.actions')}</th>
+                        <th className="p-4 text-left font-semibold text-gray-700 dark:text-gray-200">{t('Title')}</th>
+                        <th className="p-4 text-left font-semibold text-gray-700 dark:text-gray-200">{t('Category')}</th> {/* Changed key for category header */}
+                        <th className="p-4 text-left font-semibold text-gray-700 dark:text-gray-200">{t('Date')}</th>
+                        <th className="p-4 text-left font-semibold text-gray-700 dark:text-gray-200">{t('Actions')}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -26,8 +26,8 @@ const AdminBlogTable = ({ blogs, onEdit, onDelete }) => {
                             <td className="p-4 text-gray-500 dark:text-gray-400">{new Date(blog.date).toLocaleDateString()}</td>
                             <td className="p-4">
                                 {/* Using translation keys for action buttons */}
-                                <button className="text-green-600 hover:underline mr-4" onClick={() => onEdit(blog)}>{t('admin_panel.edit')}</button>
-                                <button className="text-red-600 hover:underline" onClick={() => setDeleteId(blog._id)}>{t('admin_panel.delete')}</button>
+                                <button className="text-green-600 hover:underline mr-4" onClick={() => onEdit(blog)}>{t('Edit')}</button>
+                                <button className="text-red-600 hover:underline" onClick={() => setDeleteId(blog._id)}>{t('Delete')}</button>
                             </td>
                         </tr>
                     ))}
@@ -43,8 +43,8 @@ const AdminBlogTable = ({ blogs, onEdit, onDelete }) => {
                         <p className="mb-6 text-gray-700 dark:text-gray-300">{t('admin_panel.confirm_delete_message')}</p>
                         <div className="flex justify-end gap-4">
                             {/* Using translation key for Cancel button */}
-                            <button className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700" onClick={() => setDeleteId(null)}>{t('general.cancel')}</button>
-                            <button className="px-4 py-2 rounded bg-red-600 text-white" onClick={() => { onDelete(deleteId); setDeleteId(null); }}>{t('admin_panel.delete')}</button>
+                            <button className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700" onClick={() => setDeleteId(null)}>{t('Cancel')}</button>
+                            <button className="px-4 py-2 rounded bg-red-600 text-white" onClick={() => { onDelete(deleteId); setDeleteId(null); }}>{t('Delete')}</button>
                         </div>
                     </div>
                 </div>
