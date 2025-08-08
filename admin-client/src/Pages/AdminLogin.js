@@ -12,15 +12,14 @@ const AdminLogin = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(''); // Clear previous errors
+    setError(''); 
     try {
-      // Use our configured API instance
+      
       const res = await api.post('/api/admin/login', { username, password });
 
-      // The api.js interceptor will automatically store the access token in memory
-      // We don't need to do anything here except handle a successful login.
+     
       console.log('Login successful, navigating to admin dashboard.');
-      navigate('/admin');
+      navigate('/dashboard');
     } catch (err) {
       console.error('Login error:', err.response?.data?.message || err.message);
       setError(t('invalidCredentials')); // Use a translated error message
@@ -69,3 +68,4 @@ const AdminLogin = () => {
 };
 
 export default AdminLogin;
+

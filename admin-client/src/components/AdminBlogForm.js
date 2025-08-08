@@ -12,12 +12,13 @@ const LANGUAGES = [
     { code: 'hi', name: 'Hindi' },
 ];
 
-const categories = [
-    'Technology', 'Fashion', 'Health & Wellness', 'Travel',
-    'Food & Cooking', 'Sports', 'Business & Finance', 'Lifestyle',
-    'Trends',
-    'Relationship'
-];
+// --- REMOVED THE HARD-CODED CATEGORIES ARRAY ---
+// const categories = [
+//     'Technology', 'Fashion', 'Health & Wellness', 'Travel',
+//     'Food & Cooking', 'Sports', 'Business & Finance', 'Lifestyle',
+//     'Trends',
+//     'Relationship'
+// ];
 
 const AdminBlogForm = ({ blog, onSave }) => {
     const { register, handleSubmit, reset, setValue, watch } = useForm();
@@ -34,6 +35,29 @@ const AdminBlogForm = ({ blog, onSave }) => {
     const fileInputRef = useRef(null);
 
     const quillRef = useRef(null);
+
+    // --- NEW STATE FOR DYNAMIC CATEGORIES ---
+    const [categories, setCategories] = useState([]);
+    const [loadingCategories, setLoadingCategories] = useState(true);
+    const [categoriesError, setCategoriesError] = useState(null);
+
+    // --- NEW useEffect TO FETCH CATEGORIES ---
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                setLoadingCategories(true);
+                const response = await api.get('/api/admin/categories');
+                setCategories(response.data);
+                setLoadingCategories(false);
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+                setCategoriesError('Failed to fetch categories.');
+                setLoadingCategories(false);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     const extractFirstImageUrl = (htmlContent) => {
         if (!htmlContent) return null;
@@ -68,10 +92,9 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 const cursorIndex = range ? range.index : 0;
                 editor.insertEmbed(cursorIndex, 'text', 'Uploading image...');
 
-                // Use 'api.post' instead of 'axios.post'
-                const res = await api.post('/api/blogs/upload-image', formData, { // <-- Changed
+                const res = await api.post('/api/admin/blogs/upload-image', formData, {
                     headers: {
-                        'Content-Type': 'multipart/form-form-data', // Corrected typo here
+                        'Content-Type': 'multipart/form-data',
                     },
                 });
 
@@ -142,7 +165,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 title: '',
                 image: '',
                 tags: '',
-                category: categories[0]
+                category: categories[0]?.name_en || '' // <-- Use dynamic categories
             });
             const clearedContents = {};
             LANGUAGES.forEach(lang => clearedContents[lang.code] = '');
@@ -153,7 +176,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 fileInputRef.current.value = '';
             }
         }
-    }, [blog, reset, setValue]);
+    }, [blog, reset, setValue, categories]); // <-- ADDED 'categories' to dependency array
 
     const handleFileChange = (event) => {
         if (event.target.files && event.target.files[0]) {
@@ -172,8 +195,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
         formData.append('image', selectedFile);
 
         try {
-            // Use 'api.post' instead of 'axios.post'
-            const res = await api.post('/api/blogs/upload-image', formData, { // <-- Changed
+            const res = await api.post('/api/admin/blogs/upload-image', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -225,10 +247,9 @@ const AdminBlogForm = ({ blog, onSave }) => {
 
 
         try {
-            // Use 'api.put' and 'api.post' instead of 'axios.put' and 'axios.post'
             const res = blog
-                ? await api.put(`/api/blogs/${blog._id}`, payload) // <-- Changed
-                : await api.post('/api/blogs', payload);           // <-- Changed
+                ? await api.put(`/api/admin/blogs/${blog._id}`, payload)
+                : await api.post('/api/admin/blogs', payload);
             onSave(res.data);
             reset();
             const clearedContents = {};
@@ -289,12 +310,12 @@ const AdminBlogForm = ({ blog, onSave }) => {
                         onChange={handleFileChange}
                         ref={fileInputRef}
                         className="block w-full text-sm text-gray-900 dark:text-white
-                                    file:mr-4 file:py-2 file:px-4
-                                    file:rounded-md file:border-0
-                                    file:text-sm file:font-semibold
-                                    file:bg-blue-50 file:text-blue-700
-                                    hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300
-                                    dark:hover:file:bg-blue-800"
+                                     file:mr-4 file:py-2 file:px-4
+                                     file:rounded-md file:border-0
+                                     file:text-sm file:font-semibold
+                                     file:bg-blue-50 file:text-blue-700
+                                     hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300
+                                     dark:hover:file:bg-blue-800"
                     />
                     {selectedFile && (
                         <button
@@ -319,14 +340,22 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 placeholder="Tags (comma separated)"
                 {...register('tags')}
             />
-            <select
-                className="border border-gray-300 dark:border-gray-700 p-2 rounded w-full text-gray-900 dark:text-white bg-white dark:bg-gray-700"
-                {...register('category', { required: true })}
-            >
-                {categories.map((category) => (
-                    <option key={category} value={category}>{category}</option>
-                ))}
-            </select>
+
+            {/* --- NEW CONDITIONAL RENDERING FOR CATEGORIES --- */}
+            {loadingCategories ? (
+                <div className="text-gray-500 dark:text-gray-400">Loading categories...</div>
+            ) : categoriesError ? (
+                <div className="text-red-500 dark:text-red-400">{categoriesError}</div>
+            ) : (
+                <select
+                    className="border border-gray-300 dark:border-gray-700 p-2 rounded w-full text-gray-900 dark:text-white bg-white dark:bg-gray-700"
+                    {...register('category', { required: true })}
+                >
+                    {categories.map((category) => (
+                        <option key={category.slug} value={category.name_en}>{category.name_en}</option>
+                    ))}
+                </select>
+            )}
 
             {
                 LANGUAGES.map(lang => (

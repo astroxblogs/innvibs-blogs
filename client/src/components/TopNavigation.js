@@ -8,19 +8,12 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 
-const categories = [
-    { labelKey: "category.all", value: "all" },
-    { labelKey: "category.technology", value: "Technology" },
-    { labelKey: "category.fashion", value: "Fashion" },
-    { labelKey: "category.health_wellness", value: "Health & Wellness" },
-    { labelKey: "category.travel", value: "Travel" },
-    { labelKey: "category.food_cooking", value: "Food & Cooking" },
-    { labelKey: "category.sports", value: "Sports" },
-    { labelKey: "category.business_finance", value: "Business & Finance" },
-    { labelKey: "category.lifestyle", value: "Lifestyle" },
-    { labelKey: "category.trends", value: "Trends" },
-    { labelKey: "category.relationship", value: "Relationship" },
-];
+// --- REMOVED THE HARDCODED CATEGORIES ARRAY ---
+// const categories = [
+//     { labelKey: "category.all", value: "all" },
+//     { labelKey: "category.technology", value: "Technology" },
+//     ...
+// ];
 
 const socialLinks = [
     { name: "Facebook", icon: Facebook, url: "https://facebook.com/astroxhub", className: "text-blue-600 hover:text-blue-700 dark:hover:text-blue-500" },
@@ -29,8 +22,9 @@ const socialLinks = [
     { name: "LinkedIn", icon: Linkedin, url: "https://linkedin.com/company/astroxhub", className: "text-blue-700 hover:text-blue-800 dark:hover:text-blue-600" },
 ];
 
-const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLogoClick }) => {
-    const { t } = useTranslation();
+// --- NEW PROPS ADDED: `categories` ---
+const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLogoClick, categories }) => {
+    const { t, i18n } = useTranslation(); // <-- ADDED `i18n` to get the current language
 
     const [showSearchInput, setShowSearchInput] = useState(false);
     const [inputValue, setInputValue] = useState('');
@@ -39,7 +33,7 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
     const scrollRef = useRef(null);
     const itemRefs = useRef([]);
     const [showLeftArrow, setShowLeftArrow] = useState(false);
-    const [showRightArrow, setShowRightArrow] = useState(true);
+    const [showRightArrow, setShowRightArrow] = useState(false);
 
     const checkArrows = useCallback(() => {
         const el = scrollRef.current;
@@ -52,7 +46,7 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
     useEffect(() => {
         const el = scrollRef.current;
         if (el) {
-            el.scrollLeft = 80;
+            el.scrollLeft = 0;
             checkArrows();
 
             let resizeTimer;
@@ -67,7 +61,7 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                 window.removeEventListener("resize", handleResize);
             };
         }
-    }, [checkArrows]);
+    }, [checkArrows,categories]);
 
     const handleNext = () => {
         scrollRef.current?.scrollBy({ left: scrollRef.current.clientWidth * 0.5, behavior: "smooth" });
@@ -77,16 +71,10 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
         scrollRef.current?.scrollBy({ left: -scrollRef.current.clientWidth * 0.5, behavior: "smooth" });
     };
 
+    // --- UPDATED CATEGORY CLICK HANDLER TO USE DYNAMIC DATA ---
     const handleCategoryClick = (categoryValue) => {
-        onCategoryChange(categoryValue);
+        onCategoryChange(categoryValue.trim()); 
         setIsSidebarOpen(false);
-        const idx = categories.findIndex((c) => c.value === categoryValue);
-        const el = itemRefs.current[idx];
-        const scrollEl = scrollRef.current;
-        if (el && scrollEl) {
-            const scrollAmount = el.offsetLeft - scrollEl.offsetWidth / 2 + el.offsetWidth / 2;
-            scrollEl.scrollTo({ left: scrollAmount, behavior: "smooth" });
-        }
     };
 
     const handleSearchSubmit = (e) => {
@@ -113,6 +101,21 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
         visible: { x: 0, transition: { type: "spring", stiffness: 300, damping: 30 } },
         exit: { x: "-100%", transition: { duration: 0.3 } }
     };
+
+    // --- CREATE A NEW DYNAMIC CATEGORIES LIST FOR RENDERING ---
+    const dynamicCategories = [
+        { name_en: "All", name_hi: "सभी", value: "all" },
+        ...categories.map(cat => ({
+            name_en: cat.name_en,
+            name_hi: cat.name_hi,
+            value: cat.name_en
+        }))
+    ];
+
+    const getCategoryName = (category) => {
+        return i18n.language === 'hi' ? category.name_hi : category.name_en;
+    };
+
 
     return (
         <nav className="sticky top-0 z-50 bg-light-bg-secondary dark:bg-dark-bg-secondary shadow-sm">
@@ -163,17 +166,19 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                         </AnimatePresence>
 
                         <div ref={scrollRef} className="flex items-center space-x-4 whitespace-nowrap overflow-x-auto scroll-smooth no-scrollbar px-10">
-                            {categories.map((cat, idx) => (
+                            {/* --- MAP OVER THE DYNAMIC CATEGORIES LIST --- */}
+                            {dynamicCategories.map((cat, idx) => (
                                 <button
                                     key={cat.value}
                                     ref={(el) => (itemRefs.current[idx] = el)}
                                     onClick={() => handleCategoryClick(cat.value)}
                                     className={`flex-shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-200 ${activeCategory === cat.value
-                                            ? "bg-gray-900 text-white dark:bg-gray-50 dark:text-gray-900"
-                                            : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                                        ? "bg-gray-900 text-white dark:bg-gray-50 dark:text-gray-900"
+                                        : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                                         }`}
                                 >
-                                    {t(cat.labelKey)}
+                                    {/* Use the getCategoryName function to show the correct language */}
+                                    {getCategoryName(cat)}
                                 </button>
                             ))}
                         </div>
@@ -196,7 +201,6 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                 </div>
 
                 {/* Right - Controls */}
-                 
                 <div className="flex items-center gap-3 flex-shrink-0">
                     {showSearchInput ? (
                         <form
@@ -213,7 +217,6 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                             <button
                                 type="button"
                                 onClick={handleCloseSearch}
-                                // className="ml-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                             >
                                 <X className="w-4 h-4" />
                             </button>
@@ -230,8 +233,6 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                     <LanguageSelector />
                     <ThemeToggle />
                 </div>
-
-
             </div>
 
             {/* Sidebar */}
@@ -280,16 +281,17 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                                         {t('footer.categories_title')}
                                     </h3>
                                     <ul className="space-y-2">
-                                        {categories.map((cat) => (
+                                        {/* --- MAP OVER THE DYNAMIC CATEGORIES LIST FOR THE SIDEBAR --- */}
+                                        {dynamicCategories.map((cat) => (
                                             <li key={cat.value}>
                                                 <button
                                                     onClick={() => handleCategoryClick(cat.value)}
                                                     className={`w-full py-1.5 text-lg font-medium rounded-md ${activeCategory === cat.value
-                                                            ? "bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-white"
-                                                            : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                                                        ? "bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-white"
+                                                        : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
                                                         }`}
                                                 >
-                                                    {t(cat.labelKey)}
+                                                    {getCategoryName(cat)}
                                                 </button>
                                             </li>
                                         ))}

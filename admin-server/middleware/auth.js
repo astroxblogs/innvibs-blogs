@@ -1,6 +1,4 @@
-// This file has been slightly modified to be more generic in its 401 response,
-// which is what the client-side interceptor needs to trigger the refresh flow.
-
+ 
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/Admin');
 

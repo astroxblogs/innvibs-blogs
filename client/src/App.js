@@ -1,9 +1,10 @@
-import React, { useState, useEffect, Suspense, useRef } from 'react';
+import React, { useState, useEffect, Suspense, useRef, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './index.css';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import { useTranslation } from 'react-i18next'; // Corrected import
+import { useTranslation } from 'react-i18next';
+import api from './services/api'; // Assuming you have a similar API client on the main site
 
 // Component Imports
 import Footer1 from './components/Footer1';
@@ -16,7 +17,6 @@ const BlogDetailPage = React.lazy(() => import('./pages/BlogDetailPage'));
 const CategoryPage = React.lazy(() => import('./pages/CategoryPage'));
 const TagPage = React.lazy(() => import('./pages/TagPage'));
 
-// Set a default base URL for Axios
 axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL;
 
 axios.interceptors.request.use(
@@ -36,45 +36,55 @@ const slugify = (text) => {
     return text.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-');
 };
 
- 
 const AdminRedirectComponent = () => {
     const navigate = useNavigate();
     const hasRedirected = useRef(false);
 
     useEffect(() => {
-        // This check ensures the code inside runs only once.
         if (!hasRedirected.current) {
-            // Use the environment variable directly.
             const adminUrl = process.env.REACT_APP_ADMIN_URL;
-
             if (adminUrl) {
                 window.open(adminUrl, '_blank', 'noopener,noreferrer');
                 hasRedirected.current = true;
             } else {
                 console.error("Admin URL not found in environment variables.");
             }
-
-            // Redirect the current tab back to the homepage
             navigate('/');
         }
     }, [navigate]);
 
     return (
-        <div >  </div>
+        <div ></div>
     );
 };
 // -----------------------------------------------------
 
 function App() {
     const { t } = useTranslation();
+    const [categories, setCategories] = useState([]); // <-- NEW STATE FOR CATEGORIES
     const [activeCategory, setActiveCategory] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
     const navigate = useNavigate();
 
+    // --- NEW useEffect TO FETCH CATEGORIES ---
+    const fetchCategories = useCallback(async () => {
+        try {
+            const response = await axios.get('/api/blogs/categories'); // Using axios directly as it seems to be in use
+            setCategories(response.data);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+            // Handle error, maybe set a default state or show a message
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchCategories();
+    }, [fetchCategories]);
+
     const handleCategoryChange = (category) => {
         setActiveCategory(category);
         setSearchQuery('');
-        if (category === 'all') {
+        if (category.toLowerCase() === 'all') {
             navigate('/');
         } else {
             const categorySlug = slugify(category);
@@ -96,6 +106,7 @@ function App() {
                 onCategoryChange={handleCategoryChange}
                 setSearchQuery={setSearchQuery}
                 onLogoClick={handleLogoClick}
+                categories={categories} // <-- PASS CATEGORIES TO THE NAVIGATION COMPONENT
             />
             <main className="flex-1 overflow-y-auto">
                 <Suspense fallback={<div className="text-center py-20 dark:text-gray-200">{t('general.loading_page')}</div>}>
@@ -104,10 +115,7 @@ function App() {
                         <Route path="/category/:categoryName" element={<CategoryPage />} />
                         <Route path="/tag/:tagName" element={<TagPage />} />
                         <Route path="/blog/:id" element={<BlogDetailPage />} />
-
-                        {/* This is the final, working redirect route */}
                         <Route path="/admin" element={<AdminRedirectComponent />} />
-
                         <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                 </Suspense>

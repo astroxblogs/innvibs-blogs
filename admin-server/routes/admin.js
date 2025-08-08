@@ -2,29 +2,27 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
-
-// --- ADD THESE DEBUG LOGS ---
-const authModule = require('../middleware/auth'); // Capture the entire module export
-console.log('DEBUG: authModule received:', authModule); // Log what require returns
-const { adminAuth } = authModule; // Then destructure
-console.log('DEBUG: adminAuth type:', typeof adminAuth); // Log the type of adminAuth
-// --- END DEBUG LOGS ---
-
 const blogController = require('../controllers/blogController');
-console.log('DEBUG: blogController object:', blogController);
+const categoryController = require('../controllers/categoryController');
+const { adminAuth } = require('../middleware/auth');
 
+// Admin Authentication Routes
 router.post('/login', adminController.login);
-router.post('/refresh-token', adminController.refreshAdminToken); // <-- NEW ROUTE
- 
-router.post('/logout', adminController.logout);  
-
+router.post('/refresh-token', adminController.refreshAdminToken);
+router.post('/logout', adminController.logout);
 router.get('/verify-token', adminAuth, (req, res) => {
     res.status(200).json({ message: 'Token is valid', isAdmin: true });
 });
 
+// Blog Management Routes (protected)
 router.post('/blogs', adminAuth, blogController.createBlog);
 router.put('/blogs/:id', adminAuth, blogController.updateBlog);
 router.delete('/blogs/:id', adminAuth, blogController.deleteBlog);
 router.get('/blogs', adminAuth, blogController.getLatestBlogs);
+
+// Category Management Routes (protected) // <-- NEW ROUTES
+router.post('/categories', adminAuth, categoryController.createCategory);
+router.get('/categories', adminAuth, categoryController.getCategories);
+router.delete('/categories/:id', adminAuth, categoryController.deleteCategory); // <-- NEW DELETE ROUTE
 
 module.exports = router;

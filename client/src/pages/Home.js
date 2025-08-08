@@ -77,7 +77,7 @@ const Home = ({ activeCategory, searchQuery }) => {
             setLoading(false);
             setLoadingMore(false);
         }
-    }, [activeCategory, searchQuery]);
+    }, [activeCategory, searchQuery]); // <-- ADDED activeCategory AND searchQuery to dependency array
 
     useEffect(() => {
         fetchBlogs(1, false);
