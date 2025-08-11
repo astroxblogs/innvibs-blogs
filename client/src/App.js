@@ -23,7 +23,7 @@ axios.interceptors.request.use(
     (config) => {
         const cloudinaryUploadUrl = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
         if (config.url && !config.url.startsWith(cloudinaryUploadUrl)) {
-            // No changes here
+        
         }
         return config;
     },
@@ -66,7 +66,7 @@ function App() {
     const [searchQuery, setSearchQuery] = useState('');
     const navigate = useNavigate();
 
-    // --- NEW useEffect TO FETCH CATEGORIES ---
+   
     const fetchCategories = useCallback(async () => {
         try {
             const response = await axios.get('/api/blogs/categories'); // Using axios directly as it seems to be in use
