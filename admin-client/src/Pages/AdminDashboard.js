@@ -15,7 +15,7 @@ const AdminDashboard = () => {
     const navigate = useNavigate();
     const location = useLocation(); // <-- Use useLocation hook to get state
 
-    // If we're redirected from AdminBlogList for editing, set the blog
+     
     useEffect(() => {
         if (location.state?.blogToEdit) {
             setEditingBlog(location.state.blogToEdit);

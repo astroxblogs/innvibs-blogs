@@ -58,7 +58,7 @@ function App() {
                     <Route path="/login" element={<AdminLogin />} />
                     <Route path="/" element={<AdminLogin />} />
                     <Route
-                        path="/dashboard" // <-- REMOVED `/*` since it's no longer a parent route
+                        path="/dashboard"  
                         element={
                             <PrivateRoute>
                                 <AdminDashboard />

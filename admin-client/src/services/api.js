@@ -27,14 +27,14 @@ const api = axios.create({
 export const setAccessToken = (token) => {
     console.log('setAccessToken called. Token is now:', token ? '[SET]' : null);
     if (token) {
-        setAuthToken(token); // Store token in localStorage
+        setAuthToken(token);  
     } else {
-        removeAuthToken(); // Remove token from localStorage
+        removeAuthToken();  
     }
 };
 
 export const getAccessToken = () => {
-    return getAuthToken(); // Retrieve token from localStorage
+    return getAuthToken();  
 };
 
 api.interceptors.request.use(
