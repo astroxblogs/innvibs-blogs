@@ -15,8 +15,8 @@ cloudinary.config({
 });
 
 // Import the admin routes
-const adminRoutes = require('./routes/admin');
-const blogController = require('./controllers/blogController'); // Required for image upload
+const adminRoutes = require('./routes/Admin');
+// REMOVED: const blogController = require('./controllers/blogController'); // This is not needed here
 
 const app = express();
 
@@ -43,11 +43,9 @@ const upload = multer({
     }
 });
 
-
 // API Routes
 app.use('/api/admin', adminRoutes);
 
- 
 app.post('/api/admin/blogs/upload-image', upload.single('image'), async (req, res) => {
     try {
         if (!req.file) {
@@ -76,22 +74,20 @@ app.post('/api/admin/blogs/upload-image', upload.single('image'), async (req, re
         res.status(500).json({ error: 'Image upload failed due to processing or Cloudinary issue.', details: error.message });
     }
 });
-// --- END NEW ROUTE ---
 
 // Simple health check route
 app.get('/', (req, res) => {
     res.send('Admin Backend is running!');
 });
 
-const PORT = process.env.ADMIN_SERVER_PORT || 5001;
-app.listen(PORT, () => {
-    console.log(`Admin backend server is running on port ${PORT}`);
-});
-mongoose.connect(process.env.MONGODB_URI, { // <-- CORRECTED: Use MONGODB_URI
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
+// Database connection
+mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('Admin backend connected to MongoDB'))
     .catch(err => {
         console.error('Admin backend MongoDB connection error:', err);
     });
+
+const PORT = process.env.ADMIN_SERVER_PORT || 8080;
+app.listen(PORT, () => {
+    console.log(`Admin backend server is running on port ${PORT}`);
+});
