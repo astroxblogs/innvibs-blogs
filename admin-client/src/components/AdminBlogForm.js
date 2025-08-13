@@ -1,14 +1,10 @@
-import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+
 import { useForm } from 'react-hook-form';
 import api from '../services/api';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ImageResize from 'quill-image-resize-module-react';
-
- 
-if (typeof window !== 'undefined' && Quill && !Quill.imports['modules/imageResize']) {
-    Quill.register('modules/imageResize', ImageResize);
-}
 
 const LANGUAGES = [
     { code: 'en', name: 'English' },
@@ -32,16 +28,11 @@ const AdminBlogForm = ({ blog, onSave }) => {
     const [categories, setCategories] = useState([]);
     const [loadingCategories, setLoadingCategories] = useState(true);
     const [categoriesError, setCategoriesError] = useState(null);
-
-    // --- CORRECT REGISTRATION LOGIC ---
     useEffect(() => {
-    
-        const isRegistered = Quill.imports['modules/imageResize'];
-        if (!isRegistered) {
+         
+        if (!Quill.imports['modules/imageResize']) {
             Quill.register('modules/imageResize', ImageResize);
             console.log('Quill ImageResize module registered successfully.');
-        } else {
-            console.log('Quill ImageResize module already registered.');
         }
     }, []);
 
@@ -65,7 +56,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
         if (!htmlContent) return null;
         const parser = new DOMParser();
         const doc = parser.parseFromString(htmlContent, 'text/html');
-        const img = doc.querySelector('img');
+        const img    = doc.querySelector('img');
         return img ? img.src : null;
     };
 

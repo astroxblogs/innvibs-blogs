@@ -101,4 +101,18 @@ All styles related to the main public-facing blog have been removed.
     border-top-right-radius: 0.5rem;
 }
 
+.ql-image-resize {
+    position: absolute;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.ql-image-resize-handle {
+    width: 8px;
+    height: 8px;
+    background-color: #fff;
+    border: 1px solid #000;
+    position: absolute;
+}
+
 /* === END OF EDITOR STYLES === */
