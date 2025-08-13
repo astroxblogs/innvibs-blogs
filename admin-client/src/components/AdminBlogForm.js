@@ -1,24 +1,19 @@
 import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { useForm } from 'react-hook-form';
-import api from '../services/api'; // <-- Changed from axios to api
+import api from '../services/api';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ImageResize from 'quill-image-resize-module-react';
 
-Quill.register('modules/imageResize', ImageResize);
+ 
+if (typeof window !== 'undefined' && Quill && !Quill.imports['modules/imageResize']) {
+    Quill.register('modules/imageResize', ImageResize);
+}
 
 const LANGUAGES = [
     { code: 'en', name: 'English' },
     { code: 'hi', name: 'Hindi' },
 ];
-
-// --- REMOVED THE HARD-CODED CATEGORIES ARRAY ---
-// const categories = [
-//     'Technology', 'Fashion', 'Health & Wellness', 'Travel',
-//     'Food & Cooking', 'Sports', 'Business & Finance', 'Lifestyle',
-//     'Trends',
-//     'Relationship'
-// ];
 
 const AdminBlogForm = ({ blog, onSave }) => {
     const { register, handleSubmit, reset, setValue, watch } = useForm();
@@ -33,15 +28,23 @@ const AdminBlogForm = ({ blog, onSave }) => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [uploadingImage, setUploadingImage] = useState(false);
     const fileInputRef = useRef(null);
-
     const quillRef = useRef(null);
-
-    // --- NEW STATE FOR DYNAMIC CATEGORIES ---
     const [categories, setCategories] = useState([]);
     const [loadingCategories, setLoadingCategories] = useState(true);
     const [categoriesError, setCategoriesError] = useState(null);
 
-    // --- NEW useEffect TO FETCH CATEGORIES ---
+    // --- CORRECT REGISTRATION LOGIC ---
+    useEffect(() => {
+    
+        const isRegistered = Quill.imports['modules/imageResize'];
+        if (!isRegistered) {
+            Quill.register('modules/imageResize', ImageResize);
+            console.log('Quill ImageResize module registered successfully.');
+        } else {
+            console.log('Quill ImageResize module already registered.');
+        }
+    }, []);
+
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -55,7 +58,6 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 setLoadingCategories(false);
             }
         };
-
         fetchCategories();
     }, []);
 
@@ -97,9 +99,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
                         'Content-Type': 'multipart/form-data',
                     },
                 });
-
                 const imageUrl = res.data.imageUrl;
-
                 editor.deleteText(cursorIndex, 16);
                 editor.insertEmbed(cursorIndex, 'image', imageUrl);
 
@@ -118,7 +118,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 }
             }
         };
-    }, [])
+    }, []);
 
     const modules = useMemo(() => ({
         imageResize: {
@@ -165,7 +165,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 title: '',
                 image: '',
                 tags: '',
-                category: categories[0]?.name_en || '' // <-- Use dynamic categories
+                category: categories[0]?.name_en || ''
             });
             const clearedContents = {};
             LANGUAGES.forEach(lang => clearedContents[lang.code] = '');
@@ -176,7 +176,7 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 fileInputRef.current.value = '';
             }
         }
-    }, [blog, reset, setValue, categories]); // <-- ADDED 'categories' to dependency array
+    }, [blog, reset, setValue, categories]);
 
     const handleFileChange = (event) => {
         if (event.target.files && event.target.files[0]) {
@@ -189,18 +189,13 @@ const AdminBlogForm = ({ blog, onSave }) => {
 
     const uploadMainCoverImage = async () => {
         if (!selectedFile) return;
-
         setUploadingImage(true);
         const formData = new FormData();
         formData.append('image', selectedFile);
-
         try {
             const res = await api.post('/api/admin/blogs/upload-image', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+                headers: { 'Content-Type': 'multipart/form-data' },
             });
-
             const imageUrl = res.data.imageUrl;
             setValue('image', imageUrl);
             setSelectedFile(null);
@@ -218,17 +213,13 @@ const AdminBlogForm = ({ blog, onSave }) => {
 
     const onSubmit = async (data) => {
         const tags = typeof data.tags === 'string' ? data.tags.split(',').map(tag => tag.trim()) : [];
-
         let finalImageUrl = data.image;
-
         if (!finalImageUrl && !selectedFile) {
             finalImageUrl = extractFirstImageUrl(contents.en);
         }
-
         if (finalImageUrl) {
             finalImageUrl = finalImageUrl.trim();
         }
-
         const payload = {
             image: finalImageUrl,
             tags,
@@ -236,16 +227,12 @@ const AdminBlogForm = ({ blog, onSave }) => {
             title: data.title_en || data.title,
             content: contents.en || data.content,
         };
-
         LANGUAGES.forEach(lang => {
             payload[`title_${lang.code}`] = data[`title_${lang.code}`];
             payload[`content_${lang.code}`] = contents[lang.code];
         });
-
         payload.title = data.title_en || data.title;
         payload.content = contents.en || data.content;
-
-
         try {
             const res = blog
                 ? await api.put(`/api/admin/blogs/${blog._id}`, payload)
@@ -292,7 +279,6 @@ const AdminBlogForm = ({ blog, onSave }) => {
                     </button>
                 ))}
             </div>
-
 
             <div className="flex flex-col gap-2">
                 <label className="block font-medium text-sm text-gray-700 dark:text-gray-300">
@@ -341,7 +327,6 @@ const AdminBlogForm = ({ blog, onSave }) => {
                 {...register('tags')}
             />
 
-            {/* --- NEW CONDITIONAL RENDERING FOR CATEGORIES --- */}
             {loadingCategories ? (
                 <div className="text-gray-500 dark:text-gray-400">Loading categories...</div>
             ) : categoriesError ? (
@@ -369,7 +354,6 @@ const AdminBlogForm = ({ blog, onSave }) => {
                                 placeholder={`Title (${lang.name})`}
                                 {...register(`title_${lang.code}`, { required: lang.code === 'en' })}
                             />
-
                             <div>
                                 <label className="block font-medium text-sm mb-1 text-gray-700 dark:text-gray-300">
                                     Content ({lang.name})
