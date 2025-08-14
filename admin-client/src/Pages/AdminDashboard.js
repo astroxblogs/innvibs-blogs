@@ -1,21 +1,18 @@
 // client/src/pages/AdminDashboard.js
 import React, { useEffect, useState, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom'; // <-- NEW IMPORT `useLocation`
+import { useNavigate, useLocation } from 'react-router-dom';
 import AdminBlogForm from '../components/AdminBlogForm';
-// import AdminBlogTable from '../components/AdminBlogTable'; // <-- REMOVED
 import api, { setAccessToken } from '../services/api';
 import { useTranslation } from 'react-i18next';
 
-// --- Import the new CategoryManager component ---
 import CategoryManager from './CategoryManager';
 
 const AdminDashboard = () => {
     const { t } = useTranslation();
     const [editingBlog, setEditingBlog] = useState(null);
     const navigate = useNavigate();
-    const location = useLocation(); // <-- Use useLocation hook to get state
+    const location = useLocation();
 
-     
     useEffect(() => {
         if (location.state?.blogToEdit) {
             setEditingBlog(location.state.blogToEdit);
@@ -44,7 +41,6 @@ const AdminDashboard = () => {
         }
     };
 
-    // --- New handler to navigate to the blog list page ---
     const handleViewBlogs = () => {
         navigate('/admin/blogs');
     };
@@ -52,8 +48,9 @@ const AdminDashboard = () => {
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-10">
             <div className="w-full max-w-5xl mx-auto p-4 md:p-6 bg-white dark:bg-gray-800 rounded-lg shadow-xl">
-                <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white">
+                {/* CORRECTED HEADER CODE STARTS HERE */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                    <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-4 md:mb-0">
                         {t('Admin Dashboard')}
                     </h1>
                     <div className="flex items-center gap-4">
@@ -65,6 +62,7 @@ const AdminDashboard = () => {
                         </button>
                     </div>
                 </div>
+                {/* CORRECTED HEADER CODE ENDS HERE */}
 
                 <div className="mb-12">
                     <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-gray-200 text-center">
@@ -87,7 +85,6 @@ const AdminDashboard = () => {
                     )}
                 </div>
 
-                {/* --- The Category Management Section goes here --- */}
                 <div className="mt-12">
                     <CategoryManager />
                 </div>
