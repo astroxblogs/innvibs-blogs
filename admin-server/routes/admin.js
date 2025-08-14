@@ -1,4 +1,3 @@
- 
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
@@ -14,15 +13,16 @@ router.get('/verify-token', adminAuth, (req, res) => {
     res.status(200).json({ message: 'Token is valid', isAdmin: true });
 });
 
-// Blog Management Routes (protected)
+router.get('/blogs/search', adminAuth, blogController.searchBlogs);
 router.post('/blogs', adminAuth, blogController.createBlog);
 router.put('/blogs/:id', adminAuth, blogController.updateBlog);
 router.delete('/blogs/:id', adminAuth, blogController.deleteBlog);
-router.get('/blogs', adminAuth, blogController.getLatestBlogs);
+router.get('/blogs', adminAuth, blogController.getBlogs);
 
-// Category Management Routes (protected) // <-- NEW ROUTES
+
+// Category Management Routes (protected)
 router.post('/categories', adminAuth, categoryController.createCategory);
 router.get('/categories', adminAuth, categoryController.getCategories);
-router.delete('/categories/:id', adminAuth, categoryController.deleteCategory); // <-- NEW DELETE ROUTE
+router.delete('/categories/:id', adminAuth, categoryController.deleteCategory);
 
 module.exports = router;

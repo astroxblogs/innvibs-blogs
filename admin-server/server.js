@@ -24,16 +24,20 @@ const app = express();
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser());
+
 app.use(cors({
     origin: [process.env.CLIENT_ADMIN_URL_DEV, process.env.CLIENT_ADMIN_URL_PROD],
     credentials: true,
 }));
 
+// admin-server/server.js
+// ... (existing code)
+
 // Multer storage configuration for image upload
 const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 20 * 1024 * 1024 },
+    limits: { fileSize: 50 * 1024 * 1024 }, // <-- UPDATED to 50MB
     fileFilter: (req, file, cb) => {
         if (file.mimetype.startsWith('image/')) {
             cb(null, true);

@@ -100,11 +100,68 @@ const getBlog = async (req, res) => {
     }
 };
 
+// ===================================
+// NEW FUNCTIONS TO ADD
+// ===================================
 
-// Export all the remaining functions
+const likePost = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const blog = await Blog.findById(id);
+
+        if (!blog) {
+            return res.status(404).json({ message: 'Blog post not found.' });
+        }
+
+        blog.likes = (blog.likes || 0) + 1;
+        await blog.save();
+
+        res.status(200).json({ message: 'Post liked successfully!', likes: blog.likes });
+    } catch (err) {
+        console.error("Error liking post:", err);
+        res.status(500).json({ error: 'Failed to like the post.' });
+    }
+};
+
+const addComment = async (req, res) => {
+    try {
+        const { id } = req.params;
+        // Corrected: Read 'name' and 'comment' from the request body
+        const { name, comment } = req.body;
+
+        if (!name || !comment) {
+            return res.status(400).json({ message: 'Name and comment are required.' });
+        }
+
+        const blog = await Blog.findById(id);
+
+        if (!blog) {
+            return res.status(404).json({ message: 'Blog post not found.' });
+        }
+
+        const newComment = {
+            name,
+            comment,
+            timestamp: new Date()
+        };
+
+        blog.comments.push(newComment);
+        await blog.save();
+
+        res.status(201).json({ message: 'Comment added successfully!', comment: newComment });
+    } catch (err) {
+        console.error("Error adding comment:", err);
+        res.status(500).json({ error: 'Failed to add the comment.' });
+    }
+};
+
+
+// Export all the functions, including the new ones
 module.exports = {
     getBlogs,
     getLatestBlogs,
     searchBlogs,
     getBlog,
+    likePost,
+    addComment,
 };

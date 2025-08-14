@@ -44,37 +44,37 @@ const CommentSection = ({ blogId, initialComments }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!name.trim() || !comment.trim()) { // Added .trim() for better validation
+        if (!name.trim() || !comment.trim()) {
             setError('Name and comment cannot be empty.');
             return;
         }
         setLoading(true);
-        setError(''); // Clear previous errors
+        setError('');
 
         try {
-            // This is the correct URL for POSTING a new comment
             const res = await axios.post(`/api/blogs/${blogId}/comments`, { name, comment });
-            setComments([...comments, res.data]);
+
+            // --- FIX IS HERE: Add res.data.comment, not res.data ---
+            setComments([...comments, res.data.comment]);
+
             setName('');
             setComment('');
 
-            // --- NEW: Track user behavior for inferred interests ---
+            // NEW: Track user behavior for inferred interests
             const subscriberId = getSubscriberId();
-            if (subscriberId) { // Only track if subscriber ID exists in localStorage
+            if (subscriberId) {
                 try {
                     await trackUserComment(subscriberId, blogId);
                     console.log(`Comment behavior for blog ${blogId} tracked for subscriber:`, subscriberId);
                 } catch (trackingError) {
                     console.error('Failed to track comment for personalization:', trackingError);
-                    // This error is usually non-critical for the user's immediate experience,
-                    // so we just log it.
                 }
             }
 
         } catch (err) {
             console.error("Error posting comment:", err);
             setError('Failed to post comment. Please try again.');
-        } finally { // Use finally to ensure loading state is reset
+        } finally {
             setLoading(false);
         }
     };
