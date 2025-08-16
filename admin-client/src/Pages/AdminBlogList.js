@@ -1,18 +1,17 @@
 // client/src/pages/AdminBlogList.js
-import React, { useEffect, useState, useRef } from 'react'; // Added useRef
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom'; // You can remove this import if it's not used anywhere else in the file.
 import AdminBlogTable from '../components/AdminBlogTable';
 import api from '../services/api';
 import { useTranslation } from 'react-i18next';
 
-const AdminBlogList = () => {
+const AdminBlogList = ({ onEdit }) => { // onEdit is now a prop
     const { t } = useTranslation();
     const [blogs, setBlogs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
-    const navigate = useNavigate();
-    const timerRef = useRef(null); // Ref to hold our debounce timer
+    const timerRef = useRef(null);
 
     const fetchBlogs = async (query = '') => {
         setLoading(true);
@@ -34,30 +33,20 @@ const AdminBlogList = () => {
         }
     };
 
-    // New useEffect to handle debouncing
     useEffect(() => {
-        // Clear the previous timer to reset the debounce period
         if (timerRef.current) {
             clearTimeout(timerRef.current);
         }
-
-        // Set a new timer
         timerRef.current = setTimeout(() => {
             fetchBlogs(searchQuery);
-        }, 500); // 500ms delay before fetching
+        }, 500);
 
-        // Cleanup function: clears the timer when the component unmounts or dependencies change
         return () => {
             if (timerRef.current) {
                 clearTimeout(timerRef.current);
             }
         };
-    }, [searchQuery]); // The effect re-runs only when searchQuery changes
-
-    // The rest of your component's logic is unchanged
-    const handleEdit = (blog) => {
-        navigate('/admin', { state: { blogToEdit: blog } });
-    };
+    }, [searchQuery]);
 
     const handleDelete = async (id) => {
         if (window.confirm(t('admin_panel.confirm_delete'))) {
@@ -94,7 +83,7 @@ const AdminBlogList = () => {
                 </div>
 
                 <div>
-                    <AdminBlogTable blogs={blogs} onEdit={handleEdit} onDelete={handleDelete} />
+                    <AdminBlogTable blogs={blogs} onEdit={onEdit} onDelete={handleDelete} />
                 </div>
             </div>
         </div>
