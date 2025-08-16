@@ -49,7 +49,7 @@ const BlogList = ({ blogs, loadingMore, hasMore, onLoadMore, totalBlogsCount }) 
                 </div>
             ) : (
                 <p className="text-center text-gray-500 mt-10">
-                    {loadingMore ? t('loading blogs....') : t('no blogs found')}
+                    {loadingMore ? t('loading blogs....') : t('Sorry no blogs found')}
                 </p>
             )}
 
