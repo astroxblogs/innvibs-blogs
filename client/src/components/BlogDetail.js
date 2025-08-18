@@ -256,18 +256,32 @@ const BlogDetail = ({ blog: initialBlog }) => {
             </div>
 
             {/* Main Blog Content Section & Gradient Overlay */}
-            <div className={`relative ${showContentOverlay ? 'h-96 overflow-hidden' : ''}`}>
+            <div className="relative">
                 <div
-                    className={`prose prose-base sm:prose-lg lg:prose-xl dark:prose-invert max-w-none mb-6 md:mb-8
-                                 prose-img:rounded-xl prose-img:max-h-[400px] prose-img:mx-auto
-                                 ${showContentOverlay ? 'filter blur-sm' : ''}`}
-                    dangerouslySetInnerHTML={{ __html: isSubscribed ? cleanContentHtml : contentToDisplay }}
-                />
+                    className="prose prose-base sm:prose-lg lg:prose-xl dark:prose-invert max-w-none mb-6 md:mb-8 prose-img:rounded-xl prose-img:max-h-[400px] prose-img:mx-auto"
+                >
+                    <div
+                        dangerouslySetInnerHTML={{
+                            __html: isSubscribed ? cleanContentHtml : contentToDisplay,
+                        }}
+                        className={`${showContentOverlay ? 'line-clamp-4' : ''}`} // only 3–4 lines visible
+                    />
 
-                {showContentOverlay && (
-                    <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-white dark:from-gray-900 to-transparent pointer-events-none"></div>
-                )}
+                    {!isSubscribed && showContentOverlay && (
+                        <div className="relative">
+                            {/* Fake blurred continuation */}
+                            <div
+                                className="absolute inset-0 top-20 backdrop-blur-sm"
+                                style={{ height: "70%" }}
+                            ></div>
+
+                            {/* Gradient fade */}
+                            <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-white dark:from-gray-900 to-transparent"></div>
+                        </div>
+                    )}
+                </div>
             </div>
+
 
             {/* Call-to-action overlay for non-subscribers (positioned below the content div) */}
             {showContentOverlay && (

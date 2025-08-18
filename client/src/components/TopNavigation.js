@@ -309,7 +309,7 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                                                 rel="noopener noreferrer"
                                                 className={`p-2 rounded-full bg-white dark:bg-gray-800 shadow-md hover:scale-110 transition-all ${className}`}
                                             >
-                                                <Icon size={25} />
+                                                <Icon size={18} />
                                             </a>
                                         ))}
                                     </div>

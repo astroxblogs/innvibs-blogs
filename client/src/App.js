@@ -41,21 +41,27 @@ const AdminRedirectComponent = () => {
     const hasRedirected = useRef(false);
 
     useEffect(() => {
-        if (!hasRedirected.current) {
-            const adminUrl = process.env.REACT_APP_ADMIN_URL;
-            if (adminUrl) {
-                window.open(adminUrl, '_blank', 'noopener,noreferrer');
-                hasRedirected.current = true;
-            } else {
-                console.error("Admin URL not found in environment variables.");
-            }
-            navigate('/');
+        // This check prevents the redirect from happening more than once
+        if (hasRedirected.current) {
+            return;
         }
+
+        const adminUrl = process.env.REACT_APP_ADMIN_URL;
+        if (adminUrl) {
+            // Open the admin URL in a new tab
+            window.open(adminUrl, '_blank', 'noopener,noreferrer');
+            hasRedirected.current = true;
+        } else {
+            console.error("Admin URL not found in environment variables.");
+        }
+
+        // Navigate the current tab back to the home page
+        navigate('/', { replace: true });
+
     }, [navigate]);
 
-    return (
-        <div ></div>
-    );
+    // The component will render null, as the redirect happens in the effect hook
+    return null;
 };
 // -----------------------------------------------------
 
