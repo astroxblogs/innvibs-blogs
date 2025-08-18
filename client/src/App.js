@@ -1,10 +1,10 @@
 import React, { useState, useEffect, Suspense, useRef, useCallback } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import {  Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './index.css';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { useTranslation } from 'react-i18next';
-import api from './services/api'; // Assuming you have a similar API client on the main site
+// import api from './services/api'; // Assuming you have a similar API client on the main site
 
 // Component Imports
 import Footer1 from './components/Footer1';
