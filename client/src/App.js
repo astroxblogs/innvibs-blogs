@@ -41,7 +41,7 @@ const AdminRedirectComponent = () => {
     const hasRedirected = useRef(false);
 
     useEffect(() => {
-        // This check prevents the redirect from happening more than once
+       
         if (hasRedirected.current) {
             return;
         }
@@ -54,20 +54,18 @@ const AdminRedirectComponent = () => {
         } else {
             console.error("Admin URL not found in environment variables.");
         }
-
-        // Navigate the current tab back to the home page
+ 
         navigate('/', { replace: true });
 
     }, [navigate]);
-
-    // The component will render null, as the redirect happens in the effect hook
+ 
     return null;
 };
 // -----------------------------------------------------
 
 function App() {
     const { t } = useTranslation();
-    const [categories, setCategories] = useState([]); // <-- NEW STATE FOR CATEGORIES
+    const [categories, setCategories] = useState([]);  
     const [activeCategory, setActiveCategory] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
     const navigate = useNavigate();
@@ -75,11 +73,11 @@ function App() {
    
     const fetchCategories = useCallback(async () => {
         try {
-            const response = await axios.get('/api/blogs/categories'); // Using axios directly as it seems to be in use
+            const response = await axios.get('/api/blogs/categories');  
             setCategories(response.data);
         } catch (error) {
             console.error('Error fetching categories:', error);
-            // Handle error, maybe set a default state or show a message
+            
         }
     }, []);
 
