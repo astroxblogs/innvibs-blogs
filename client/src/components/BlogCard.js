@@ -4,6 +4,7 @@ import { marked } from 'marked';
 import LikeButton from './LikeButton.jsx';
 import { MessageSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { getCategoryClasses } from '../utils/categoryColors';
 
 const BlogCard = ({ blog }) => {
     const { i18n } = useTranslation();
@@ -39,55 +40,51 @@ const BlogCard = ({ blog }) => {
     const excerpt = getPlainTextExcerpt(displayContent);
 
     return (
-        <div className="flex flex-col md:flex-row items-stretch bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden w-full">
-            {/* Image Section: Order on mobile, fixed width on desktop */}
+        <div className="flex items-stretch bg-white dark:bg-gray-900 rounded-xl shadow-sm hover:shadow transition overflow-hidden w-full">
             {blog.image && (
-                <Link to={`/blog/${blog._id}`} className="order-first md:order-last w-full md:w-56 h-48 flex-shrink-0">
+                <Link to={`/blog/${blog._id}`} className="w-32 sm:w-40 md:w-48 h-28 sm:h-32 md:h-32 flex-shrink-0">
                     <img
                         src={blog.image}
                         alt={displayTitle}
-                        className="object-cover w-full h-full transition-transform hover:scale-105"
+                        className="object-cover w-full h-full"
                         loading="lazy"
                     />
                 </Link>
             )}
 
-            {/* Content Section: Order on mobile, flex-grow to fill space */}
-            <div className="flex-1 p-4 sm:p-5 flex flex-col order-last md:order-first">
-                <div className="flex-grow">
-                    <Link to={`/blog/${blog._id}`} className="block">
-                        <h2 className="text-xl sm:text-2xl font-bold mb-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors leading-tight">
-                            {displayTitle}
-                        </h2>
-                    </Link>
-                    {/* Make tags clickable */}
-                    <div className="flex flex-wrap gap-2 mb-2 text-xs text-gray-500 dark:text-gray-400">
-                        <span>{new Date(blog.date).toLocaleDateString()}</span>
-                        {blog.tags && blog.tags.map((tag) => (
-                            <Link
-                                key={tag}
-                                to={`/tag/${encodeURIComponent(tag.toLowerCase())}`} // Link to a new tag-specific route
-                                className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded
-                                           hover:bg-blue-200 dark:hover:bg-blue-600 hover:text-blue-700 dark:hover:text-blue-100
-                                           transition-colors cursor-pointer" // Add hover effects and cursor
-                            >
-                                #{tag}
-                            </Link>
-                        ))}
-                    </div>
-                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4">
-                        {excerpt}
-                        {excerpt.length >= 150 && (
-                            <Link to={`/blog/${blog._id}`} className="text-blue-500 hover:underline font-semibold ml-1">
-                                Read More
-                            </Link>
-                        )}
-                    </p>
+            <div className="flex-1 p-3 sm:p-4">
+                <div className="flex items-center gap-2 text-[11px] text-gray-500 mb-1">
+                    {blog.category && (
+                        <span className={`px-2 py-0.5 rounded-full ${getCategoryClasses(blog.category)}`}>
+                            {blog.category}
+                        </span>
+                    )}
+                    <span>{new Date(blog.date).toLocaleDateString()}</span>
+                    {blog.tags && blog.tags.slice(0, 2).map((tag) => (
+                        <Link
+                            key={tag}
+                            to={`/tag/${encodeURIComponent(tag.toLowerCase())}`}
+                            className="px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-violet-100 hover:text-violet-700"
+                        >
+                            #{tag}
+                        </Link>
+                    ))}
                 </div>
-                <div className="flex items-center gap-6 text-gray-500 dark:text-gray-400 text-sm mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+
+                <Link to={`/blog/${blog._id}`} className="block">
+                    <h2 className="text-base sm:text-lg md:text-xl font-semibold leading-snug hover:text-violet-700 dark:hover:text-violet-400">
+                        {displayTitle}
+                    </h2>
+                </Link>
+
+                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                    {excerpt}
+                </p>
+
+                <div className="mt-3 flex items-center gap-5 text-gray-500 dark:text-gray-400 text-xs">
                     <LikeButton blogId={blog._id} initialLikes={blog.likes} />
-                    <Link to={`/blog/${blog._id}#comments`} className="flex items-center gap-1.5 hover:text-gray-900 dark:hover:text-white transition-colors">
-                        <MessageSquare size={16} />
+                    <Link to={`/blog/${blog._id}#comments`} className="flex items-center gap-1.5 hover:text-gray-900 dark:hover:text-white">
+                        <MessageSquare size={14} />
                         <span>{blog.comments?.length || 0}</span>
                     </Link>
                 </div>

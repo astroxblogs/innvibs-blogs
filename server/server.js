@@ -1,6 +1,6 @@
 require('dotenv').config();
 
- 
+
 console.log('CORS_ORIGIN_DEV:', process.env.CORS_ORIGIN_DEV);
 console.log('CORS_ORIGIN_PROD:', process.env.CORS_ORIGIN_PROD);
 console.log('CORS_ORIGIN_Main:', process.env.CORS_ORIGIN_Main);
@@ -16,24 +16,25 @@ const subscriberRoutes = require('./routes/subscribers');
 const { startEmailJob } = require('./jobs/sendPersonalizedEmails');
 const app = express();
 
- 
+
 
 const allowedOrigins = [
+    process.env.CORS_ORIGIN_DEV,
     process.env.CORS_ORIGIN_PROD,
     process.env.CORS_ORIGIN_Main
 ];
 
- 
+
 if (process.env.NODE_ENV !== 'production') {
     allowedOrigins.push(process.env.CORS_ORIGIN_DEV);
 }
 
 app.use(cors({
     origin: function (origin, callback) {
-     
+
         if (!origin) return callback(null, true);
 
-    
+
         const isAllowed = allowedOrigins.includes(origin);
 
         if (isAllowed) {
@@ -45,7 +46,7 @@ app.use(cors({
     },
     credentials: true
 }));
- 
+
 
 
 app.use(express.json({ limit: '50mb' }));

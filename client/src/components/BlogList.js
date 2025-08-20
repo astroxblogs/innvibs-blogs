@@ -35,9 +35,9 @@ const BlogList = ({ blogs, loadingMore, hasMore, onLoadMore, totalBlogsCount }) 
 
     // Use a conditional rendering pattern here instead of a conditional return.
     return (
-        <div className="max-w-4xl w-full mx-auto px-4">
+        <div className="max-w-4xl w-full mx-auto px-0">
             {blogs && blogs.length > 0 ? (
-                <div className="grid grid-cols-1 gap-6">
+                <div className="grid grid-cols-1 gap-4">
                     {blogs.map((blog, index) => {
                         const isLast = index === blogs.length - 1;
                         return (
@@ -54,7 +54,7 @@ const BlogList = ({ blogs, loadingMore, hasMore, onLoadMore, totalBlogsCount }) 
             )}
 
             {loadingMore && (
-                <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                <div className="text-center py-3 text-gray-500 dark:text-gray-400">
                     {t('loading blogs....')}
                 </div>
             )}
