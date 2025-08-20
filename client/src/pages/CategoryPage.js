@@ -12,6 +12,7 @@ const unslugify = (slug) => {
     // Fix known ampersand categories that lose the symbol when slugged
     if (/^health-?wellness$/i.test(slug)) return 'Health & Wellness';
     if (/^business-?finance$/i.test(slug)) return 'Business & Finance';
+    if (/^food-?cooking$/i.test(slug)) return 'Food & Cooking';
 
     return base;
 };
