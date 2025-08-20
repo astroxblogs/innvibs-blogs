@@ -70,11 +70,11 @@ export default function BalancedMonumentFooter() {
   ];
 
   return (
-    <footer className="bg-off-background dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
-      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 pt-4 pb-4 md:px-8 md:pt-6 md:pb-6">
+    <footer className="bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800">
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 pt-8 pb-6 md:px-8 md:pt-10 md:pb-8">
 
         {/* --- Logo (Light/Dark Mode) --- */}
-        <div className="mb-2">
+        <div className="mb-4 md:mb-6">
           {/* Light Mode Logo */}
           <img
             src="/lm..png"
@@ -91,16 +91,16 @@ export default function BalancedMonumentFooter() {
 
         {/* --- Tagline --- */}
         <div className="mb-6 md:mb-8">
-          <p className="text-sm md:text-base text-text-secondary dark:text-gray-400 max-w-sm">
+          <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 max-w-2xl">
             {t('footer.tagline')}
           </p>
         </div>
 
         {/* --- Sections Grid --- */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-3 md:gap-x-5">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-y-5 gap-x-6">
           {footerSections.map((section) => (
             <div key={section.titleKey} className="text-center md:text-left">
-              <h3 className="text-sm font-semibold text-text-primary dark:text-gray-200 tracking-wider uppercase mb-3">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 tracking-wider uppercase mb-3">
                 {t(section.titleKey)}
               </h3>
               <ul className="space-y-2">
@@ -108,7 +108,7 @@ export default function BalancedMonumentFooter() {
                   <li key={link.nameKey || link.name}>
                     <Link
                       to={link.path}
-                      className="text-sm text-text-secondary dark:text-gray-400 hover:text-accent dark:hover:text-white transition-colors duration-200">
+                      className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
                       {t(link.nameKey || link.name)}
                     </Link>
                   </li>
@@ -119,19 +119,19 @@ export default function BalancedMonumentFooter() {
 
           {/* Newsletter */}
           <div className="col-span-2 md:col-span-1 text-center md:text-left">
-            <h3 className="text-sm font-semibold text-text-primary dark:text-gray-200 tracking-wider uppercase mb-3">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 tracking-wider uppercase mb-3">
               {t('footer.newsletter_title')}
             </h3>
             <form className="flex items-center max-w-xs mx-auto md:mx-0">
               <input
                 type="email"
                 placeholder={t('footer.email_placeholder')}
-                className="w-full bg-white dark:bg-black px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded-l-md focus:ring-2 focus:ring-accent focus:outline-none transition-colors"
+                className="w-full bg-white dark:bg-gray-900 px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded-l-md focus:ring-2 focus:ring-violet-500 focus:outline-none transition-colors"
                 aria-label={t('footer.email_aria_label')}
               />
               <button
                 type="submit"
-                className="bg-accent text-white p-2.5 rounded-r-md hover:bg-opacity-90 transition-colors"
+                className="bg-violet-600 text-white p-2.5 rounded-r-md hover:bg-violet-700 transition-colors"
                 aria-label={t('footer.subscribe_aria_label')}
                 title={t('footer.subscribe_title')}>
                 <FaArrowRight />
@@ -141,7 +141,7 @@ export default function BalancedMonumentFooter() {
         </div>
 
         {/* --- Bottom Bar --- */}
-        <div className="mt-4 pt-2 md:mt-6 md:pt-3 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-3">
+        <div className="mt-6 pt-4 md:mt-8 md:pt-5 border-t border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-3">
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-0">
             © {new Date().getFullYear()} {t('innvibs Blogs')}.<br />
             Copyright 2025 innvibs Media Group. All rights reserved.
@@ -162,7 +162,7 @@ export default function BalancedMonumentFooter() {
             <button
               onClick={toggleTheme}
               title={t('theme_toggle.toggle_theme_title')}
-              className="text-gray-500 hover:text-accent dark:hover:text-white transition-colors flex items-center gap-2 text-sm">
+              className="text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors flex items-center gap-2 text-sm">
               {theme === "light" ? <FaMoon /> : <FaSun />}
               <span className="hidden sm:inline">
                 {theme === "light" ? t('theme_toggle.dark') : t('theme_toggle.light')} {t('theme_toggle.mode')}

@@ -36,6 +36,7 @@ const BlogSchema = new mongoose.Schema({
     },
     tags: [String],
     likes: { type: Number, default: 0 },
+    views: { type: Number, default: 0 },
     comments: [CommentSchema]
 }, { timestamps: true }); // Adding timestamps for createdAt and updatedAt
 

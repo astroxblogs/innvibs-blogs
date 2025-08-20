@@ -159,7 +159,7 @@ const Home = ({ activeCategory, searchQuery }) => {
     const pageTitle = isSearchView
         ? t('search results for', { query: searchQuery })
         : isCategoryView
-            ? t('blogs in category', { category: activeCategory })
+            ? `Blogs in "${activeCategory}"`
             : '';
 
     if (loading) {

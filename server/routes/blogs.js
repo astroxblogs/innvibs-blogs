@@ -11,6 +11,7 @@ router.get('/categories', categoryController.getCategories);
 router.get('/search', blogController.searchBlogs);
 router.get('/latest', blogController.getLatestBlogs);
 router.get('/:id', blogController.getBlog);
+router.post('/:id/views', blogController.incrementViews);
 
 // New routes for likes and comments
 router.post('/:id/like', blogController.likePost);

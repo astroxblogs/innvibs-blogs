@@ -55,14 +55,14 @@ const HeroCarousel = ({ blogs }) => {
         <section className="relative w-full">
             <div className="relative h-[320px] sm:h-[380px] md:h-[420px] overflow-hidden rounded-xl bg-gray-200 dark:bg-gray-800">
                 <div
-                    className={`absolute inset-0 bg-cover bg-center transition-opacity duration-700 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                    className={`absolute inset-0 bg-cover bg-center transition-opacity duration-700 ${imageLoaded ? 'opacity-100' : 'opacity-0'} pointer-events-none`}
                     style={{ backgroundImage: `url(${currentBlog?.image})` }}
                 >
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none" />
                 </div>
 
-                <div className="relative z-10 h-full flex items-end">
-                    <div className="p-4 sm:p-6 md:p-8 w-full max-w-[720px]">
+                <div className="relative z-10 h-full flex items-end pointer-events-none">
+                    <div className="p-4 sm:p-6 md:p-8 w-full max-w-[720px] pointer-events-auto">
                         <Link to={`/blog/${currentBlog?._id}`} className="block">
                             <h2 className="text-white text-2xl sm:text-3xl md:text-4xl font-extrabold leading-tight drop-shadow">
                                 {title}
@@ -80,14 +80,14 @@ const HeroCarousel = ({ blogs }) => {
                     </div>
                 </div>
 
-                <button onClick={goPrev} className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 text-white hover:bg-black/60">
+                <button onClick={goPrev} className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 text-white hover:bg-black/60 z-30">
                     ‹
                 </button>
-                <button onClick={goNext} className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 text-white hover:bg-black/60">
+                <button onClick={goNext} className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 text-white hover:bg-black/60 z-30">
                     ›
                 </button>
 
-                <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-2">
+                <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-2 z-20">
                     {blogs.map((_, idx) => (
                         <button
                             key={idx}

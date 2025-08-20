@@ -4,11 +4,19 @@ import ThemeToggle from './ThemeToggle';
 import LanguageSelector from './LanguageSelector';
 import { useTranslation } from 'react-i18next';
 import {
-    Search, X, ChevronLeft, ChevronRight
+    Search, X, ChevronLeft, ChevronRight, ChevronDown
 } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 
- 
+// --- REMOVED THE HARDCODED CATEGORIES ARRAY ---
+// const categories = [
+//     { labelKey: "category.all", value: "all" },
+//     { labelKey: "category.technology", value: "Technology" },
+//     ...
+// ];
+
+// Sidebar/social links removed
+
 // --- NEW PROPS ADDED: `categories` ---
 const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLogoClick, categories }) => {
     const { t, i18n } = useTranslation(); // <-- ADDED `i18n` to get the current language
@@ -82,7 +90,7 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
 
     // --- CREATE A NEW DYNAMIC CATEGORIES LIST FOR RENDERING ---
     const dynamicCategories = [
-        { name_en: "All", name_hi: "सभी", value: "all" },
+        { name_en: "Categories", name_hi: "Categories", value: "all" },
         ...categories.map(cat => ({
             name_en: cat.name_en,
             name_hi: cat.name_hi,
@@ -98,8 +106,8 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
     return (
         <nav className="sticky top-0 z-50 bg-white/90 dark:bg-dark-bg-secondary backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:supports-[backdrop-filter]:bg-dark-bg-secondary shadow">
             <div className="py-2.5 px-3 sm:px-4 md:px-8 flex flex-col md:flex-row gap-2 md:gap-0 md:justify-between md:items-center">
-                {/* Left - Logo */}
-                <div className="flex items-center gap-4">
+                {/* Left - Logo + Controls (mobile) */}
+                <div className="flex items-center gap-3 w-full md:w-auto">
                     <Link
                         to="/"
                         onClick={handleLogoLinkClick}
@@ -116,11 +124,40 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                             className="h-8 sm:h-10 w-auto object-contain hidden dark:block"
                         />
                     </Link>
+                    <div className="md:hidden ml-auto flex items-center gap-2">
+                        {/* Search icon moved left on mobile - place before language/theme if desired */}
+                        <button
+                            onClick={handleSearchClick}
+                            className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                        >
+                            <Search className="w-5 h-5" />
+                        </button>
+                        <LanguageSelector />
+                        <ThemeToggle />
+                    </div>
                 </div>
 
-                {/* Center - Scrollable Categories */}
+                {/* Center - Scrollable Categories (mobile dropdown + desktop scroller) */}
                 <div className="flex flex-grow justify-center items-center order-last md:order-none">
                     <div className="relative flex items-center w-full max-w-[920px] mx-auto">
+                        {/* Mobile dropdown */}
+                        <div className="w-full md:hidden px-3">
+                            <div className="relative">
+                                <select
+                                    aria-label="Select category"
+                                    className="appearance-none w-full rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-3 pr-9 py-2 text-sm font-medium shadow-sm"
+                                    value={activeCategory}
+                                    onChange={(e) => handleCategoryClick(e.target.value)}
+                                >
+                                    {dynamicCategories.map((cat) => (
+                                        <option key={cat.value} value={cat.value}>{getCategoryName(cat)}</option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                            </div>
+                        </div>
+
+                        {/* Desktop scroller */}
                         <AnimatePresence>
                             {showLeftArrow && (
                                 <motion.div
@@ -138,7 +175,7 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
 
                         <div
                             ref={scrollRef}
-                            className="flex items-center space-x-2 whitespace-nowrap overflow-x-auto scroll-smooth no-scrollbar px-3 sm:px-10"
+                            className="hidden md:flex items-center space-x-2 whitespace-nowrap overflow-x-auto scroll-smooth no-scrollbar px-3 sm:px-10"
                         >
                             {dynamicCategories.map((cat, idx) => (
                                 <button
@@ -173,7 +210,7 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                 </div>
 
                 {/* Right - Controls */}
-                <div className="flex items-center gap-3 flex-shrink-0">
+                <div className="hidden md:flex items-center gap-3 flex-shrink-0 md:self-auto self-end w-full md:w-auto justify-end">
                     {showSearchInput ? (
                         <form
                             onSubmit={handleSearchSubmit}
@@ -199,10 +236,35 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                         </button>
                     )}
 
-                    <LanguageSelector />
-                    <ThemeToggle />
+                    <div className="hidden md:block">
+                        <LanguageSelector />
+                    </div>
+                    <div className="hidden md:block">
+                        <ThemeToggle />
+                    </div>
                 </div>
             </div>
+            {/* Mobile search input */}
+            {showSearchInput && (
+                <div className="px-3 pb-2 md:hidden">
+                    <form
+                        onSubmit={handleSearchSubmit}
+                        className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-2 border border-gray-200 dark:border-gray-700"
+                    >
+                        <input
+                            type="text"
+                            placeholder={t('Search...')}
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
+                            className="bg-transparent text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-0 border-none w-full"
+                            autoFocus
+                        />
+                        <button type="button" onClick={handleCloseSearch}>
+                            <X className="w-4 h-4" />
+                        </button>
+                    </form>
+                </div>
+            )}
         </nav>
     );
 };

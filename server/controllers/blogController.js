@@ -99,6 +99,17 @@ const getBlog = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+// Increment view count
+const incrementViews = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updated = await Blog.findByIdAndUpdate(id, { $inc: { views: 1 } }, { new: true });
+        if (!updated) return res.status(404).json({ error: 'Blog not found' });
+        res.json({ views: updated.views });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
 
 // ===================================
 // NEW FUNCTIONS TO ADD
@@ -162,6 +173,7 @@ module.exports = {
     getLatestBlogs,
     searchBlogs,
     getBlog,
+    incrementViews,
     likePost,
     addComment,
 };
