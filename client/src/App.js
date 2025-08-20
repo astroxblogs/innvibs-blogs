@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Suspense, useRef, useCallback } from 'react';
-import {  Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './index.css';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
@@ -23,7 +23,7 @@ axios.interceptors.request.use(
     (config) => {
         const cloudinaryUploadUrl = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
         if (config.url && !config.url.startsWith(cloudinaryUploadUrl)) {
-        
+
         }
         return config;
     },
@@ -33,7 +33,12 @@ axios.interceptors.request.use(
 );
 
 const slugify = (text) => {
-    return text.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-');
+    const normalized = text.replace(/\s*&\s*/g, ' & ');
+    return normalized
+        .toLowerCase()
+        .replace(/\s*&\s*/g, ' & ') // keep a consistent space-around-& for mapping
+        .replace(/ & /g, '-')
+        .replace(/\s+/g, '-');
 };
 
 const AdminRedirectComponent = () => {
@@ -41,7 +46,7 @@ const AdminRedirectComponent = () => {
     const hasRedirected = useRef(false);
 
     useEffect(() => {
-       
+
         if (hasRedirected.current) {
             return;
         }
@@ -54,30 +59,30 @@ const AdminRedirectComponent = () => {
         } else {
             console.error("Admin URL not found in environment variables.");
         }
- 
+
         navigate('/', { replace: true });
 
     }, [navigate]);
- 
+
     return null;
 };
 // -----------------------------------------------------
 
 function App() {
     const { t } = useTranslation();
-    const [categories, setCategories] = useState([]);  
+    const [categories, setCategories] = useState([]);
     const [activeCategory, setActiveCategory] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
     const navigate = useNavigate();
 
-   
+
     const fetchCategories = useCallback(async () => {
         try {
-            const response = await axios.get('/api/blogs/categories');  
+            const response = await axios.get('/api/blogs/categories');
             setCategories(response.data);
         } catch (error) {
             console.error('Error fetching categories:', error);
-            
+
         }
     }, []);
 

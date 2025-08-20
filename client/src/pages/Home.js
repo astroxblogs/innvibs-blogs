@@ -157,7 +157,7 @@ const Home = ({ activeCategory, searchQuery }) => {
     const isCategoryView = activeCategory && activeCategory.toLowerCase() !== 'all';
 
     const pageTitle = isSearchView
-        ? t('search results for', { query: searchQuery })
+        ? `Search results for "${searchQuery}"`
         : isCategoryView
             ? `Blogs in "${activeCategory}"`
             : '';

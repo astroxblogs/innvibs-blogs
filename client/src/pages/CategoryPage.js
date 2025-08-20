@@ -1,13 +1,19 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import Home from './Home';
- 
+
 const unslugify = (slug) => {
-    return slug
+    // Base: convert hyphens to spaces and capitalize words
+    const base = slug
         .split('-')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ')
-        .replace(/ & /g, ' & ');
+        .join(' ');
+
+    // Fix known ampersand categories that lose the symbol when slugged
+    if (/^health-?wellness$/i.test(slug)) return 'Health & Wellness';
+    if (/^business-?finance$/i.test(slug)) return 'Business & Finance';
+
+    return base;
 };
 
 const CategoryPage = () => {
