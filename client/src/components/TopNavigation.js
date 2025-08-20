@@ -3,14 +3,19 @@ import { Link } from 'react-router-dom';
 import ThemeToggle from './ThemeToggle';
 import LanguageSelector from './LanguageSelector';
 import { useTranslation } from 'react-i18next';
-import { Search, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+    Search, X, ChevronLeft, ChevronRight
+} from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 
+ 
+// --- NEW PROPS ADDED: `categories` ---
 const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLogoClick, categories }) => {
-    const { t, i18n } = useTranslation();
+    const { t, i18n } = useTranslation(); // <-- ADDED `i18n` to get the current language
 
     const [showSearchInput, setShowSearchInput] = useState(false);
     const [inputValue, setInputValue] = useState('');
+    // const [isSidebarOpen] = useState(false);
 
     const scrollRef = useRef(null);
     const itemRefs = useRef([]);
@@ -53,6 +58,7 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
         scrollRef.current?.scrollBy({ left: -scrollRef.current.clientWidth * 0.5, behavior: "smooth" });
     };
 
+    // --- UPDATED CATEGORY CLICK HANDLER TO USE DYNAMIC DATA ---
     const handleCategoryClick = (categoryValue) => {
         onCategoryChange(categoryValue.trim());
     };
@@ -70,7 +76,6 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
     };
 
     const handleSearchClick = () => setShowSearchInput(true);
-
     const handleLogoLinkClick = () => {
         onLogoClick?.();
     };
@@ -89,9 +94,10 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
         return i18n.language === 'hi' ? category.name_hi : category.name_en;
     };
 
+
     return (
         <nav className="sticky top-0 z-50 bg-white/90 dark:bg-dark-bg-secondary backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:supports-[backdrop-filter]:bg-dark-bg-secondary shadow">
-            <div className="py-2.5 px-4 md:px-8 flex justify-between items-center">
+            <div className="py-2.5 px-3 sm:px-4 md:px-8 flex flex-col md:flex-row gap-2 md:gap-0 md:justify-between md:items-center">
                 {/* Left - Logo */}
                 <div className="flex items-center gap-4">
                     <Link
@@ -113,7 +119,7 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                 </div>
 
                 {/* Center - Scrollable Categories */}
-                <div className="hidden md:flex flex-grow justify-center items-center">
+                <div className="flex flex-grow justify-center items-center order-last md:order-none">
                     <div className="relative flex items-center w-full max-w-[920px] mx-auto">
                         <AnimatePresence>
                             {showLeftArrow && (
@@ -121,7 +127,7 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                                     initial={{ opacity: 0, scale: 0.5 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.5 }}
-                                    className="absolute left-0 z-20 bg-light-bg-secondary dark:bg-dark-bg-secondary pr-4 rounded-r-full"
+                                    className="hidden md:block absolute left-0 z-20 bg-light-bg-secondary dark:bg-dark-bg-secondary pr-4 rounded-r-full"
                                 >
                                     <button onClick={handlePrev} className="p-1.5 rounded-full shadow-md hover:bg-gray-200 dark:hover:bg-gray-700">
                                         <ChevronLeft className="h-5 w-5 text-gray-700 dark:text-gray-200" />
@@ -132,7 +138,7 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
 
                         <div
                             ref={scrollRef}
-                            className="flex items-center space-x-2 whitespace-nowrap overflow-x-auto scroll-smooth no-scrollbar px-10"
+                            className="flex items-center space-x-2 whitespace-nowrap overflow-x-auto scroll-smooth no-scrollbar px-3 sm:px-10"
                         >
                             {dynamicCategories.map((cat, idx) => (
                                 <button
@@ -140,8 +146,8 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                                     ref={(el) => (itemRefs.current[idx] = el)}
                                     onClick={() => handleCategoryClick(cat.value)}
                                     className={`flex-shrink-0 rounded-full px-3.5 py-1.5 text-sm transition-colors duration-200 border ${activeCategory === cat.value
-                                            ? "bg-violet-600 border-violet-600 text-white"
-                                            : "bg-white/70 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        ? "bg-violet-600 border-violet-600 text-white"
+                                        : "bg-white/70 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                                         }`}
                                 >
                                     {getCategoryName(cat)}
@@ -155,7 +161,7 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                                     initial={{ opacity: 0, scale: 0.5 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.5 }}
-                                    className="absolute right-0 z-20 bg-light-bg-secondary dark:bg-dark-bg-secondary pl-4 rounded-l-full"
+                                    className="hidden md:block absolute right-0 z-20 bg-light-bg-secondary dark:bg-dark-bg-secondary pl-4 rounded-l-full"
                                 >
                                     <button onClick={handleNext} className="p-1.5 rounded-full shadow-md hover:bg-gray-200 dark:hover:bg-gray-700">
                                         <ChevronRight className="h-5 w-5 text-gray-700 dark:text-gray-200" />

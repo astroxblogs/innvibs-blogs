@@ -157,13 +157,13 @@ const Home = ({ activeCategory, searchQuery }) => {
     const isCategoryView = activeCategory && activeCategory.toLowerCase() !== 'all';
 
     const pageTitle = isSearchView
-        ? t('general.search_results_for', { query: searchQuery })
+        ? t('search results for', { query: searchQuery })
         : isCategoryView
-            ? t('general.blogs_in_category', { category: activeCategory })
+            ? t('blogs in category', { category: activeCategory })
             : '';
 
     if (loading) {
-        return <div className="text-center py-20 dark:text-gray-200">{t('general.loading_blogs')}</div>;
+        return <div className="text-center py-20 dark:text-gray-200">{t('loading blogs')}</div>;
     }
 
     const showDynamicPageTitle = isSearchView || isCategoryView;

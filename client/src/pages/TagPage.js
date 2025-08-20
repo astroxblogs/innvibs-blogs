@@ -64,7 +64,7 @@ const TagPage = () => {
     }, [tagName, t]);
 
     if (loading && blogs.length === 0) { // Only show full loading if no blogs are loaded yet
-        return <div className="text-center py-20 text-lg dark:text-gray-300">{t('general.loading_blogs')}</div>;
+        return <div className="text-center py-20 text-lg dark:text-gray-300">{t('loading blogs')}</div>;
     }
 
     if (error) {
@@ -74,7 +74,7 @@ const TagPage = () => {
     const displayTag = tagName.charAt(0).toUpperCase() + tagName.slice(1); // Capitalize first letter
 
     return (
-        <Suspense fallback={<div className="text-center py-20 text-lg dark:text-gray-300">{t('general.loading_components')}</div>}>
+        <Suspense fallback={<div className="text-center py-20 text-lg dark:text-gray-300">{t('loading components')}</div>}>
             <div className="container mx-auto px-4 py-8">
                 <h1 className="text-3xl md:text-4xl font-extrabold text-center mb-8 text-gray-900 dark:text-white">
                     {t('tag_page.blogs_for_tag', { tag: displayTag })} {/* Use translation */}

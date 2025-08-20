@@ -113,7 +113,7 @@ function App() {
                 categories={categories} // <-- PASS CATEGORIES TO THE NAVIGATION COMPONENT
             />
             <main className="flex-1 overflow-y-auto">
-                <Suspense fallback={<div className="text-center py-20 dark:text-gray-200">{t('general.loading_page')}</div>}>
+                <Suspense fallback={<div className="text-center py-20 dark:text-gray-200">{t('loading page')}</div>}>
                     <Routes>
                         <Route path="/" element={<Home activeCategory={activeCategory} searchQuery={searchQuery} />} />
                         <Route path="/category/:categoryName" element={<CategoryPage />} />

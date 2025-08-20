@@ -1,4 +1,4 @@
- 
+
 import React, { useState, useEffect, Suspense, useRef, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
@@ -68,6 +68,18 @@ const BlogDetail = ({ blog: initialBlog }) => {
             setBlog(initialBlog);
             setLoading(false);
             setError(null);
+            // increment views for provided initial blog
+            (async () => {
+                try {
+                    const v = await axios.post(`/api/blogs/${id}/views`);
+                    if (v?.data?.views !== undefined) {
+                        setBlog(prev => ({ ...prev, views: v.data.views }));
+                    }
+                } catch (e) {
+                    // ignore increment error
+                }
+            })();
+
             if (hasSubscriberId()) {
                 startTimeRef.current = Date.now();
                 timeSpentRef.current = 0;
@@ -84,6 +96,13 @@ const BlogDetail = ({ blog: initialBlog }) => {
             try {
                 const res = await axios.get(`/api/blogs/${id}`);
                 setBlog(res.data);
+                // increment views and update state count
+                try {
+                    const v = await axios.post(`/api/blogs/${id}/views`);
+                    if (v?.data?.views !== undefined) {
+                        setBlog(prev => ({ ...prev, views: v.data.views }));
+                    }
+                } catch (e) { /* ignore */ }
                 setError(null);
 
                 if (hasSubscriberId()) {
@@ -97,7 +116,7 @@ const BlogDetail = ({ blog: initialBlog }) => {
 
             } catch (err) {
                 console.error("Failed to fetch blog post:", err);
-                setError(t('general.error_loading_blogs_detail'));
+                setError(t('Error loading blogs detail'));
                 setBlog(null);
             } finally {
                 setLoading(false);
@@ -252,6 +271,10 @@ const BlogDetail = ({ blog: initialBlog }) => {
                 <span className="flex items-center gap-1">
                     <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.08-3.242A8.877 8.877 0 012 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM4.72 14.48A6.879 6.879 0 008 15c3.314 0 6-2.686 6-6s-2.686-6-6-6a6.879 6.879 0 00-3.28.52l.995 2.985A.5.5 0 016 7h.5a.5.5 0 01.5.5v.5a.5.5 0 01-.5.5h-.5a.5.5 0 01-.5-.5v-.5a.5.5 0 01.3-.464L4.72 14.48z" clipRule="evenodd"></path></svg>
                     {blog.comments?.length || 0}
+                </span>
+                <span className="flex items-center gap-1">
+                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    {blog.views || 0}
                 </span>
             </div>
 
