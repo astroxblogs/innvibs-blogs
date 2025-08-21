@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+ 
 import ThemeToggle from './ThemeToggle';
 import LanguageSelector from './LanguageSelector';
 import { useTranslation } from 'react-i18next';
+ 
 import {
     Search, X, ChevronLeft, ChevronRight, ChevronDown
 } from 'lucide-react';
@@ -99,9 +100,8 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
             <div className="py-2.5 px-3 sm:px-4 md:px-8 flex flex-col md:flex-row gap-2 md:gap-0 md:justify-between md:items-center">
                 {/* Left - Logo + Controls (mobile) */}
                 <div className="flex items-center gap-3 w-full md:w-auto">
-                    <Link
-                        to="/"
-                        onClick={() => window.location.reload()}
+                    <a
+                        href="/"
                         className="flex items-center gap-2 flex-shrink-0 max-w-[120px] sm:max-w-[140px] md:max-w-none"
                     >
                         <img
@@ -114,7 +114,7 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                             alt="Logo Dark"
                             className="h-8 sm:h-10 w-auto object-contain hidden dark:block"
                         />
-                    </Link>
+                    </a>
                     <div className="md:hidden ml-auto flex items-center gap-2">
                         {/* Search icon moved left on mobile - place before language/theme if desired */}
                         <button
