@@ -115,7 +115,7 @@ function App() {
                 onCategoryChange={handleCategoryChange}
                 setSearchQuery={setSearchQuery}
                 onLogoClick={handleLogoClick}
-                categories={categories} // <-- PASS CATEGORIES TO THE NAVIGATION COMPONENT
+                categories={categories}  
             />
             <main className="flex-1 overflow-y-auto">
                 <Suspense fallback={<div className="text-center py-20 dark:text-gray-200">{t('loading page')}</div>}>

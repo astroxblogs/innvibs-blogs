@@ -8,14 +8,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 
-// --- REMOVED THE HARDCODED CATEGORIES ARRAY ---
-// const categories = [
-//     { labelKey: "category.all", value: "all" },
-//     { labelKey: "category.technology", value: "Technology" },
-//     ...
-// ];
-
-// Sidebar/social links removed
+ 
 
 // --- NEW PROPS ADDED: `categories` ---
 const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLogoClick, categories }) => {
@@ -84,9 +77,7 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
     };
 
     const handleSearchClick = () => setShowSearchInput(true);
-    const handleLogoLinkClick = () => {
-        onLogoClick?.();
-    };
+    
 
     // --- CREATE A NEW DYNAMIC CATEGORIES LIST FOR RENDERING ---
     const dynamicCategories = [
@@ -110,7 +101,7 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
                 <div className="flex items-center gap-3 w-full md:w-auto">
                     <Link
                         to="/"
-                        onClick={handleLogoLinkClick}
+                        onClick={() => window.location.reload()}
                         className="flex items-center gap-2 flex-shrink-0 max-w-[120px] sm:max-w-[140px] md:max-w-none"
                     >
                         <img

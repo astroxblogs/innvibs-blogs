@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
+import { useTheme } from './ThemeContext';
 import {
   FaLinkedin,
   FaTwitter,
@@ -10,18 +11,9 @@ import {
   FaArrowRight,
 } from "react-icons/fa";
 
-const useTheme = () => {
-  const [theme, setTheme] = useState("light");
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
-  }, [theme]);
-  const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
-  return { theme, toggleTheme };
-};
-
 export default function BalancedMonumentFooter() {
-  const { theme, toggleTheme } = useTheme();
   const { t } = useTranslation();
+  const { theme, toggleTheme } = useTheme(); // <-- Use shared context
 
   const blogCategories = [
     { labelKey: "category.technology", value: "Technology" },
@@ -75,13 +67,11 @@ export default function BalancedMonumentFooter() {
 
         {/* --- Logo (Light/Dark Mode) --- */}
         <div className="mb-4 md:mb-6">
-          {/* Light Mode Logo */}
           <img
             src="/lm..png"
             className="h-20 w-auto max-w-full block dark:hidden"
             alt="innvibs Logo Light"
           />
-          {/* Dark Mode Logo */}
           <img
             src="logoo1.png"
             className="h-20 w-auto max-w-full hidden dark:block"

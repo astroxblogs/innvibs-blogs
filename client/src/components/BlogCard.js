@@ -42,11 +42,11 @@ const BlogCard = ({ blog }) => {
     return (
         <div className="flex items-stretch bg-white dark:bg-gray-900 rounded-xl shadow-sm hover:shadow transition overflow-hidden w-full">
             {blog.image && (
-                <Link to={`/blog/${blog._id}`} className="w-32 sm:w-40 md:w-48 h-28 sm:h-32 md:h-32 flex-shrink-0">
+                <Link to={`/blog/${blog._id}`} className="w-32 sm:w-40 md:w-48 h-28 sm:h-32 md:h-32 flex-shrink-0 overflow-hidden group">
                     <img
                         src={blog.image}
                         alt={displayTitle}
-                        className="object-cover w-full h-full"
+                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
                         loading="lazy"
                     />
                 </Link>
