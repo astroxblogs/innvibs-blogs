@@ -40,9 +40,9 @@ const BlogCard = ({ blog }) => {
     const excerpt = getPlainTextExcerpt(displayContent);
 
     return (
-        <div className="flex items-stretch bg-white dark:bg-gray-900 rounded-xl shadow-sm hover:shadow transition overflow-hidden w-full">
+        <div className="flex flex-col sm:flex-row items-stretch bg-white dark:bg-gray-900 rounded-xl shadow-sm hover:shadow transition overflow-hidden w-full">
             {blog.image && (
-                <Link to={`/blog/${blog._id}`} className="w-32 sm:w-40 md:w-48 h-28 sm:h-32 md:h-32 flex-shrink-0 overflow-hidden group">
+                <Link to={`/blog/${blog._id}`} className="w-full aspect-[16/9] sm:w-40 md:w-48 sm:aspect-auto sm:self-stretch flex-shrink-0 overflow-hidden group">
                     <img
                         src={blog.image}
                         alt={displayTitle}
@@ -65,7 +65,7 @@ const BlogCard = ({ blog }) => {
 
                 {/* Title */}
                 <Link to={`/blog/${blog._id}`} className="block">
-                    <h2 className="text-base sm:text-lg md:text-xl font-semibold leading-snug text-gray-900 dark:text-gray-100 hover:underline">
+                    <h2 className="text-sm sm:text-lg md:text-xl font-semibold leading-snug text-gray-900 dark:text-gray-100 hover:underline line-clamp-2">
                         {displayTitle}
                     </h2>
                 </Link>
@@ -77,7 +77,7 @@ const BlogCard = ({ blog }) => {
                             <Link
                                 key={tag}
                                 to={`/tag/${encodeURIComponent(tag.toLowerCase())}`}
-                                className="text-[11px] px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                                className="text-[10px] sm:text-[11px] px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
                             >
                                 #{tag}
                             </Link>
@@ -86,11 +86,11 @@ const BlogCard = ({ blog }) => {
                 )}
 
                 {/* Excerpt */}
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                <p className="mt-1.5 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
                     {excerpt}
                 </p>
 
-                <div className="mt-3 flex items-center gap-5 text-gray-500 dark:text-gray-400 text-xs">
+                <div className="mt-2 flex items-center gap-4 sm:gap-5 text-gray-500 dark:text-gray-400 text-[11px] sm:text-xs">
                     <LikeButton blogId={blog._id} initialLikes={blog.likes} />
                     <Link to={`/blog/${blog._id}#comments`} className="flex items-center gap-1.5 hover:text-gray-900 dark:hover:text-white">
                         <MessageSquare size={14} />
@@ -107,3 +107,4 @@ const BlogCard = ({ blog }) => {
 };
 
 export default BlogCard;
+

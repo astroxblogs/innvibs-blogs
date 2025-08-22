@@ -1,3 +1,5 @@
+
+
 import React, { useRef, useEffect } from 'react';
 import BlogCard from './BlogCard';
 import { useTranslation } from 'react-i18next';
@@ -37,7 +39,7 @@ const BlogList = ({ blogs, loadingMore, hasMore, onLoadMore, totalBlogsCount }) 
     return (
         <div className="max-w-4xl w-full mx-auto px-0">
             {blogs && blogs.length > 0 ? (
-                <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 gap-3">
                     {blogs.map((blog, index) => {
                         const isLast = index === blogs.length - 1;
                         return (
@@ -63,3 +65,4 @@ const BlogList = ({ blogs, loadingMore, hasMore, onLoadMore, totalBlogsCount }) 
 };
 
 export default BlogList;
+

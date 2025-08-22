@@ -1,20 +1,8 @@
+
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
-const categories = [
-  { label: "All", value: "all" },
-  { label: "Technology", value: "Technology" },
-  { label: "Fashion", value: "Fashion" },
-  { label: "Health & Wellness", value: "Health & Wellness" },
-  { label: "Travel", value: "Travel" },
-  { label: "Food & Cooking", value: "Food & Cooking" },
-  { label: "Sports", value: "Sports" },
-  { label: "Business & Finance", value: "Business & Finance" },
-  { label: "Lifestyle", value: "Lifestyle" },
-  { label: "Trends", value: "Trends" }, // <-- ADDED
-  { label: "Relationship", value: "Relationship" }, // <-- ADDED
-];
+ 
 
 
 export default function CategoryNav({ activeCategory, onCategoryChange }) {
@@ -22,6 +10,7 @@ export default function CategoryNav({ activeCategory, onCategoryChange }) {
   const itemRefs = useRef([]);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const checkArrows = useCallback(() => {
     const el = scrollRef.current;
@@ -47,6 +36,7 @@ export default function CategoryNav({ activeCategory, onCategoryChange }) {
 
   const handleCategoryClick = (categoryValue) => {
     onCategoryChange(categoryValue);
+    setMobileOpen(false);
 
     const categoryIndex = categories.findIndex(
       (c) => c.value === categoryValue
@@ -72,7 +62,52 @@ export default function CategoryNav({ activeCategory, onCategoryChange }) {
 
   return (
     <div className="w-full bg-background py-2 border-b dark:border-gray-800">
-      <div className="relative mx-auto flex max-w-2xl items-center">
+      {/* Mobile: dropdown on hover/tap */}
+      <div
+        className="relative mx-auto block max-w-2xl sm:hidden"
+        onMouseEnter={() => setMobileOpen(true)}
+        onMouseLeave={() => setMobileOpen(false)}
+      >
+        <button
+          onClick={() => setMobileOpen((v) => !v)}
+          className="w-full flex justify-between items-center rounded-md px-4 py-2 text-sm font-medium bg-white border border-gray-200 shadow-sm hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+          aria-expanded={mobileOpen}
+          aria-haspopup="true"
+        >
+          Categories
+          <ChevronRight className={`h-4 w-4 transition-transform ${mobileOpen ? "rotate-90" : "rotate-0"}`} />
+        </button>
+        <AnimatePresence>
+          {mobileOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="absolute left-0 right-0 mt-2 rounded-md border border-gray-200 bg-white shadow-lg dark:bg-gray-900 dark:border-gray-700 z-20"
+            >
+              <ul className="py-2">
+                {categories.map((cat) => (
+                  <li key={cat.value}>
+                    <button
+                      onClick={() => handleCategoryClick(cat.value)}
+                      className={`w-full text-left px-4 py-2 text-sm transition-colors ${activeCategory === cat.value
+                          ? "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white"
+                          : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800"
+                        }`}
+                    >
+                      {cat.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Desktop/tablet: keep existing horizontal nav */}
+      <div className="relative mx-auto hidden sm:flex max-w-2xl items-center">
         <AnimatePresence>
           {showLeftArrow && (
             <motion.div
@@ -137,3 +172,6 @@ export default function CategoryNav({ activeCategory, onCategoryChange }) {
     </div>
   );
 }
+
+
+
