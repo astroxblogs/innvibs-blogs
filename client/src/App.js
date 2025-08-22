@@ -4,15 +4,13 @@ import axios from 'axios';
 import './index.css';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { useTranslation } from 'react-i18next';
-// import api from './services/api'; // Assuming you have a similar API client on the main site
-
-// Component Imports
+  
 import Footer1 from './components/Footer1';
 import TopNavigation from './components/TopNavigation';
 import Home from './pages/Home';
 import ScrollToTop from './components/ScrollToTop';
 
-// Dynamically imported components for the public-facing blog
+ 
 const BlogDetailPage = React.lazy(() => import('./pages/BlogDetailPage'));
 const CategoryPage = React.lazy(() => import('./pages/CategoryPage'));
 const TagPage = React.lazy(() => import('./pages/TagPage'));
@@ -85,6 +83,19 @@ function App() {
 
         }
     }, []);
+
+
+    useEffect(() => {
+        const isAdminPath = window.location.pathname === "/admin";
+        const isMainDomain =
+            window.location.hostname === "innvibs.com" ||
+            window.location.hostname === "www.innvibs.com";
+
+        if (isAdminPath && isMainDomain) {
+            window.open(process.env.REACT_APP_ADMIN_URL, "_blank");
+        }
+    }, []);
+
 
     useEffect(() => {
         fetchCategories();
