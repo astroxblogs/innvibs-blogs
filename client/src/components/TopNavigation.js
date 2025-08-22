@@ -1,15 +1,15 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
- 
+
 import ThemeToggle from './ThemeToggle';
 import LanguageSelector from './LanguageSelector';
 import { useTranslation } from 'react-i18next';
- 
+
 import {
     Search, X, ChevronLeft, ChevronRight, ChevronDown
 } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 
- 
+
 
 // --- NEW PROPS ADDED: `categories` ---
 const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLogoClick, categories }) => {
@@ -78,11 +78,11 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
     };
 
     const handleSearchClick = () => setShowSearchInput(true);
-    
+
 
     // --- CREATE A NEW DYNAMIC CATEGORIES LIST FOR RENDERING ---
     const dynamicCategories = [
-        { name_en: "Categories", name_hi: "Categories", value: "all" },
+        { name_en: t('navigation.categories'), name_hi: t('navigation.categories'), value: "all" },
         ...categories.map(cat => ({
             name_en: cat.name_en,
             name_hi: cat.name_hi,
@@ -91,7 +91,8 @@ const TopNavigation = ({ activeCategory, onCategoryChange, setSearchQuery, onLog
     ];
 
     const getCategoryName = (category) => {
-        return i18n.language === 'hi' ? category.name_hi : category.name_en;
+        if (category.value === 'all') return t('navigation.categories');
+        return i18n.language === 'hi' ? (category.name_hi || category.name_en) : (category.name_en || category.name_hi);
     };
 
 

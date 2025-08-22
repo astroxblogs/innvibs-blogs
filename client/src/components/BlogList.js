@@ -1,5 +1,3 @@
-
-
 import React, { useRef, useEffect } from 'react';
 import BlogCard from './BlogCard';
 import { useTranslation } from 'react-i18next';
@@ -65,4 +63,3 @@ const BlogList = ({ blogs, loadingMore, hasMore, onLoadMore, totalBlogsCount }) 
 };
 
 export default BlogList;
-

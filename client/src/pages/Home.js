@@ -157,9 +157,9 @@ const Home = ({ activeCategory, searchQuery }) => {
     const isCategoryView = activeCategory && activeCategory.toLowerCase() !== 'all';
 
     const pageTitle = isSearchView
-        ? `Search results for "${searchQuery}"`
+        ? t('general.search_results_for', { query: searchQuery })
         : isCategoryView
-            ? `Blogs in "${activeCategory}"`
+            ? t('general.blogs_in_category', { category: t(`category.${String(activeCategory).toLowerCase().replace(/ & /g, '_').replace(/\s+/g, '_')}`, { defaultValue: activeCategory }) })
             : '';
 
     if (loading) {

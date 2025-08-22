@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { marked } from 'marked';
@@ -7,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { getCategoryClasses } from '../utils/categoryColors';
 
 const BlogCard = ({ blog }) => {
-    const { i18n } = useTranslation();
+    const { i18n, t } = useTranslation();
     const currentLang = i18n.language;
 
     const getLocalizedContent = (field) => {
@@ -57,7 +58,7 @@ const BlogCard = ({ blog }) => {
                 <div className="flex items-center gap-2 flex-wrap text-[11px] text-gray-500 mb-1">
                     {blog.category && (
                         <span className={`px-2 py-0.5 rounded-full ${getCategoryClasses(blog.category)}`}>
-                            {blog.category}
+                            {t(`category.${String(blog.category).toLowerCase().replace(/ & /g, '_').replace(/\s+/g, '_')}`, { defaultValue: blog.category })}
                         </span>
                     )}
                     <span className="text-gray-500 dark:text-gray-400">{new Date(blog.date).toLocaleDateString()}</span>
@@ -107,4 +108,6 @@ const BlogCard = ({ blog }) => {
 };
 
 export default BlogCard;
+
+
 

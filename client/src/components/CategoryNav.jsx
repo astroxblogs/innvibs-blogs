@@ -1,11 +1,25 @@
-
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
- 
+import { useTranslation } from 'react-i18next';
+
+const categories = [
+  { label: "All", value: "all" },
+  { label: "Technology", value: "Technology" },
+  { label: "Fashion", value: "Fashion" },
+  { label: "Health & Wellness", value: "Health & Wellness" },
+  { label: "Travel", value: "Travel" },
+  { label: "Food & Cooking", value: "Food & Cooking" },
+  { label: "Sports", value: "Sports" },
+  { label: "Business & Finance", value: "Business & Finance" },
+  { label: "Lifestyle", value: "Lifestyle" },
+  { label: "Trends", value: "Trends" }, // <-- ADDED
+  { label: "Relationship", value: "Relationship" }, // <-- ADDED
+];
 
 
 export default function CategoryNav({ activeCategory, onCategoryChange }) {
+  const { t } = useTranslation();
   const scrollRef = useRef(null);
   const itemRefs = useRef([]);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -74,7 +88,7 @@ export default function CategoryNav({ activeCategory, onCategoryChange }) {
           aria-expanded={mobileOpen}
           aria-haspopup="true"
         >
-          Categories
+          {t('navigation.categories')}
           <ChevronRight className={`h-4 w-4 transition-transform ${mobileOpen ? "rotate-90" : "rotate-0"}`} />
         </button>
         <AnimatePresence>
@@ -96,7 +110,7 @@ export default function CategoryNav({ activeCategory, onCategoryChange }) {
                           : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800"
                         }`}
                     >
-                      {cat.label}
+                      {t(`category.${String(cat.value).toLowerCase().replace(/ & /g, '_').replace(/\s+/g, '_')}`, { defaultValue: cat.label })}
                     </button>
                   </li>
                 ))}
@@ -145,7 +159,7 @@ export default function CategoryNav({ activeCategory, onCategoryChange }) {
                 }
               `}
             >
-              {cat.label}
+              {t(`category.${String(cat.value).toLowerCase().replace(/ & /g, '_').replace(/\s+/g, '_')}`, { defaultValue: cat.label })}
             </button>
           ))}
         </div>
@@ -172,6 +186,4 @@ export default function CategoryNav({ activeCategory, onCategoryChange }) {
     </div>
   );
 }
-
-
 
