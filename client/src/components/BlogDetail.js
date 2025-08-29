@@ -12,6 +12,7 @@ import { trackUserRead } from '../services/api';
 
 // Component imports
 import LikeButton from '../components/LikeButton.jsx';
+import ShareButton from '../components/ShareButton.jsx';
 import EmailSubscriptionPopup from './EmailSubscriptionPopup';
 const CommentSection = React.lazy(() => import('../components/CommentSection'));
 
@@ -261,7 +262,10 @@ const BlogDetail = ({ blog: initialBlog }) => {
                 loading="lazy"
             />
 
-            <h1 className="text-2xl sm:text-3xl md:text-5xl font-semibold mb-2 md:mb-3 text-gray-900 dark:text-white leading-tight" style={{ fontFamily: 'Arial, sans-serif' }}>{displayTitle}</h1>
+            <div className="flex items-start justify-between gap-3 mb-3 md:mb-4">
+                <h1 className="text-2xl sm:text-3xl md:text-5xl font-semibold text-gray-900 dark:text-white leading-tight" style={{ fontFamily: 'Arial, sans-serif' }}>{displayTitle}</h1>
+                <ShareButton title={displayTitle} blogId={blog._id} initialShareCount={blog.shareCount || 0} />
+            </div>
             <div className="flex flex-wrap gap-x-3 gap-y-1 items-center text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-6 md:mb-8">
                 <span>Published on: {blog.date ? new Date(blog.date).toLocaleDateString() : 'Invalid Date'}</span> {/* Added conditional rendering for date */}
                 <span className="flex items-center gap-1">
