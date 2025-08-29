@@ -75,8 +75,14 @@ const Home = ({ activeCategory, searchQuery }) => {
 
         const buildLatestSidebar = async () => {
             try {
-                const res = await axios.get('/api/blogs/latest');
-                setSidebarLatest(res.data || []);
+                // If we're on a category page, exclude blogs from the current category
+                if (activeCategory && activeCategory.toLowerCase() !== 'all') {
+                    const res = await axios.get(`/api/blogs?page=1&limit=5&excludeCategory=${encodeURIComponent(activeCategory)}`);
+                    setSidebarLatest(res.data?.blogs || []);
+                } else {
+                    const res = await axios.get('/api/blogs/latest');
+                    setSidebarLatest(res.data || []);
+                }
             } catch (err) {
                 console.error('Error fetching latest for sidebar:', err);
                 setSidebarLatest([]);

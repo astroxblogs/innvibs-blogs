@@ -30,49 +30,62 @@ const LikeButton = ({ blogId, initialLikes = 0 }) => {
     }, [initialLikes]);
 
     const handleLike = async () => {
-        if (liked) return; // Prevent multiple likes if already liked
-
         // Optimistically update UI
-        setLiked(true);
-        setLikes(prevLikes => prevLikes + 1);
+        const newLikedState = !liked;
+        setLiked(newLikedState);
+        setLikes(prevLikes => newLikedState ? prevLikes + 1 : Math.max(0, prevLikes - 1));
         setError(null);
 
         try {
-            // Send like to the main blog backend to update the like count
-            await axios.post(`/api/blogs/${blogId}/like`);
+            // Send like/unlike to the main blog backend to update the like count
+            const endpoint = newLikedState ? 'like' : 'unlike';
+            await axios.post(`/api/blogs/${blogId}/${endpoint}`);
 
-            // 2. After a successful like, save it to localStorage for local state persistence
+            // Update localStorage for local state persistence
             const likedBlogsJSON = localStorage.getItem('likedBlogs');
-            const likedBlogs = likedBlogsJSON ? JSON.parse(likedBlogsJSON) : [];
+            let likedBlogs = likedBlogsJSON ? JSON.parse(likedBlogsJSON) : [];
 
-            // Add the new blog ID and save it back to storage
-            localStorage.setItem('likedBlogs', JSON.stringify([...likedBlogs, blogId]));
+            if (newLikedState) {
+                // Add the blog ID if not already present
+                if (!likedBlogs.includes(blogId)) {
+                    likedBlogs.push(blogId);
+                }
+            } else {
+                // Remove the blog ID
+                likedBlogs = likedBlogs.filter(id => id !== blogId);
+            }
+            
+            localStorage.setItem('likedBlogs', JSON.stringify(likedBlogs));
 
-            // --- NEW: Track user behavior for inferred interests ---
-            // Get the subscriber ID from localStorage
-            const subscriberId = getSubscriberId();
-            if (subscriberId) { // Only track if a subscriber ID exists (i.e., user has subscribed)
-                try {
-                    // Send tracking data to our new backend endpoint
-                    await trackUserLike(subscriberId, blogId);
-                    console.log(`Like behavior for blog ${blogId} tracked for subscriber:`, subscriberId);
-                } catch (trackingError) {
-                    console.error('Failed to track like for personalization:', trackingError);
-                    // This error is usually non-critical for the user's immediate experience,
-                    // so we just log it.
+            // Track user behavior for inferred interests (only when liking)
+            if (newLikedState) {
+                const subscriberId = getSubscriberId();
+                if (subscriberId) {
+                    try {
+                        await trackUserLike(subscriberId, blogId);
+                        console.log(`Like behavior for blog ${blogId} tracked for subscriber:`, subscriberId);
+                    } catch (trackingError) {
+                        console.error('Failed to track like for personalization:', trackingError);
+                    }
                 }
             }
 
         } catch (err) {
-            setError('Failed to like post.');
-            setLiked(false); // Revert UI on error
-            setLikes(prevLikes => prevLikes - 1); // Revert likes count on error
-            console.error("Failed to like the post:", err);
+            setError(newLikedState ? 'Failed to like post.' : 'Failed to unlike post.');
+            setLiked(!newLikedState); // Revert UI on error
+            setLikes(prevLikes => newLikedState ? Math.max(0, prevLikes - 1) : prevLikes + 1); // Revert likes count on error
+            console.error(`Failed to ${newLikedState ? 'like' : 'unlike'} the post:`, err);
 
-            // Revert localStorage if the like failed on the server
+            // Revert localStorage if the operation failed on the server
             const likedBlogsJSON = localStorage.getItem('likedBlogs');
             let likedBlogs = likedBlogsJSON ? JSON.parse(likedBlogsJSON) : [];
-            likedBlogs = likedBlogs.filter(id => id !== blogId); // Remove if it was optimistically added
+            if (newLikedState) {
+                likedBlogs = likedBlogs.filter(id => id !== blogId);
+            } else {
+                if (!likedBlogs.includes(blogId)) {
+                    likedBlogs.push(blogId);
+                }
+            }
             localStorage.setItem('likedBlogs', JSON.stringify(likedBlogs));
         }
     };
@@ -80,12 +93,11 @@ const LikeButton = ({ blogId, initialLikes = 0 }) => {
     return (
         <button
             onClick={handleLike}
-            disabled={liked} // The button is disabled if it's already liked
             className={`flex items-center gap-1.5 transition-colors duration-200 ${liked
-                ? 'text-blue-600 font-semibold cursor-not-allowed'
+                ? 'text-blue-600 font-semibold hover:text-blue-700'
                 : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
                 }`}
-            aria-label="Like this post"
+            aria-label={liked ? "Unlike this post" : "Like this post"}
         >
             <ThumbsUp size={16} fill={liked ? 'currentColor' : 'none'} />
             <span>{likes}</span>
