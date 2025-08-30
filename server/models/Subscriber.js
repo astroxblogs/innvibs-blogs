@@ -7,8 +7,7 @@ const subscriberSchema = new mongoose.Schema({
         required: true,
         unique: true,
         trim: true,
-        lowercase: true,
-        match: [/.+@.+\..+/, 'Please fill a valid email address'] // Basic email validation
+        lowercase: true
     },
     subscribedAt: {
         type: Date,

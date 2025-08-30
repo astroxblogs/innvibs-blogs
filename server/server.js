@@ -18,24 +18,41 @@ const app = express();
 
 
 
+// Build CORS allowlist (ignore empty envs, normalize without trailing slash)
+const normalizeOrigin = (value) => {
+    if (!value) return null;
+    const trimmed = String(value).trim();
+    if (!trimmed) return null;
+    return trimmed.endsWith('/') ? trimmed.slice(0, -1) : trimmed;
+};
+
 const allowedOrigins = [
-    process.env.CORS_ORIGIN_DEV,
-    process.env.CORS_ORIGIN_PROD,
-    process.env.CORS_ORIGIN_Main
-];
+    normalizeOrigin(process.env.CORS_ORIGIN_DEV),
+    normalizeOrigin(process.env.CORS_ORIGIN_PROD),
+    normalizeOrigin(process.env.CORS_ORIGIN_Main)
+].filter(Boolean);
 
-
+// In development, also allow common localhost origins
 if (process.env.NODE_ENV !== 'production') {
-    allowedOrigins.push(process.env.CORS_ORIGIN_DEV);
+    const devOrigins = [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'http://localhost:8081',
+        'http://127.0.0.1:3000',
+        'http://127.0.0.1:3001',
+        'http://127.0.0.1:8081'
+    ];
+    for (const o of devOrigins) {
+        if (!allowedOrigins.includes(o)) allowedOrigins.push(o);
+    }
 }
 
 app.use(cors({
     origin: function (origin, callback) {
-
         if (!origin) return callback(null, true);
 
-
-        const isAllowed = allowedOrigins.includes(origin);
+        const normalizedOrigin = normalizeOrigin(origin);
+        const isAllowed = allowedOrigins.includes(normalizedOrigin);
 
         if (isAllowed) {
             callback(null, true);
@@ -56,6 +73,13 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use('/api/blogs', blogRoutes);
 app.use('/api/subscribers', subscriberRoutes);
 
+// Test route for debugging
+app.post('/api/test-subscriber', (req, res) => {
+    console.log('Test subscriber route hit');
+    console.log('Request body:', req.body);
+    res.json({ msg: 'Test route working', body: req.body });
+});
+
 // Default route
 app.get('/', (req, res) => {
     res.send('innvibs Backend API is running!');
@@ -70,5 +94,14 @@ mongoose.connect(process.env.MONGO_URI)
     .catch(err => console.error('MongoDB connection error:', err));
 
 const PORT = process.env.PORT || 8081;
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Unhandled error:', err);
+    res.status(500).json({ 
+        msg: 'Internal Server Error', 
+        error: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong' 
+    });
+});
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

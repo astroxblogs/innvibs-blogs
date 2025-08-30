@@ -8,7 +8,7 @@ const JobStatus = require('../models/JobStatus'); // NEW: Import JobStatus model
 // Function to generate a simple HTML email for a blog post (unchanged)
 const generateEmailHtml = (subscriberName, blog) => {
     const contentPreview = blog.content_en ? blog.content_en.substring(0, 200) + '...' : '';
-    const blogUrl = `https://www.innvibs.com/blog/${blog._id}`; // Replace with your actual deployed frontend URL
+    const blogUrl = `https://www.innvibs.com/blog/${blog.slug || blog._id}`; // Use slug if available, fallback to ID
 
     return `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; padding: 20px;">

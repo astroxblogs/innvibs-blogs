@@ -2,11 +2,16 @@
 const Subscriber = require('../models/Subscriber');
 const Blog = require('../models/Blog'); // Import the Blog model
 
+console.log('Subscriber model loaded:', !!Subscriber);
+console.log('Blog model loaded:', !!Blog);
+
 // @route   POST /api/subscribe
 // @desc    Subscribe a new user to the newsletter
 // @access  Public
 const subscribe = async (req, res) => {
     const { email } = req.body;
+
+    console.log('Subscription request received for email:', email);
 
     if (!email) {
         return res.status(400).json({ msg: 'Email is required.' });
@@ -16,19 +21,23 @@ const subscribe = async (req, res) => {
         let subscriber = await Subscriber.findOne({ email: email.toLowerCase() });
 
         if (subscriber) {
+            console.log('Subscriber already exists:', subscriber._id);
             return res.status(200).json({ msg: 'You are already subscribed.', subscriberId: subscriber._id });
         }
 
+        console.log('Creating new subscriber for email:', email);
         subscriber = new Subscriber({ email });
         await subscriber.save();
 
+        console.log('Subscriber created successfully:', subscriber._id);
         res.status(201).json({ msg: 'Subscription successful!', subscriberId: subscriber._id });
 
     } catch (err) {
+        console.error('Subscription error:', err);
         if (err.code === 11000) {
             return res.status(409).json({ msg: 'This email is already subscribed.' });
         }
-        res.status(500).json({ msg: 'Server Error' });
+        res.status(500).json({ msg: 'Server Error', error: err.message });
     }
 };
 
@@ -59,8 +68,9 @@ const subscribe = async (req, res) => {
             return res.status(404).json({ msg: 'Subscriber not found.' });
         }
 
+        const currentCategories = subscriber.inferredCategories || [];
         const updatedCategories = [
-            ...new Set([...subscriber.inferredCategories, ...relevantTerms])
+            ...new Set([...currentCategories, ...relevantTerms])
         ];
 
         subscriber.inferredCategories = updatedCategories;
@@ -100,8 +110,9 @@ const trackComment = async (req, res) => {
             return res.status(404).json({ msg: 'Subscriber not found.' });
         }
 
+        const currentCategories = subscriber.inferredCategories || [];
         const updatedCategories = [
-            ...new Set([...subscriber.inferredCategories, ...relevantTerms])
+            ...new Set([...currentCategories, ...relevantTerms])
         ];
 
         subscriber.inferredCategories = updatedCategories;
@@ -141,8 +152,9 @@ const trackReadDuration = async (req, res) => {
             return res.status(404).json({ msg: 'Subscriber not found.' });
         }
 
+        const currentCategories = subscriber.inferredCategories || [];
         const updatedCategories = [
-            ...new Set([...subscriber.inferredCategories, ...relevantTerms])
+            ...new Set([...currentCategories, ...relevantTerms])
         ];
 
         subscriber.inferredCategories = updatedCategories;

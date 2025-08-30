@@ -1,9 +1,19 @@
 const Blog = require('../models/Blog');
 
+// Helper function to generate slug from title
+const generateSlug = (title) => {
+    return title
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
+        .replace(/\s+/g, '-') // Replace spaces with hyphens
+        .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+        .trim('-'); // Remove leading/trailing hyphens
+};
+
 // Get all blogs for the homepage, with pagination and filtering
 const getBlogs = async (req, res) => {
     try {
-        const { category, tag, page = 1, limit = 10 } = req.query;
+        const { category, tag, page = 1, limit = 10, excludeCategory } = req.query;
         const parsedLimit = parseInt(limit, 10);
         const parsedPage = parseInt(page, 10);
 
@@ -17,6 +27,9 @@ const getBlogs = async (req, res) => {
         let filter = {};
         if (category && category.toLowerCase() !== 'all') {
             filter.category = category.trim();
+        }
+        if (excludeCategory) {
+            filter.category = { $ne: excludeCategory.trim() };
         }
         if (tag) {
             filter.tags = { $in: [new RegExp(`^${tag.trim()}$`, 'i')] };
@@ -99,6 +112,17 @@ const getBlog = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+// Get a single blog by slug
+const getBlogBySlug = async (req, res) => {
+    try {
+        const blog = await Blog.findOne({ slug: req.params.slug });
+        if (!blog) return res.status(404).json({ error: 'Blog not found' });
+        res.json(blog);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
 // Increment view count
 const incrementViews = async (req, res) => {
     try {
@@ -106,6 +130,18 @@ const incrementViews = async (req, res) => {
         const updated = await Blog.findByIdAndUpdate(id, { $inc: { views: 1 } }, { new: true });
         if (!updated) return res.status(404).json({ error: 'Blog not found' });
         res.json({ views: updated.views });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Increment share count
+const incrementShares = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updated = await Blog.findByIdAndUpdate(id, { $inc: { shareCount: 1 } }, { new: true });
+        if (!updated) return res.status(404).json({ error: 'Blog not found' });
+        res.json({ shareCount: updated.shareCount });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -131,6 +167,25 @@ const likePost = async (req, res) => {
     } catch (err) {
         console.error("Error liking post:", err);
         res.status(500).json({ error: 'Failed to like the post.' });
+    }
+};
+
+const unlikePost = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const blog = await Blog.findById(id);
+
+        if (!blog) {
+            return res.status(404).json({ message: 'Blog post not found.' });
+        }
+
+        blog.likes = Math.max((blog.likes || 0) - 1, 0);
+        await blog.save();
+
+        res.status(200).json({ message: 'Post unliked successfully!', likes: blog.likes });
+    } catch (err) {
+        console.error("Error unliking post:", err);
+        res.status(500).json({ error: 'Failed to unlike the post.' });
     }
 };
 
@@ -173,7 +228,10 @@ module.exports = {
     getLatestBlogs,
     searchBlogs,
     getBlog,
+    getBlogBySlug,
     incrementViews,
     likePost,
+    unlikePost,
     addComment,
+    incrementShares,
 };
