@@ -1,6 +1,37 @@
 const Blog = require('../models/Blog');
 
- 
+// Helper function to generate slug from title
+const generateSlug = (title) => {
+    return title
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
+        .replace(/\s+/g, '-') // Replace spaces with hyphens
+        .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+        .trim('-'); // Remove leading/trailing hyphens
+};
+
+// Function to generate unique slug
+const generateUniqueSlug = async (title, existingId = null) => {
+    let baseSlug = generateSlug(title);
+    let slug = baseSlug;
+    let counter = 1;
+
+    while (true) {
+        const query = { slug };
+        if (existingId) {
+            query._id = { $ne: existingId };
+        }
+        
+        const existing = await Blog.findOne(query);
+        if (!existing) {
+            return slug;
+        }
+        
+        slug = `${baseSlug}-${counter}`;
+        counter++;
+    }
+};
+
 exports.getLatestBlogs = async (req, res) => {
     try {
         const blogs = await Blog.find({})
@@ -136,7 +167,15 @@ exports.getBlog = async (req, res) => {
 // Create a new blog (will automatically handle the 'category' from req.body and new language fields)
 exports.createBlog = async (req, res) => {
     try {
-        const blog = new Blog(req.body);
+        const title = req.body.title_en || req.body.title;
+        if (!title) {
+            return res.status(400).json({ error: 'Title is required to generate slug' });
+        }
+        
+        const slug = await generateUniqueSlug(title);
+        const blogData = { ...req.body, slug };
+        
+        const blog = new Blog(blogData);
         await blog.save();
         res.status(201).json(blog);
     } catch (err) {
@@ -147,6 +186,12 @@ exports.createBlog = async (req, res) => {
 // Update an existing blog (will automatically handle new language fields in req.body)
 exports.updateBlog = async (req, res) => {
     try {
+        const title = req.body.title_en || req.body.title;
+        if (title) {
+            const slug = await generateUniqueSlug(title, req.params.id);
+            req.body.slug = slug;
+        }
+        
         const blog = await Blog.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!blog) return res.status(404).json({ error: 'Blog not found' });
         res.json(blog);
