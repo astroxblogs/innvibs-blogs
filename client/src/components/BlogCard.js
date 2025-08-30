@@ -43,7 +43,7 @@ const BlogCard = ({ blog }) => {
     return (
         <div className="flex flex-col sm:flex-row items-stretch bg-white dark:bg-gray-900 rounded-xl shadow-sm hover:shadow transition overflow-hidden w-full">
             {blog.image && (
-                <Link to={`/blog/${blog._id}`} className="w-full aspect-[16/9] sm:w-40 md:w-48 sm:aspect-auto sm:self-stretch flex-shrink-0 overflow-hidden group">
+                <Link to={`/blog/${blog.slug || blog._id}`} className="w-full aspect-[16/9] sm:w-40 md:w-48 sm:aspect-auto sm:self-stretch flex-shrink-0 overflow-hidden group">
                     <img
                         src={blog.image}
                         alt={displayTitle}
@@ -65,7 +65,7 @@ const BlogCard = ({ blog }) => {
                 </div>
 
                 {/* Title */}
-                <Link to={`/blog/${blog._id}`} className="block">
+                <Link to={`/blog/${blog.slug || blog._id}`} className="block">
                     <h2 className="text-sm sm:text-lg md:text-xl font-semibold leading-snug text-gray-900 dark:text-gray-100 hover:underline line-clamp-2">
                         {displayTitle}
                     </h2>
@@ -93,7 +93,7 @@ const BlogCard = ({ blog }) => {
 
                 <div className="mt-2 flex items-center gap-4 sm:gap-5 text-gray-500 dark:text-gray-400 text-[11px] sm:text-xs">
                     <LikeButton blogId={blog._id} initialLikes={blog.likes} />
-                    <Link to={`/blog/${blog._id}#comments`} className="flex items-center gap-1.5 hover:text-gray-900 dark:hover:text-white">
+                    <Link to={`/blog/${blog.slug || blog._id}#comments`} className="flex items-center gap-1.5 hover:text-gray-900 dark:hover:text-white">
                         <MessageSquare size={14} />
                         <span>{blog.comments?.length || 0}</span>
                     </Link>
