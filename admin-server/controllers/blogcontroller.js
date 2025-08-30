@@ -168,6 +168,7 @@ exports.getBlog = async (req, res) => {
 exports.createBlog = async (req, res) => {
     try {
         const title = req.body.title_en || req.body.title;
+        
         if (!title) {
             return res.status(400).json({ error: 'Title is required to generate slug' });
         }

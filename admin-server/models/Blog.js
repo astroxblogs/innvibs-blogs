@@ -36,6 +36,8 @@ const BlogSchema = new mongoose.Schema({
     },
     tags: [String],
     likes: { type: Number, default: 0 },
+    shareCount: { type: Number, default: 0 },
+    slug: { type: String, unique: true, sparse: true },
     comments: [CommentSchema]
 }, { timestamps: true }); // Adding timestamps for createdAt and updatedAt
 
